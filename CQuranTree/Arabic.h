@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "Utilities.h"
 
 namespace Arabic
 {
@@ -88,11 +89,7 @@ namespace Arabic
 			Character character;
 			Diacritic modification;
 			Position position;
-			int ASCIICharacter;
-			std::string hexCharacter;
 			std::vector<Diacritic> diacritics;
-			std::vector<int> ASCIIDiacritics;
-			std::vector<std::string> hexDiacritics;
 
 		public:
 			Letter(Position = Position::NONE);
@@ -101,7 +98,9 @@ namespace Arabic
 			Letter(std::vector<int>, Position = Position::NONE);
 			Letter(std::vector<std::string>, Position = Position::NONE);
 			Letter(Character, Position = Position::NONE);
+			Letter(Character, std::vector<Diacritic>, Position = Position::NONE);
 			Letter(Character, Diacritic, Position = Position::NONE);
+			Letter(Character, Diacritic, std::vector<Diacritic>, Position = Position::NONE);
 			~Letter();
 
 			void Reset();
@@ -128,10 +127,6 @@ namespace Arabic
 
 			std::vector<int> GetASCII();
 			std::vector<std::string> GetHex();
-			int GetASCIICharacter();
-			std::string GetHexCharacter();
-			std::vector<int> GetASCIIDiacritics();
-			std::vector<std::string> GetHexDiacritics();
 
 			int GetAbjadValue();
 			int GetSequentialValue();
@@ -140,12 +135,12 @@ namespace Arabic
 
 			bool operator ==(const Letter&);
 			bool operator !=(const Letter&);
-			bool operator <(const Letter& l);
+			bool operator <(const Letter& l) const;
 
 			int ASCIICount();
 			int DiacriticCount();
 			
-			bool IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace, bool checkExtra);
+			bool IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace);
 	};
 
 	class Word
@@ -211,7 +206,7 @@ namespace Arabic
 
 			std::vector<Character> GetRoot();
 			int GetASCII();
-			int GetHex();
+			std::string GetHex();
 
 			int GetAbjadValue();
 			int GetSequentialValue();
@@ -232,121 +227,11 @@ namespace Arabic
 			int OccuranceOf(Letter);
 	};
 
-	std::map<Letter,int> ASCIIByLetter
-	{
-		{Letter(Character::SPACE, Diacritic::NONE),				32},
-		{Letter(Character::HAMZAH, Diacritic::NONE),			1569},
-		{Letter(Character::ALIF, Diacritic::MADDAH),			1570},
-		{Letter(Character::ALIF, Diacritic::HAMZAH_ABOVE),		1571},
-		{Letter(Character::WAW, Diacritic::HAMZAH_ABOVE),		1572},
-		{Letter(Character::ALIF, Diacritic::HAMZAH_BELOW),		1573},
-		{Letter(Character::HAMZAH, Diacritic::HAMZAH_MIDDLE),	1574},
-		{Letter(Character::ALIF, Diacritic::NONE),				1575},
-		{Letter(Character::BA, Diacritic::NONE),				1576},
-		{Letter(Character::TA, Diacritic::MARBUTAH),			1577},
-		{Letter(Character::TA, Diacritic::NONE),				1578},
-		{Letter(Character::THA, Diacritic::NONE),				1579},
-		{Letter(Character::JEEM, Diacritic::NONE),				1580},
-		{Letter(Character::HHA, Diacritic::NONE),				1581},
-		{Letter(Character::KHA, Diacritic::NONE),				1582},
-		{Letter(Character::DAL, Diacritic::NONE),				1583},
-		{Letter(Character::DHAL, Diacritic::NONE),				1584},
-		{Letter(Character::RA, Diacritic::NONE),				1585},
-		{Letter(Character::ZAYN, Diacritic::NONE),				1586},
-		{Letter(Character::SEEN, Diacritic::NONE),				1587},
-		{Letter(Character::SHEEN, Diacritic::NONE),				1588},
-		{Letter(Character::SAD, Diacritic::NONE),				1589},
-		{Letter(Character::DAD, Diacritic::NONE),				1590},
-		{Letter(Character::TTA, Diacritic::NONE),				1591},
-		{Letter(Character::THHA, Diacritic::NONE),				1592},
-		{Letter(Character::AYN, Diacritic::NONE),				1593},
-		{Letter(Character::GHAYN, Diacritic::NONE),				1594},
-		{Letter(Character::FA, Diacritic::NONE),				1601},
-		{Letter(Character::QAF, Diacritic::NONE),				1602},
-		{Letter(Character::KAF, Diacritic::NONE),				1603},
-		{Letter(Character::LAM, Diacritic::NONE),				1604},
-		{Letter(Character::MEEM, Diacritic::NONE),				1605},
-		{Letter(Character::NOON, Diacritic::NONE),				1606},
-		{Letter(Character::HA, Diacritic::NONE),				1607},
-		{Letter(Character::WAW, Diacritic::NONE),				1608},
-		{Letter(Character::YA, Diacritic::ALIF_MAQSURAH),		1609},
-		{Letter(Character::YA, Diacritic::NONE),				1610},
-		{Letter(Character::ALIF, Diacritic::ALIF_KHANJARIYAH),	1648},
-		{Letter(Character::ALIF, Diacritic::ALIF_WASLAH),		1649},
-	};
-	std::map<int, Letter> LetterByASCII
-	{
-		{32,	Letter(Character::SPACE, Diacritic::NONE)},
-		{1569,	Letter(Character::HAMZAH, Diacritic::NONE)},
-		{1570,	Letter(Character::ALIF, Diacritic::MADDAH)},
-		{1571,	Letter(Character::ALIF, Diacritic::HAMZAH_ABOVE)},
-		{1572,	Letter(Character::WAW, Diacritic::HAMZAH_ABOVE)},
-		{1573,	Letter(Character::ALIF, Diacritic::HAMZAH_BELOW)},
-		{1574,	Letter(Character::HAMZAH, Diacritic::HAMZAH_MIDDLE)},
-		{1575,	Letter(Character::ALIF, Diacritic::NONE)},
-		{1576,	Letter(Character::BA, Diacritic::NONE)},
-		{1577,	Letter(Character::TA, Diacritic::MARBUTAH)},
-		{1578,	Letter(Character::TA, Diacritic::NONE)},
-		{1579,	Letter(Character::THA, Diacritic::NONE)},
-		{1580,	Letter(Character::JEEM, Diacritic::NONE)},
-		{1581,	Letter(Character::HHA, Diacritic::NONE)},
-		{1582,	Letter(Character::KHA, Diacritic::NONE)},
-		{1583,	Letter(Character::DAL, Diacritic::NONE)},
-		{1584,	Letter(Character::DHAL, Diacritic::NONE)},
-		{1585,	Letter(Character::RA, Diacritic::NONE)},
-		{1586,	Letter(Character::ZAYN, Diacritic::NONE)},
-		{1587,	Letter(Character::SEEN, Diacritic::NONE)},
-		{1588,	Letter(Character::SHEEN, Diacritic::NONE)},
-		{1589,	Letter(Character::SAD, Diacritic::NONE)},
-		{1590,	Letter(Character::DAD, Diacritic::NONE)},
-		{1591,	Letter(Character::TTA, Diacritic::NONE)},
-		{1592,	Letter(Character::THHA, Diacritic::NONE)},
-		{1593,	Letter(Character::AYN, Diacritic::NONE)},
-		{1594,	Letter(Character::GHAYN, Diacritic::NONE)},
-		{1601,	Letter(Character::FA, Diacritic::NONE)},
-		{1602,	Letter(Character::QAF, Diacritic::NONE)},
-		{1603,	Letter(Character::KAF, Diacritic::NONE)},
-		{1604,	Letter(Character::LAM, Diacritic::NONE)},
-		{1605,	Letter(Character::MEEM, Diacritic::NONE)},
-		{1606,	Letter(Character::NOON, Diacritic::NONE)},
-		{1607,	Letter(Character::HA, Diacritic::NONE)},
-		{1608,	Letter(Character::WAW, Diacritic::NONE)},
-		{1609,	Letter(Character::YA, Diacritic::ALIF_MAQSURAH)},
-		{1610,	Letter(Character::YA, Diacritic::NONE)},
-		{1648,	Letter(Character::ALIF, Diacritic::ALIF_KHANJARIYAH)},
-		{1649,	Letter(Character::ALIF, Diacritic::ALIF_WASLAH)},
-	};
+	extern std::map<Letter, int> ASCIIByLetter;
+	extern std::map<int, Letter> LetterByASCII;
 
-	std::map<Diacritic, int> ASCIIByDiacritic
-	{
-		{Diacritic::TANWEEN_FATHAH,		1611},
-		{Diacritic::TANWEEN_DAMMAH,		1612},
-		{Diacritic::TANWEEN_KASRAH,		1613},
-		{Diacritic::FATHAH,				1614},
-		{Diacritic::DAMMAH,				1615},
-		{Diacritic::KASRAH,				1616},
-		{Diacritic::SHADDAH,			1617},
-		{Diacritic::SUKOON,				1618},
-		{Diacritic::MADDAH,				1619},
-		{Diacritic::HAMZAH,				1620},
-		{Diacritic::ALIF_KHANJARIYAH,	1648},
-		{Diacritic::SUKOON_WASLAH,		1759},
-	};
-	std::map<int, Diacritic> DiacriticByASCII
-	{
-		{1611,	Diacritic::TANWEEN_FATHAH},
-		{1612,	Diacritic::TANWEEN_DAMMAH},
-		{1613,	Diacritic::TANWEEN_KASRAH},
-		{1614,	Diacritic::FATHAH},
-		{1615,	Diacritic::DAMMAH},
-		{1616,	Diacritic::KASRAH},
-		{1617,	Diacritic::SHADDAH},
-		{1618,	Diacritic::SUKOON},
-		{1619,	Diacritic::MADDAH},
-		{1620,	Diacritic::HAMZAH},
-		{1648,	Diacritic::ALIF_KHANJARIYAH},
-		{1759,	Diacritic::SUKOON_WASLAH},
-	};
+	extern std::map<Diacritic, int> ASCIIByDiacritic;
+	extern std::map<int, Diacritic> DiacriticByASCII;
 	
 	std::string to_string(int);
 	std::string to_string(Character);
@@ -380,7 +265,8 @@ namespace Arabic
 	int sequential_value(Word);
 	int sequential_value(std::vector<Word>);
 
-	std::string sound_of(Letter);
+	std::string sound_of(Letter, bool = true);
+	std::string sound_of(std::vector<Letter>, bool = true);
 
 	bool is_character(int, bool = false);
 	bool is_character(std::string, bool = false);
