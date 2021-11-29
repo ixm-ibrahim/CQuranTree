@@ -290,6 +290,19 @@ std::string Arabic::to_string(Word::Gender g)
 }
 
 /// <summary>
+/// Converts a hexadecimal to its ascii representation
+/// </summary>
+/// <param name="hex:">hexadecimal to convert</param>
+/// <returns>ascii representation of a hexadecimal</returns>
+int Arabic::to_ascii(std::string hex)
+{
+	int n = 0;
+	std::stringstream ss;
+	ss << std::hex << hex;
+	ss >> n;
+	return n;
+}
+/// <summary>
 /// Converts a Character to its ascii representation
 /// </summary>
 /// <param name="c:">Character to convert</param>
@@ -324,25 +337,222 @@ int Arabic::to_ascii(Letter l)
 /// <returns>hexadecimal representation of an integer</returns>
 std::string Arabic::to_hex(int n)
 {
-	std::stringstream stream;
-	stream << std::hex << n;
-	return stream.str();
+	std::stringstream ss;
+	ss << std::hex << n;
+	return ss.str();
 }
-std::string Arabic::to_hex(Character);
-std::string Arabic::to_hex(Diacritic);
-std::string Arabic::to_hex(Letter);
+/// <summary>
+/// Converts a Character to its hexadecimal representation
+/// </summary>
+/// <param name="c:">Character to convert</param>
+/// <returns>hexadecimal representation of a Character</returns>
+std::string Arabic::to_hex(Character c)
+{
+	return to_hex(to_ascii(c));
+}
+/// <summary>
+/// Converts a Diacritic to its hexadecimal representation
+/// </summary>
+/// <param name="d:">Diacritic to convert</param>
+/// <returns>hexadecimal representation of a Diacritic</returns>
+std::string Arabic::to_hex(Diacritic d)
+{
+	return to_hex(to_ascii(d));
+}
+/// <summary>
+/// Converts a Letter to its hexadecimal representation
+/// </summary>
+/// <param name="l:">Letter to convert</param>
+/// <returns>hexadecimal representation of a Letter</returns>
+std::string Arabic::to_hex(Letter l)
+{
+	return to_hex(to_ascii(l));
+}
 
-int Arabic::abjad_value(Character);
-int Arabic::abjad_value(Letter);
-int Arabic::abjad_value(std::vector<Letter>);
-int Arabic::abjad_value(Word);
-int Arabic::abjad_value(std::vector<Word>);
+/// <summary>
+/// Returns the abjad value of a Character
+/// </summary>
+/// <param name="c:">Character to convert</param>
+/// <returns>abjad value of a Character</returns>
+int Arabic::abjad_value(Character c)
+{
+	return abs(static_cast<int>(c));
+}
+/// <summary>
+/// Returns the abjad value of a Letter
+/// </summary>
+/// <param name="l:">Letter to convert</param>
+/// <returns>abjad value of a Letter</returns>
+int Arabic::abjad_value(Letter l)
+{
+	return abjad_value(l.GetCharacter());
+}
+/// <summary>
+/// Returns the abjad value of a vector of Letters
+/// </summary>
+/// <param name="ls:">Letters to convert</param>
+/// <returns>abjad value of a number of Letters</returns>
+int Arabic::abjad_value(std::vector<Letter> ls)
+{
+	int sum = 0;
 
-int Arabic::sequential_value(Character);
-int Arabic::sequential_value(Letter);
-int Arabic::sequential_value(std::vector<Letter>);
-int Arabic::sequential_value(Word);
-int Arabic::sequential_value(std::vector<Word>);
+	for (auto& l : ls)
+		sum += abjad_value(l);
+
+	return sum;
+}
+/// <summary>
+/// Returns the abjad value of a Word
+/// </summary>
+/// <param name="w:">Word to convert</param>
+/// <returns>abjad value of a Word</returns>
+int Arabic::abjad_value(Word w)
+{
+	int sum = 0;
+
+	for (auto& l : w.GetLetters())
+		sum += abjad_value(l);
+
+	return sum;
+}
+/// <summary>
+/// Returns the abjad value of a vector of Words
+/// </summary>
+/// <param name="ws:">Words to convert</param>
+/// <returns>abjad value of a number of Words</returns>
+int Arabic::abjad_value(std::vector<Word> ws)
+{
+	int sum = 0;
+
+	for (auto& w : ws)
+		sum += abjad_value(w);
+
+	return sum;
+}
+
+//TODO: value of ya with alif maqsurah on it
+
+/// <summary>
+/// Returns the sequential value of a Character
+/// </summary>
+/// <param name="c:">Character to convert</param>
+/// <returns>sequential value of a Character</returns>
+int Arabic::sequential_value(Character c)
+{
+	switch (c)
+	{
+		case Character::HAMZAH:
+		case Character::ALIF:
+			return 1;
+		case Character::BA:
+			return 2;
+		case Character::JEEM:
+			return 3;
+		case Character::DAL:
+			return 4;
+		case Character::HA:
+			return 5;
+		case Character::WAW:
+			return 6;
+		case Character::ZAYN:
+			return 7;
+		case Character::HHA:
+			return 8;
+		case Character::TTA:
+			return 9;
+		case Character::YA:
+			return 10;
+		case Character::KAF:
+			return 11;
+		case Character::LAM:
+			return 12;
+		case Character::MEEM:
+			return 13;
+		case Character::NOON:
+			return 14;
+		case Character::SEEN:
+			return 15;
+		case Character::AYN:
+			return 16;
+		case Character::FA:
+			return 17;
+		case Character::SAD:
+			return 18;
+		case Character::QAF:
+			return 19;
+		case Character::RA:
+			return 20;
+		case Character::SHEEN:
+			return 21;
+		case Character::TA:
+			return 22;
+		case Character::THA:
+			return 23;
+		case Character::KHA:
+			return 24;
+		case Character::DHAL:
+			return 25;
+		case Character::DAD:
+			return 26;
+		case Character::THHA:
+			return 27;
+		case Character::GHAYN:
+			return 28;
+	}
+
+	return 0;
+}
+/// <summary>
+/// Returns the sequential value of a Letter
+/// </summary>
+/// <param name="l:">Letter to convert</param>
+/// <returns>sequential value of a Letter</returns>
+int Arabic::sequential_value(Letter l)
+{
+	return sequential_value(l.GetCharacter());
+}
+/// <summary>
+/// Returns the sequential value of a vector of Letters
+/// </summary>
+/// <param name="ls:">Letters to convert</param>
+/// <returns>sequential value of a number of Letters</returns>
+int Arabic::sequential_value(std::vector<Letter> ls)
+{
+	int sum = 0;
+
+	for (auto& l : ls)
+		sum += sequential_value(l);
+
+	return sum;
+}
+/// <summary>
+/// Returns the sequential value of a Word
+/// </summary>
+/// <param name="w:">Word to convert</param>
+/// <returns>sequential value of a Word</returns>
+int Arabic::sequential_value(Word w)
+{
+	int sum = 0;
+
+	for (auto& l : w.GetLetters())
+		sum += sequential_value(l);
+
+	return sum;
+}
+/// <summary>
+/// Returns the sequential value of a vector of Words
+/// </summary>
+/// <param name="ws:">Words to convert</param>
+/// <returns>sequential value of a number of Words</returns>
+int Arabic::sequential_value(std::vector<Word> ws)
+{
+	int sum = 0;
+
+	for (auto& w : ws)
+		sum += sequential_value(w);
+
+	return sum;
+}
 
 /// <summary>
 /// Returns the sound that a Letter makes
@@ -576,4 +786,394 @@ std::string Arabic::sound_of(Letter l)
 	}
 
 	return sound;
+}
+
+bool Arabic::is_character(int ascii, bool checkSpace)
+{
+	// Hamza to Ghayn
+	if (ascii >= 1569 && ascii <= 1594)
+		return true;
+
+	// Fa to Ya
+	if (ascii >= 1601 && ascii <= 1610)
+		return true;
+
+	// Alif Waslah and Space
+	return ascii == 1649 || (checkSpace && ascii == 32);
+}
+bool Arabic::is_character(std::string hex, bool checkSpace)
+{
+	return is_character(to_ascii(hex), checkSpace);
+}
+bool Arabic::is_diacritic(int ascii)
+{
+	// meem saakin - 06e2   <------------
+
+	return (ascii >= 1611 && ascii <= 1620) || ascii == 1648 || ascii == 1759;
+}
+bool Arabic::is_diacritic(std::string hex)
+{
+	return is_diacritic(to_ascii(hex));
+}
+
+/// <summary>
+/// Returns true if the ASCII value is a valid arabic character or diacritic, and false otherwise
+/// </summary>
+/// <param name="ascii:">ASCII value to analyze</param>
+/// <returns>boolean representing if the ASCII value is a valid arabic character or diacritic</returns>
+bool Arabic::is_arabic(int ascii)
+{
+	if (LetterByASCII.count(ascii) == 1)
+		return is_arabic(LetterByASCII[ascii]);
+
+	return is_arabic(DiacriticByASCII[ascii]);
+}
+/// <summary>
+/// Returns true if a Character is a valid arabic ASCII value, and false otherwise
+/// </summary>
+/// <param name="ascii:">Character to analyze</param>
+/// <returns>boolean representing if the Character is a valid arabic ASCII value</returns>
+bool Arabic::is_arabic(Character c, bool checkSpace)
+{
+	return is_character(to_ascii(c), checkSpace);
+}
+/// <summary>
+/// Returns true if a Diacritic is a valid arabic ASCII value, and false otherwise
+/// </summary>
+/// <param name="d:">Diacritic to analyze</param>
+/// <returns>boolean representing if the Diacritic is a valid arabic ASCII value</returns>
+bool Arabic::is_arabic(Diacritic d)
+{
+	int ascii = to_ascii(d);
+
+	// meem saakin - 06e2   <------------
+
+	return (ascii >= 1611 && ascii <= 1620) || ascii == 1648 || ascii == 1759;
+}
+/// <summary>
+/// Returns true if a Letter contains valid arabic ASCII values, and false otherwise
+/// </summary>
+/// <param name="l:">Letter to analyze</param>
+/// <returns>boolean representing if the Letter contains valid arabic ASCII values</returns>
+bool Arabic::is_arabic(Letter l, bool checkSpace)
+{
+	for (auto& d : l.GetDiacritics())
+		if (!is_arabic(d))
+			return false;
+
+	return is_character(to_ascii(l), checkSpace);
+}
+/// <summary>
+/// Returns true if a Word contains valid arabic ASCII values, and false otherwise
+/// </summary>
+/// <param name="w:">Word to analyze</param>
+/// <returns>boolean representing if the Word contains valid arabic ASCII values</returns>
+bool Arabic::is_arabic(Word w, bool checkSpace)
+{
+	for (auto& l: w.GetLetters())
+		if (!is_arabic(l, checkSpace))
+			return false;
+
+	return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Letter 
+///////////////////////////////////////////////////////////////////////////////
+
+Letter::Letter(Position position)
+{
+	Reset();
+
+	this->position = position;
+}
+Letter::Letter(int ascii, Position position) : Letter(position)
+{
+	SetFromASCII(ascii);
+}
+Letter::Letter(std::string hex, Position position) : Letter(to_ascii(hex), position) {}
+Letter::Letter(std::vector<int> asciis, Position position) : Letter(position)
+{
+	if (asciis.size() > 0)
+	{
+		SetFromASCII(asciis[0]);
+
+		for (unsigned int i = 1; i < asciis.size(); i++)
+			if (is_diacritic(asciis[i]))
+				AddDiacritic(asciis[i]);
+	}
+	
+}
+Letter::Letter(std::vector<std::string> hexes, Position position) : Letter()
+{
+	if (hexes.size() > 0)
+	{
+		SetFromASCII(to_ascii(hexes[0]));
+
+		for (unsigned int i = 1; i < hexes.size(); i++)
+		{
+			int ascii = to_ascii(hexes[i]);
+
+			if (is_diacritic(ascii))
+				AddDiacritic(ascii);
+		}
+	}
+}
+Letter::Letter(Character character, Position position) : Letter(position)
+{
+	SetCharacter(character);
+}
+Letter::Letter(Character character, Diacritic modification, Position position) : Letter(position)
+{
+	SetCharacter(character, modification);
+}
+Letter::~Letter()
+{
+	Reset();
+}
+
+void Letter::Reset()
+{
+	this->character = Character::NONE;
+	this->modification = Diacritic::NONE;
+	this->position = position;
+	this->ASCIICharacter = 0;
+	this->hexCharacter = "0x0000";
+	diacritics.clear();
+	ASCIIDiacritics.clear();
+	hexDiacritics.clear();
+}
+
+bool Letter::SetFromASCII(int ascii)
+{
+	if (is_arabic(ascii))
+		if (is_character(ascii))
+		{
+			this->character = LetterByASCII[ascii].GetCharacter();
+			this->modification = LetterByASCII[ascii].GetModification();
+			this->ASCIICharacter = ascii;
+			this->hexCharacter = to_hex(ascii);
+		}
+		else if (is_diacritic(ascii))
+			this->diacritics.push_back(DiacriticByASCII[ascii]);
+
+	return false;
+}
+Character Letter::GetCharacter()
+{
+	return this->character;
+}
+void Letter::SetCharacter(Character character, bool clearModification)
+{
+	this->character = character;
+	if (clearModification)
+		this->modification = Diacritic::NONE;
+	this->ASCIICharacter = to_ascii(character);
+	this->hexCharacter = to_hex(character);
+}
+void Letter::SetCharacter(Character character, Diacritic modification)
+{
+	this->character = character;
+	this->modification = modification;
+	this->ASCIICharacter = to_ascii(character);
+	this->hexCharacter = to_hex(character);
+}
+void Letter::SetCharacter(int ascii, bool clearModification)
+{
+	this->character = LetterByASCII[ascii].GetCharacter();
+	if (clearModification)
+		this->modification = Diacritic::NONE;
+	this->ASCIICharacter = ascii;
+	this->hexCharacter = to_hex(ascii);
+}
+
+void Letter::SetCharacter(std::string hex, bool clearModification)
+{
+	SetCharacter(to_ascii(hex), clearModification);
+}
+Diacritic Letter::GetModification()
+{
+	return this->modification;
+}
+void Letter::SetModification(Diacritic modification)
+{
+	this->modification = modification;
+}
+
+std::vector<Diacritic> Letter::GetDiacritics()
+{
+	return this->diacritics;
+}
+void Letter::SetDiacritics(std::vector<Diacritic> diacritics)
+{
+	ClearDiacritics();
+
+	this->diacritics = diacritics;
+
+	for (unsigned int i = 0; i < diacritics.size(); i++)
+	{
+		this->ASCIIDiacritics.push_back(to_ascii(diacritics[i]));
+		this->hexDiacritics.push_back(to_hex(diacritics[i]));
+	}
+}
+void Letter::SetDiacritic(int index, Diacritic diacritic)
+{
+	this->diacritics[index] = diacritic;
+	this->ASCIIDiacritics[index] = to_ascii(diacritic);
+	this->hexDiacritics[index] = to_hex(diacritic);
+}
+void Letter::AddDiacritic(Diacritic diacritic)
+{
+	if (diacritic != Diacritic::NONE)
+	{
+		this->diacritics.push_back(diacritic);
+		this->ASCIIDiacritics.push_back(to_ascii(diacritic));
+		this->hexDiacritics.push_back(to_hex(diacritic));
+	}
+}
+void Letter::AddDiacritic(int ascii)
+{
+	if (is_diacritic(ascii))
+	{
+		Diacritic d = DiacriticByASCII[ascii];
+
+		if (d != Diacritic::NONE)
+		{
+			this->diacritics.push_back(d);
+			this->ASCIIDiacritics.push_back(ascii);
+			this->hexDiacritics.push_back(to_hex(ascii));
+		}
+	}
+}
+void Letter::AddDiacritic(std::string hex)
+{
+	AddDiacritic(to_ascii(hex));
+}
+void Letter::RemoveDiacritic(int index)
+{
+	this->diacritics.erase(this->diacritics.begin() + index);
+	this->ASCIIDiacritics.erase(this->ASCIIDiacritics.begin() + index);
+	this->hexDiacritics.erase(this->hexDiacritics.begin() + index);
+}
+void Letter::RemoveDiacritic(Diacritic diacritic)
+{
+	this->diacritics.erase(std::remove(this->diacritics.begin(), this->diacritics.end(), diacritic), this->diacritics.end());
+	this->ASCIIDiacritics.erase(std::remove(this->ASCIIDiacritics.begin(), this->ASCIIDiacritics.end(), to_ascii(diacritic)), this->ASCIIDiacritics.end());
+	this->hexDiacritics.erase(std::remove(this->hexDiacritics.begin(), this->hexDiacritics.end(), to_hex(diacritic)), this->hexDiacritics.end());
+}
+void Letter::ClearDiacritics()
+{
+	this->diacritics.clear();
+	this->ASCIIDiacritics.clear();
+	this->hexDiacritics.clear();
+}
+
+Position Letter::GetPosition()
+{
+	return this->position;
+}
+void Letter::SetPosition(Position position)
+{
+	this->position = position;
+}
+
+std::vector<int> Letter::GetASCII()
+{
+	std::vector<int> ret;
+
+	if (is_character(this->ASCIICharacter))
+		ret.push_back(this->ASCIICharacter);
+
+	int ascii = to_ascii(this->modification);
+	if (is_diacritic(ascii))
+		ret.push_back(ascii);
+
+	for (auto& d : this->diacritics)
+	{
+		ascii = to_ascii(d);
+		if (is_diacritic(ascii))
+			ret.push_back(ascii);
+	}
+
+	return ret;
+}
+std::vector<std::string> Letter::GetHex()
+{
+	std::vector<std::string> ret;
+
+	if (is_character(this->hexCharacter))
+		ret.push_back(this->hexCharacter);
+
+	std::string hex = to_hex(this->modification);
+	if (is_diacritic(hex))
+		ret.push_back(hex);
+
+	for (auto& d : this->diacritics)
+	{
+		hex = to_hex(d);
+		if (is_diacritic(hex))
+			ret.push_back(hex);
+	}
+
+	return ret;
+}
+int Letter::GetASCIICharacter()
+{
+	return this->ASCIICharacter;
+}
+std::string Letter::GetHexCharacter()
+{
+	return this->hexCharacter;
+}
+std::vector<int> Letter::GetASCIIDiacritics()
+{
+	return this->ASCIIDiacritics;
+}
+std::vector<std::string> Letter::GetHexDiacritics()
+{
+	return this->hexDiacritics;
+}
+
+int Letter::GetAbjadValue()
+{
+	return abjad_value(*this);
+}
+int Letter::GetSequentialValue()
+{
+	return sequential_value(*this);
+}
+
+std::string Letter::to_string(bool addSpace)
+{
+	return sound_of(*this) + (addSpace ? " " : "");
+}
+
+bool Letter::operator ==(const Letter& l)
+{
+	return true;
+}
+bool Letter::operator !=(const Letter& l)
+{
+	return true;
+}
+bool Letter::operator <(const Letter& l)
+{
+	return to_ascii(*this) < to_ascii(l);
+}
+
+int Letter::ASCIICount()
+{
+	return diacritics.size() + (int)is_arabic(this->character, true);
+}
+int Letter::DiacriticCount()
+{
+	return diacritics.size();
+}
+
+bool Letter::IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace, bool checkExtra)
+{
+	if (checkCharacter)
+		if (!is_arabic(this->character))
+			return false;
 }

@@ -8,7 +8,7 @@ int main()
 {
     std::cout << "Hello World!\n";
 
-    std::cout << abjad_value(Arabic::Character::GHAYN) << std::endl << Arabic::to_hex(32);
+    //std::cout << abjad_value(Arabic::Character::GHAYN) << std::endl << Arabic::to_hex(32);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

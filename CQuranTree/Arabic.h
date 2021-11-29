@@ -104,11 +104,14 @@ namespace Arabic
 			Letter(Character, Diacritic, Position = Position::NONE);
 			~Letter();
 
+			void Reset();
+
+			bool SetFromASCII(int);
 			Character GetCharacter();
-			void SetCharacter(Character);
+			void SetCharacter(Character, bool = true);
 			void SetCharacter(Character, Diacritic);
-			void SetCharacter(int);
-			void SetCharacter(std::string);
+			void SetCharacter(int, bool = true);
+			void SetCharacter(std::string, bool = true);
 			Diacritic GetModification();
 			void SetModification(Diacritic);
 			std::vector<Diacritic> GetDiacritics();
@@ -117,14 +120,14 @@ namespace Arabic
 			void AddDiacritic(Diacritic);
 			void AddDiacritic(int);
 			void AddDiacritic(std::string);
+			void RemoveDiacritic(int);
 			void RemoveDiacritic(Diacritic);
 			void ClearDiacritics();
 			Position GetPosition();
 			void SetPosition(Position);
-			void Reset();
 
-			int GetASCII();
-			int GetHex();
+			std::vector<int> GetASCII();
+			std::vector<std::string> GetHex();
 			int GetASCIICharacter();
 			std::string GetHexCharacter();
 			std::vector<int> GetASCIIDiacritics();
@@ -133,18 +136,16 @@ namespace Arabic
 			int GetAbjadValue();
 			int GetSequentialValue();
 
-			std::string to_string();
+			std::string to_string(bool = false);
 
-			bool operator ==(Letter);
-			bool operator !=(Letter);
+			bool operator ==(const Letter&);
+			bool operator !=(const Letter&);
+			bool operator <(const Letter& l);
 
-			int Count();
-			int CharacterCount();
+			int ASCIICount();
 			int DiacriticCount();
-
-			bool IsCharacter();
-			bool IsDiacritic();
-			bool IsArabic();
+			
+			bool IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace, bool checkExtra);
 	};
 
 	class Word
@@ -218,9 +219,9 @@ namespace Arabic
 			std::string to_string();
 
 			Letter& operator [](int);
-			bool operator ==(Word);
-			bool operator !=(Word);
-			bool operator +(Letter);
+			bool operator ==(const Word&);
+			bool operator !=(const Word&);
+			bool operator +(const Letter&);
 			bool operator --();
 
 			int Count();
@@ -357,6 +358,7 @@ namespace Arabic
 	std::string to_string(Word::Quantity);
 	std::string to_string(Word::Gender);
 
+	int to_ascii(std::string);
 	int to_ascii(Character);
 	int to_ascii(Diacritic);
 	int to_ascii(Letter);
@@ -379,4 +381,16 @@ namespace Arabic
 	int sequential_value(std::vector<Word>);
 
 	std::string sound_of(Letter);
+
+	bool is_character(int, bool = false);
+	bool is_character(std::string, bool = false);
+	bool is_diacritic(int);
+	bool is_diacritic(std::string);
+
+	bool is_arabic(int);
+	bool is_arabic(std::string);
+	bool is_arabic(Character, bool = false);
+	bool is_arabic(Diacritic);
+	bool is_arabic(Letter, bool = false);
+	bool is_arabic(Word, bool = false);
 };
