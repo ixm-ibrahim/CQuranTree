@@ -718,7 +718,7 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 				default:
 					if (l.GetModification() == Diacritic::ALIF_WASLAH)
 						sound = "Ⱥ";
-					else if (Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::TANWEEN_FATHAH) == -1)	// if there is a TANWEEN_FATHAH, get sound from diacritic section
+					else if (Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_FATHAH) == -1)	// if there is a TANWEEN_FATHAH, get sound from diacritic section
 						sound = "A";
 					break;
 			}
@@ -732,9 +732,9 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 		case Character::TA:
 		{
 			if  (l.GetModification() != Diacritic::MARBUTAH									// if it is not MARBUTAH
-			 || (Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::TANWEEN_FATHAH) != -1	// or
-			 ||  Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::TANWEEN_KASRAH) != -1	// if there is a TANWEEN
-			 ||  Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::TANWEEN_DAMMAH) != -1))
+			 || (Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_FATHAH) != -1	// or
+			 ||  Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_KASRAH) != -1	// if there is a TANWEEN
+			 ||  Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_DAMMAH) != -1))
 				sound = "T";
 			else
 				sound = "H";
@@ -887,9 +887,9 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 	if (!includeDiacritics)
 		return sound;
 
-	if (Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::SHADDAH) != -1)
+	if (Utilities::index_of(l.GetDiacritics(), Diacritic::SHADDAH) != -1)
 		sound += sound;
-	if (Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::MADDAH) != -1)
+	if (Utilities::index_of(l.GetDiacritics(), Diacritic::MADDAH) != -1)
 		sound += sound;
 
 	// TODO: optimize loop by breaking upon diacritic
@@ -931,6 +931,21 @@ std::string Arabic::sound_of(std::vector<Letter> ls, bool includeDiacritics)
 	std::string sound = "";
 
 	for (auto& l : ls)
+		sound += sound_of(l, includeDiacritics);
+
+	return sound;
+}
+/// <summary>
+/// Returns the sound that a Word makes, with the option to visualize their Diacritics
+/// </summary>
+/// <param name="w:">Word to convert</param>
+/// <param name="includeDiacritics:">if set to true, the Diacritics' sounds will be textualized as well (default true)</param>
+/// <returns>std::string representation of the Word's sound</returns>
+std::string Arabic::sound_of(Word w, bool includeDiacritics)
+{
+	std::string sound = "";
+
+	for (auto& l : w.GetLetters())
 		sound += sound_of(l, includeDiacritics);
 
 	return sound;
@@ -1196,7 +1211,7 @@ bool Letter::SetFromASCII(int ascii)
 /// Gets the Letter's "character" member
 /// </summary>
 /// <returns>a Character</returns>
-Character Letter::GetCharacter()
+Character Letter::GetCharacter() const
 {
 	return this->character;
 }
@@ -1245,7 +1260,7 @@ void Letter::SetCharacter(std::string hex, bool clearModification)
 /// Gets the Letter's "modification" member
 /// </summary>
 /// <returns>a Character</returns>
-Diacritic Letter::GetModification()
+Diacritic Letter::GetModification() const
 {
 	return this->modification;
 }
@@ -1324,7 +1339,7 @@ void Letter::AddDiacritic(std::string hex)
 /// <param name="index:">the index to remove</param>
 void Letter::RemoveDiacritic(int index)
 {
-	this->diacritics.erase(this->diacritics.begin() + index);
+	Utilities::remove_at(this->diacritics, index);
 }
 /// <summary>
 /// Removes all occurances of a Diacritic from the Letter's "diacritics" member
@@ -1332,7 +1347,7 @@ void Letter::RemoveDiacritic(int index)
 /// <param name="diacritic:">the Diacritic to remove</param>
 void Letter::RemoveDiacritic(Diacritic diacritic)
 {
-	this->diacritics.erase(std::remove(this->diacritics.begin(), this->diacritics.end(), diacritic), this->diacritics.end());
+	Utilities::remove_all(this->diacritics, diacritic);
 }
 /// <summary>
 /// Clears the Letter's "diacritics" member
@@ -1346,7 +1361,7 @@ void Letter::ClearDiacritics()
 /// Gets a Letter's "position" member
 /// </summary>
 /// <returns>the Letter's Position</returns>
-Position Letter::GetPosition()
+Position Letter::GetPosition() const
 {
 	return this->position;
 }
@@ -1363,7 +1378,7 @@ void Letter::SetPosition(Position position)
 /// Gets all ASCII values attributed to a Letter
 /// </summary>
 /// <returns>a vector of ASCII values that respectively represent the Character, modification, and Diacritics</returns>
-std::vector<int> Letter::GetASCII()
+std::vector<int> Letter::GetASCII() const
 {
 	std::vector<int> ret;
 
@@ -1387,7 +1402,7 @@ std::vector<int> Letter::GetASCII()
 /// Gets all hexadecimal values attributed to a Letter
 /// </summary>
 /// <returns>a vector of hexadecimal values that respectively represent the Character, modification, and Diacritics</returns>
-std::vector<std::string> Letter::GetHex()
+std::vector<std::string> Letter::GetHex() const
 {
 	std::vector<std::string> ret;
 
@@ -1474,7 +1489,7 @@ bool Letter::operator <(const Letter& rhs) const
 /// Gets the total amount of ASCII values that can be attributed to a Letter
 /// </summary>
 /// <returns>integer that represents the number of all the Letter's ASCII values</returns>
-int Letter::ASCIICount()
+int Letter::ASCIICount() const
 {
 	return diacritics.size() + (int)is_arabic(this->character, true);
 }
@@ -1482,7 +1497,7 @@ int Letter::ASCIICount()
 /// Gets the number of the Letter's diacritics
 /// </summary>
 /// <returns>integer that represents the number of the Letter's diacritics</returns>
-int Letter::DiacriticCount()
+int Letter::DiacriticCount() const
 {
 	return diacritics.size();
 }
@@ -1514,21 +1529,21 @@ bool Letter::IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace)
 
 Word::Word()
 {
-
+	Reset();
 }
-Word::Word(Letter)
+Word::Word(Letter) : Word()
 {
 
 }
-Word::Word(std::vector<Letter>)
+Word::Word(std::vector<Letter>) : Word()
 {
 
 }
-Word::Word(std::vector<int>, char)
+Word::Word(std::vector<int>, char) : Word()
 {
 
 }
-Word::Word(std::vector<std::string>, char)
+Word::Word(std::vector<std::string>, char) : Word()
 {
 
 }
@@ -1544,98 +1559,226 @@ Word::~Word()
 /// Gets the Letters in a Word
 /// </summary>
 /// <returns>a vector of the Word's Letters</returns>
-std::vector<Letter> Word::GetLetters()
+std::vector<Letter> Word::GetLetters() const
 {
 	return this->letters;
 }
-void Word::SetLetters(std::vector<Letter>)
+void Word::SetLetters(std::vector<Letter> letters, bool clearRoot)
 {
+	this->letters.clear();
+	this->letters = letters;
 
+	if (clearRoot)
+		this->root.clear();
 }
-void Word::SetLetter(int, Letter)
+void Word::SetLetter(int index, Letter letter, bool clearRoot)
 {
+	this->letters[index] = letter;
 
+	if (clearRoot)
+		this->root.clear();
 }
-void Word::AddLetter(int, Letter)
+void Word::AddLetter(Letter letter, bool clearRoot)
 {
+	this->letters.push_back(letter);
 
+	if (clearRoot)
+		this->root.clear();
 }
-void Word::RemoveLetter(int)
+void Word::InsertLetter(int index, Letter letter, bool clearRoot)
 {
+	Utilities::insert_at(this->letters, index, letter);
 
+	if (clearRoot)
+		this->root.clear();
+}
+void Word::RemoveLetter(int index, bool clearRoot)
+{
+	Utilities::remove_at(this->letters, index);
+
+	if (clearRoot)
+		this->root.clear();
+}
+
+std::vector<Character> Word::GetRoot() const
+{
+	return this->root;
+}
+void Word::SetRoot(std::vector<Character> root)
+{
+	this->root.clear();
+	this->root = root;
+}
+void Word::SetRootCharacter(int index, Character character)
+{
+	this->root[index] = character;
+}
+void Word::AddRootCharacter(Character character)
+{
+	this->root.push_back(character);
+}
+void Word::InsertRootCharacter(int index, Character character)
+{
+	Utilities::insert_at(this->root, index, character);
+}
+void Word::RemoveRootCharacter(int index)
+{
+	Utilities::remove_at(this->root, index);
+}
+
+void Word::SetAttributes(Attributes attributes)
+{
+	this->attributes = attributes;
+}
+void Word::SetType(Type type)
+{
+	this->attributes.type = type;
+}
+Word::Type Word::GetType() const
+{
+	return this->attributes.type;
+}
+void Word::SetTense(Tense tense)
+{
+	this->attributes.tense = tense;
+}
+Word::Tense Word::GetTense() const
+{
+	return this->attributes.tense;
+}
+void Word::SetQuantity(Quantity quantity)
+{
+	this->attributes.quantity = quantity;
+}
+Word::Quantity Word::GetQuantity() const
+{
+	return this->attributes.quantity;
+}
+void Word::SetGender(Gender gender)
+{
+	this->attributes.gender = gender;
+}
+Word::Gender Word::GetGender() const
+{
+	return this->attributes.gender;
+}
+void Word::SetPerson(Person person)
+{
+	this->attributes.person = person;
+}
+Word::Person Word::GetPerson() const
+{
+	return this->attributes.person;
+}
+
+void Word::ResetAttributes()
+{
+	this->attributes.type = Type::NONE;
+	this->attributes.tense = Tense::NONE;
+	this->attributes.quantity = Quantity::NONE;
+	this->attributes.gender = Gender::NONE;
+	this->attributes.person = Person::NONE;
 }
 void Word::Reset()
 {
+	letters.clear();
+	root.clear();
 
-}
-
-std::vector<Character> Word::GetRoot()
-{
-	std::vector<Character> tmp;
-	return tmp;
-}
-int Word::GetASCII()
-{
-	return 0;
-}
-std::string Word::GetHex()
-{
-	return "";
+	ResetAttributes();
 }
 
-int Word::GetAbjadValue()
+std::vector<int> Word::GetASCII() const
 {
-	return 0;
+	std::vector<int> asciis;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		Utilities::addrange(asciis, this->letters[i].GetASCII());
+
+	return asciis;
 }
-int Word::GetSequentialValue()
+std::vector<std::string> Word::GetHex() const
 {
-	return 0;
+	std::vector<std::string> hexes;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		Utilities::addrange(hexes, this->letters[i].GetHex());
+
+	return hexes;
 }
 
-std::string Word::to_string()
+int Word::GetAbjadValue() const
 {
-	return "";
+	return abjad_value(*this);
+}
+int Word::GetSequentialValue() const
+{
+	return sequential_value(*this);
+}
+
+std::string Word::to_string(bool addSpace)
+{
+	return sound_of(*this) + (addSpace ? " " : "");
 }
 
 Letter& Word::operator [](int index)
 {
 	return this->letters[index];
 }
-bool Word::operator ==(const Word&)
+bool Word::operator ==(const Word& rhs)
 {
+	if (this->Count() != rhs.Count())
+		return false;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		if (this->letters[i] != rhs.letters[i])
+			return false;
+	
 	return true;
 }
-bool Word::operator !=(const Word&)
+bool Word::operator !=(const Word& rhs)
 {
-	return true;
+	return !(*this == rhs);
 }
-bool Word::operator +(const Letter&)
+Word Word::operator +(const Letter& rhs)
 {
-	return true;
+	AddLetter(rhs);
+	return *this;
 }
-bool Word::operator --()
+Word Word::operator --()
 {
-	return true;
+	this->letters.pop_back();
+	return *this;
 }
 
-int Word::Count()
+int Word::Count() const
 {
-	return 0;
+	return this->letters.size();
 }
-int Word::CharacterCount()
+int Word::CharacterCount() const
 {
-	return 0;
+	int sum = 0;
+
+	for (auto l : this->letters)
+		if (l.GetCharacter() != Character::NONE)
+			sum ++;
+
+	return sum;
 }
-int Word::LetterCount()
+int Word::LetterCount() const
 {
-	return 0;
+	return Count();
 }
-int Word::DiacriticCount()
+int Word::DiacriticCount() const
 {
-	return 0;
+	int sum = 0;
+
+	for (auto l : this->letters)
+		sum += l.DiacriticCount();
+
+	return sum;
 }
 
-int Word::OccuranceOf(Letter)
+int Word::OccuranceOf(Letter l) const
 {
 	return 0;
 }

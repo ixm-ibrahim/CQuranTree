@@ -106,12 +106,12 @@ namespace Arabic
 			void Reset();
 
 			bool SetFromASCII(int);
-			Character GetCharacter();
+			Character GetCharacter() const;
 			void SetCharacter(Character, bool = true);
 			void SetCharacter(Character, Diacritic);
 			void SetCharacter(int, bool = true);
 			void SetCharacter(std::string, bool = true);
-			Diacritic GetModification();
+			Diacritic GetModification() const;
 			void SetModification(Diacritic);
 			std::vector<Diacritic> GetDiacritics();
 			void SetDiacritics(std::vector<Diacritic>);
@@ -122,11 +122,11 @@ namespace Arabic
 			void RemoveDiacritic(int);
 			void RemoveDiacritic(Diacritic);
 			void ClearDiacritics();
-			Position GetPosition();
+			Position GetPosition() const;
 			void SetPosition(Position);
 
-			std::vector<int> GetASCII();
-			std::vector<std::string> GetHex();
+			std::vector<int> GetASCII() const;
+			std::vector<std::string> GetHex() const;
 
 			int GetAbjadValue();
 			int GetSequentialValue();
@@ -137,18 +137,14 @@ namespace Arabic
 			bool operator !=(const Letter&);
 			bool operator <(const Letter& l) const;
 
-			int ASCIICount();
-			int DiacriticCount();
+			int ASCIICount() const;
+			int DiacriticCount() const;
 			
 			bool IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace);
 	};
 
 	class Word
 	{
-		private:
-			std::vector<Letter> letters;
-			std::vector<Character> root;
-
 		public:
 			enum class Type
 			{
@@ -168,14 +164,6 @@ namespace Arabic
 				FUTURE,
 				COMMAND
 			};
-			enum class Person
-			{
-				NONE = 0,
-				FIRST,
-				SECOND,
-				THRID,
-				FOURTH
-			};
 			enum class Quantity
 			{
 				NONE = 0,
@@ -189,7 +177,30 @@ namespace Arabic
 				MASCULINE,
 				FEMININE
 			};
+			enum class Person
+			{
+				NONE = 0,
+				FIRST,
+				SECOND,
+				THRID,
+				FOURTH
+			};
 
+			struct Attributes
+			{
+				Type type;
+				Tense tense;
+				Quantity quantity;
+				Gender gender;
+				Person person;
+			};
+
+		private:
+			std::vector<Letter> letters;
+			std::vector<Character> root;
+			Attributes attributes;
+
+		public:
 			Word();
 			Word(Letter);
 			Word(std::vector<Letter>);
@@ -197,34 +208,55 @@ namespace Arabic
 			Word(std::vector<std::string>, char = ' ');
 			~Word();
 
-			std::vector<Letter> GetLetters();
-			void SetLetters(std::vector<Letter>);
-			void SetLetter(int, Letter);
-			void AddLetter(int, Letter);
-			void RemoveLetter(int);
+			std::vector<Letter> GetLetters() const;
+			void SetLetters(std::vector<Letter>, bool = true);
+			void SetLetter(int, Letter, bool = true);
+			void AddLetter(Letter, bool = true);
+			void InsertLetter(int, Letter, bool = true);
+			void RemoveLetter(int, bool = true);
+
+			std::vector<Character> GetRoot() const;
+			void SetRoot(std::vector<Character>);
+			void SetRootCharacter(int, Character);
+			void AddRootCharacter(Character);
+			void InsertRootCharacter(int, Character);
+			void RemoveRootCharacter(int);
+
+			void SetAttributes(Attributes);
+			void SetType(Type);
+			Type GetType() const;
+			void SetTense(Tense);
+			Tense GetTense() const;
+			void SetQuantity(Quantity);
+			Quantity GetQuantity() const;
+			void SetGender(Gender);
+			Gender GetGender() const;
+			void SetPerson(Person);
+			Person GetPerson() const;
+
+			void ResetAttributes();
 			void Reset();
 
-			std::vector<Character> GetRoot();
-			int GetASCII();
-			std::string GetHex();
+			std::vector<int> GetASCII() const;
+			std::vector<std::string> GetHex() const;
 
-			int GetAbjadValue();
-			int GetSequentialValue();
+			int GetAbjadValue() const;
+			int GetSequentialValue() const;
 
-			std::string to_string();
+			std::string to_string(bool = true);
 
 			Letter& operator [](int);
 			bool operator ==(const Word&);
 			bool operator !=(const Word&);
-			bool operator +(const Letter&);
-			bool operator --();
+			Word operator +(const Letter&);
+			Word operator --();
 
-			int Count();
-			int CharacterCount();
-			int LetterCount();
-			int DiacriticCount();
+			int Count() const;
+			int CharacterCount() const;
+			int LetterCount() const;
+			int DiacriticCount() const;
 
-			int OccuranceOf(Letter);
+			int OccuranceOf(Letter) const;
 	};
 
 	extern std::map<Letter, int> ASCIIByLetter;
@@ -267,6 +299,7 @@ namespace Arabic
 
 	std::string sound_of(Letter, bool = true);
 	std::string sound_of(std::vector<Letter>, bool = true);
+	std::string sound_of(Word, bool = true);
 
 	bool is_character(int, bool = false);
 	bool is_character(std::string, bool = false);
