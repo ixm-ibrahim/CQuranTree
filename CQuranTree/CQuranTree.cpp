@@ -16,7 +16,7 @@ int main()
     //          << sound_of(Letter(Character::TA, Diacritic::MARBUTAH, std::vector<Diacritic> {Diacritic::TANWEEN_FATHAH}))
     //          << sound_of(Letter(Character::TA, Diacritic::MARBUTAH));
 
-    std::vector<Letter> word
+    std::vector<Letter> ibrahim
     {
         Letter(Character::ALIF, Diacritic::HAMZAH_BELOW, std::vector<Diacritic> {Diacritic::KASRAH}),
         Letter(Character::BA, std::vector<Diacritic> {Diacritic::SUKOON}),
@@ -52,10 +52,15 @@ int main()
         Letter(Character::YA, Position::MIDDLE),
         Letter(Character::MEEM, std::vector<Diacritic> {Diacritic::SUKOON}),
     };
+    Word test1 = Word(ibrahim);
+    Word test2 = Word(bsm);
 
-    std::cout << sound_of(word) << " " << sound_of(word, false) << std::endl
+    std::cout << sound_of(ibrahim) << " " << sound_of(ibrahim, false) << std::endl
               << sound_of(bsm) << std::endl
-              << sound_of(bsm, false) << std::endl;
+              << sound_of(bsm, false) << std::endl
+              << sound_of(test1) << " " << sound_of(test1, false) << std::endl
+              << sound_of(test2) << std::endl
+              << sound_of(test2, false) << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

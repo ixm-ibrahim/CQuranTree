@@ -193,6 +193,9 @@ namespace Arabic
 				Quantity quantity;
 				Gender gender;
 				Person person;
+
+				Attributes();
+				Attributes(Type, Tense, Quantity, Gender, Person);
 			};
 
 		private:
@@ -204,8 +207,8 @@ namespace Arabic
 			Word();
 			Word(Letter);
 			Word(std::vector<Letter>);
-			Word(std::vector<int>, char = ' ');
-			Word(std::vector<std::string>, char = ' ');
+			Word(std::vector<int>);
+			Word(std::vector<std::string>);
 			~Word();
 
 			std::vector<Letter> GetLetters() const;

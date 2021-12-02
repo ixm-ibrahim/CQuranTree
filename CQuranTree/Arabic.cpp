@@ -1526,26 +1526,50 @@ bool Letter::IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace)
 // Word 
 ///////////////////////////////////////////////////////////////////////////////
 
+Word::Attributes::Attributes()
+{
+	this->type = Type::NONE;
+	this->tense = Tense::NONE;
+	this->quantity = Quantity::NONE;
+	this->gender = Gender::NONE;
+	this->person = Person::NONE;
+}
+Word::Attributes::Attributes(Type type, Tense tense, Quantity quantity, Gender gender, Person person)
+{
+	this->type = type;
+	this->tense = tense;
+	this->quantity = quantity;
+	this->gender = gender;
+	this->person = person;
+}
 
 Word::Word()
 {
 	Reset();
 }
-Word::Word(Letter) : Word()
+Word::Word(Letter l) : Word()
 {
-
+	this->letters.push_back(l);
 }
-Word::Word(std::vector<Letter>) : Word()
+Word::Word(std::vector<Letter> letters) : Word()
 {
-
+	this->letters = letters;
 }
-Word::Word(std::vector<int>, char) : Word()
+Word::Word(std::vector<int> asciis) : Word()
 {
-
+	for (unsigned int i = 0; i < asciis.size(); i++)
+		if (is_character(asciis[i]))
+			this->letters.push_back(LetterByASCII[asciis[i]]);
 }
-Word::Word(std::vector<std::string>, char) : Word()
+Word::Word(std::vector<std::string> hexes) : Word()
 {
+	for (unsigned int i = 0; i < hexes.size(); i++)
+	{
+		int ascii = to_ascii(hexes[i]);
 
+		if (is_character(ascii))
+			this->letters.push_back(LetterByASCII[ascii]);
+	}
 }
 /// <summary>
 /// Default destructor for a Word
@@ -1780,5 +1804,5 @@ int Word::DiacriticCount() const
 
 int Word::OccuranceOf(Letter l) const
 {
-	return 0;
+	return Utilities::occurance_of(this->letters, l);
 }
