@@ -49,21 +49,36 @@ namespace Quran
 		int halfNum;
 		int quarterNum;
 		int bowingNum;
+
+		TextualPosition();
+		TextualPosition(int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int);
 	};
 
-	class Letter : public Arabic::Letter
+	class Word;
+	class Verse;
+	class Chapter;
+
+	class Letter : private Arabic::Letter
 	{
 		private:
 			TextualPosition textualPosition;
+
+			void SetTextualPosition(TextualPosition);
+
+			friend class Word;
 
 		public:
 			TextualPosition GetTextualPosition();
 	};
 	
-	class Word : public Arabic::Word
+	class Word : private Arabic::Word
 	{
 		private:
 			TextualPosition textualPosition;
+
+			void SetTextualPosition(TextualPosition);
+
+			friend class Verse;
 
 		public:
 			TextualPosition GetTextualPosition();
@@ -101,9 +116,14 @@ namespace Quran
 			TextualPosition textualPosition;
 			Attributes attributes;
 
+			void SetTextualPosition(TextualPosition);
+			void SetAttributes(TextualPosition);
+
+			friend class Chapter;
+
 		public:
 			Verse();
-			Verse(std::vector<Word>, int, int);
+			Verse(std::vector<Word>, int, int, TextualPosition, Attributes);
 
 			std::vector<Word> GetWords();
 			std::vector<int> GetASCII();
@@ -430,4 +450,29 @@ namespace Quran
 
 	std::string to_string(RevelationPeriod);
 	std::string to_string(Chapter::Name);
+
+	bool is_meccan(RevelationPeriod);
+	bool is_medinan(RevelationPeriod);
+
+	std::string sound_of(Letter, bool = true);
+	std::string sound_of(std::vector<Letter>, bool = true);
+	std::string sound_of(Word, bool = true);
+	std::string sound_of(std::vector<Word>, bool = true);
+	std::string sound_of(Verse, bool = true);
+
+	int abjad_value(Letter);
+	int abjad_value(std::vector<Letter>);
+	int abjad_value(Word);
+	int abjad_value(std::vector<Word>);
+	int abjad_value(Verse);
+	int abjad_value(std::vector<Verse>);
+	int abjad_value(Chapter);
+
+	int sequential_value(Letter);
+	int sequential_value(std::vector<Letter>);
+	int sequential_value(Word);
+	int sequential_value(std::vector<Word>);
+	int sequential_value(Verse);
+	int sequential_value(std::vector<Verse>);
+	int sequential_value(Chapter);
 }
