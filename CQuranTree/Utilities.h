@@ -17,13 +17,7 @@ namespace Utilities
 	template <class T>
 	int occurance_of(std::vector<T> vec, T elem)
 	{
-		int count = 0;
-
-		for (unsigned int i = 0; i < vec.size(); i++)
-			if (vec[i] == elem)
-				return count++;
-
-		return count;
+		return std::count(vec.begin(), vec.end(), elem);
 	}
 
 	template <class T>

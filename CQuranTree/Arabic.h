@@ -226,16 +226,12 @@ namespace Arabic
 			void RemoveRootCharacter(int);
 
 			void SetAttributes(Attributes);
+			Attributes GetAttributes() const;
 			void SetType(Type);
-			Type GetType() const;
 			void SetTense(Tense);
-			Tense GetTense() const;
 			void SetQuantity(Quantity);
-			Quantity GetQuantity() const;
 			void SetGender(Gender);
-			Gender GetGender() const;
 			void SetPerson(Person);
-			Person GetPerson() const;
 
 			void ResetAttributes();
 			void Reset();
@@ -252,9 +248,10 @@ namespace Arabic
 			bool operator ==(const Word&);
 			bool operator !=(const Word&);
 			Word operator +(const Letter&);
-			Word operator --();
+			Word& operator --();
 
 			int Count() const;
+			int ASCIICount() const;
 			int CharacterCount() const;
 			int LetterCount() const;
 			int DiacriticCount() const;

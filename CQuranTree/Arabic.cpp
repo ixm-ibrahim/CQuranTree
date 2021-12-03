@@ -1377,7 +1377,7 @@ void Letter::SetPosition(Position position)
 /// <summary>
 /// Gets all ASCII values attributed to a Letter
 /// </summary>
-/// <returns>a vector of ASCII values that respectively represent the Character, modification, and Diacritics</returns>
+/// <returns>a std::vector of ASCII values that respectively represent the Character, modification, and Diacritics</returns>
 std::vector<int> Letter::GetASCII() const
 {
 	std::vector<int> ret;
@@ -1401,7 +1401,7 @@ std::vector<int> Letter::GetASCII() const
 /// <summary>
 /// Gets all hexadecimal values attributed to a Letter
 /// </summary>
-/// <returns>a vector of hexadecimal values that respectively represent the Character, modification, and Diacritics</returns>
+/// <returns>a std::vector of hexadecimal values that respectively represent the Character, modification, and Diacritics</returns>
 std::vector<std::string> Letter::GetHex() const
 {
 	std::vector<std::string> ret;
@@ -1526,6 +1526,9 @@ bool Letter::IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace)
 // Word 
 ///////////////////////////////////////////////////////////////////////////////
 
+/// <summary>
+/// Default constructor for an TextualPosition struct
+/// </summary>
 Word::Attributes::Attributes()
 {
 	this->type = Type::NONE;
@@ -1534,6 +1537,14 @@ Word::Attributes::Attributes()
 	this->gender = Gender::NONE;
 	this->person = Person::NONE;
 }
+/// <summary>
+/// TextualPosition struct constructor using a Type, Tense, Quantity, Gender, and Person
+/// </summary>
+/// <param name="type:">the Word's Type</param>
+/// <param name="tense:">the Word's Tense</param>
+/// <param name="quantity:">the Word's Quantity</param>
+/// <param name="gender:">the Word's Gender</param>
+/// <param name="person:">the Word's Person</param>
 Word::Attributes::Attributes(Type type, Tense tense, Quantity quantity, Gender gender, Person person)
 {
 	this->type = type;
@@ -1543,24 +1554,43 @@ Word::Attributes::Attributes(Type type, Tense tense, Quantity quantity, Gender g
 	this->person = person;
 }
 
+/// <summary>
+/// Default constructor for a Letter
+/// </summary>
 Word::Word()
 {
 	Reset();
 }
+/// <summary>
+/// Word constructor using a Letter
+/// </summary>
+/// <param name="l:">the Letter to add</param>
 Word::Word(Letter l) : Word()
 {
 	this->letters.push_back(l);
 }
+/// <summary>
+/// Word constructor using a std::vector of Letters
+/// </summary>
+/// <param name="letters:">the Letters that make up the Word</param>
 Word::Word(std::vector<Letter> letters) : Word()
 {
 	this->letters = letters;
 }
+/// <summary>
+/// Word constructor using a std::vector of ASCII values
+/// </summary>
+/// <param name="asciis:">the ASCII values that represent the Word's letters</param>
 Word::Word(std::vector<int> asciis) : Word()
 {
 	for (unsigned int i = 0; i < asciis.size(); i++)
 		if (is_character(asciis[i]))
 			this->letters.push_back(LetterByASCII[asciis[i]]);
 }
+/// <summary>
+/// Word constructor using a std::vector of hexadecimal values
+/// </summary>
+/// <param name="hexes:">the hexadecimal values that represent the Word's letters</param>
 Word::Word(std::vector<std::string> hexes) : Word()
 {
 	for (unsigned int i = 0; i < hexes.size(); i++)
@@ -1587,6 +1617,11 @@ std::vector<Letter> Word::GetLetters() const
 {
 	return this->letters;
 }
+/// <summary>
+/// Sets all the Word's Letters
+/// </summary>
+/// <param name="letters:">the Letters to set</param>
+/// <param name="clearRoot:">if set to true, then the Word's "root" member will be cleared</param>
 void Word::SetLetters(std::vector<Letter> letters, bool clearRoot)
 {
 	this->letters.clear();
@@ -1595,6 +1630,12 @@ void Word::SetLetters(std::vector<Letter> letters, bool clearRoot)
 	if (clearRoot)
 		this->root.clear();
 }
+/// <summary>
+/// Sets a Word's Letter at an index
+/// </summary>
+/// <param name="index:">the index of the changing Letter</param>
+/// <param name="letter:">the Letter to set</param>
+/// <param name="clearRoot:">if set to true, then the Word's "root" member will be cleared</param>
 void Word::SetLetter(int index, Letter letter, bool clearRoot)
 {
 	this->letters[index] = letter;
@@ -1602,6 +1643,11 @@ void Word::SetLetter(int index, Letter letter, bool clearRoot)
 	if (clearRoot)
 		this->root.clear();
 }
+/// <summary>
+/// Adds a new Letter to a Word
+/// </summary>
+/// <param name="letter:">the Letter to add</param>
+/// <param name="clearRoot"">if set to true, then the Word's "root" member will be cleared</param>
 void Word::AddLetter(Letter letter, bool clearRoot)
 {
 	this->letters.push_back(letter);
@@ -1609,6 +1655,12 @@ void Word::AddLetter(Letter letter, bool clearRoot)
 	if (clearRoot)
 		this->root.clear();
 }
+/// <summary>
+/// Inserts a Word's Letter after an index
+/// </summary>
+/// <param name="index:">the index before the inserting Letter</param>
+/// <param name="letter:">the Letter to set</param>
+/// <param name="clearRoot:">if set to true, then the Word's "root" member will be cleared</param>
 void Word::InsertLetter(int index, Letter letter, bool clearRoot)
 {
 	Utilities::insert_at(this->letters, index, letter);
@@ -1616,6 +1668,11 @@ void Word::InsertLetter(int index, Letter letter, bool clearRoot)
 	if (clearRoot)
 		this->root.clear();
 }
+/// <summary>
+/// Revoves a Word's Letter at an index
+/// </summary>
+/// <param name="index:">the index of the Letter to be removed</param>
+/// <param name="clearRoot:">if set to true, then the Word's "root" member will be cleared</param>
 void Word::RemoveLetter(int index, bool clearRoot)
 {
 	Utilities::remove_at(this->letters, index);
@@ -1624,77 +1681,118 @@ void Word::RemoveLetter(int index, bool clearRoot)
 		this->root.clear();
 }
 
+/// <summary>
+/// Gets the root Characters of a Word
+/// </summary>
+/// <returns>a vector of the root's Characters</returns>
 std::vector<Character> Word::GetRoot() const
 {
 	return this->root;
 }
+/// <summary>
+/// Sets the root Characters of a Word
+/// </summary>
+/// <param name="root:">a std::vector of Characters to replace the "root" member</param>
 void Word::SetRoot(std::vector<Character> root)
 {
 	this->root.clear();
 	this->root = root;
 }
+/// <summary>
+/// Sets the Word's root's Character at an index
+/// </summary>
+/// <param name="index:">the index of interest</param>
+/// <param name="character:">the root's Character to be the replacement</param>
 void Word::SetRootCharacter(int index, Character character)
 {
 	this->root[index] = character;
 }
+/// <summary>
+/// Adds a new Character at the end of the "root" member
+/// </summary>
+/// <param name="character:">the Character to be the added to the "root" member</param>
 void Word::AddRootCharacter(Character character)
 {
 	this->root.push_back(character);
 }
+/// <summary>
+/// Inserts a new Character at an index of the "root" member
+/// </summary>
+/// <param name="index:">the index of interest</param>
+/// <param name="character:">the Character to be the inserted into the "root" member</param>
 void Word::InsertRootCharacter(int index, Character character)
 {
 	Utilities::insert_at(this->root, index, character);
 }
+/// <summary>
+/// Removes a Character at an index of the "root" member
+/// </summary>
+/// <param name="index:">the index with the desired Character to remove</param>
 void Word::RemoveRootCharacter(int index)
 {
 	Utilities::remove_at(this->root, index);
 }
 
+/// <summary>
+/// Sets the Word's "attributes" member
+/// </summary>
+/// <param name="attributes:">the Attributes to set</param>
 void Word::SetAttributes(Attributes attributes)
 {
 	this->attributes = attributes;
 }
+/// <summary>
+/// Gets the Word's "attributes" member
+/// </summary>
+/// <returns>the Word's "attributes" member</returns>
+Word::Attributes Word::GetAttributes() const
+{
+	return this->attributes;
+}
+/// <summary>
+/// Sets the Word's Type in the "attributes" member
+/// </summary>
+/// <param name="type:">the Type to set</param>
 void Word::SetType(Type type)
 {
 	this->attributes.type = type;
 }
-Word::Type Word::GetType() const
-{
-	return this->attributes.type;
-}
+/// <summary>
+/// Sets the Word's Tense in the "attributes" member
+/// </summary>
+/// <param name="tense:">the Tense to set</param>
 void Word::SetTense(Tense tense)
 {
 	this->attributes.tense = tense;
 }
-Word::Tense Word::GetTense() const
-{
-	return this->attributes.tense;
-}
+/// <summary>
+/// Sets the Word's Quantity in the "attributes" member
+/// </summary>
+/// <param name="quantity:">the Quantity to set</param>
 void Word::SetQuantity(Quantity quantity)
 {
 	this->attributes.quantity = quantity;
 }
-Word::Quantity Word::GetQuantity() const
-{
-	return this->attributes.quantity;
-}
+/// <summary>
+/// Sets the Word's Gender in the "attributes" member
+/// </summary>
+/// <param name="gender:">the Gender to set</param>
 void Word::SetGender(Gender gender)
 {
 	this->attributes.gender = gender;
 }
-Word::Gender Word::GetGender() const
-{
-	return this->attributes.gender;
-}
+/// <summary>
+/// Sets the Word's Person in the "attributes" member
+/// </summary>
+/// <param name="person:">the Person to set</param>
 void Word::SetPerson(Person person)
 {
 	this->attributes.person = person;
 }
-Word::Person Word::GetPerson() const
-{
-	return this->attributes.person;
-}
 
+/// <summary>
+/// Clears the Word's "attributes" member
+/// </summary>
 void Word::ResetAttributes()
 {
 	this->attributes.type = Type::NONE;
@@ -1703,6 +1801,9 @@ void Word::ResetAttributes()
 	this->attributes.gender = Gender::NONE;
 	this->attributes.person = Person::NONE;
 }
+/// <summary>
+/// Resets the whole Word to default values
+/// </summary>
 void Word::Reset()
 {
 	letters.clear();
@@ -1711,6 +1812,10 @@ void Word::Reset()
 	ResetAttributes();
 }
 
+/// <summary>
+/// Gets all ASCII values attributed to a Word
+/// </summary>
+/// <returns>a std::vector of ASCII values that represent the Word</returns>
 std::vector<int> Word::GetASCII() const
 {
 	std::vector<int> asciis;
@@ -1720,6 +1825,10 @@ std::vector<int> Word::GetASCII() const
 
 	return asciis;
 }
+/// <summary>
+/// Gets all hexadecimal values attributed to a Word
+/// </summary>
+/// <returns>a std::vector of hexadecimal values that represent the Word</returns>
 std::vector<std::string> Word::GetHex() const
 {
 	std::vector<std::string> hexes;
@@ -1730,15 +1839,28 @@ std::vector<std::string> Word::GetHex() const
 	return hexes;
 }
 
+/// <summary>
+/// Gets the Abjad value of the Word
+/// </summary>
+/// <returns>an integer that represents the Word's Abjad value</returns>
 int Word::GetAbjadValue() const
 {
 	return abjad_value(*this);
 }
+/// <summary>
+/// Gets the sequential value of the Word
+/// </summary>
+/// <returns>an integer that represents the Word's sequential value</returns>
 int Word::GetSequentialValue() const
 {
 	return sequential_value(*this);
 }
 
+/// <summary>
+/// Transliterates the Word, with the option to add a space at the end
+/// </summary>
+/// <param name="addSpace:">if set true, a space will be added at the end</param>
+/// <returns>a std::string that represents the Word's transliteration</returns>
 std::string Word::to_string(bool addSpace)
 {
 	return sound_of(*this) + (addSpace ? " " : "");
@@ -1748,6 +1870,11 @@ Letter& Word::operator [](int index)
 {
 	return this->letters[index];
 }
+/// <summary>
+/// The Word's equality operator
+/// </summary>
+/// <param name="rhs:">the right-hand side of the condition</param>
+/// <returns>boolean that represents if the two values are equal</returns>
 bool Word::operator ==(const Word& rhs)
 {
 	if (this->Count() != rhs.Count())
@@ -1759,25 +1886,60 @@ bool Word::operator ==(const Word& rhs)
 	
 	return true;
 }
+/// <summary>
+/// The Word's inequality operator
+/// </summary>
+/// <param name="rhs:">the right-hand side of the condition</param>
+/// <returns>boolean that represents if the two values are not equal</returns>
 bool Word::operator !=(const Word& rhs)
 {
 	return !(*this == rhs);
 }
+/// <summary>
+/// The Word's add operator
+/// </summary>
+/// <param name="rhs:">the right-hand side of the condition</param>
+/// <returns>a new Word with the Letters from "rhs" appended to the current Word</returns>
 Word Word::operator +(const Letter& rhs)
 {
 	AddLetter(rhs);
 	return *this;
 }
-Word Word::operator --()
+/// <summary>
+/// The Word's decrement operator
+/// </summary>
+/// <returns>the same word with the last Letter removed</returns>
+Word& Word::operator --()
 {
 	this->letters.pop_back();
 	return *this;
 }
 
+/// <summary>
+/// Gets the number of Letters in the Word
+/// </summary>
+/// <returns>integer that represents the number of letters in the Word</returns>
 int Word::Count() const
 {
-	return this->letters.size();
+	return LetterCount();
 }
+/// <summary>
+/// Gets the total amount of ASCII values that can be attributed to a Word
+/// </summary>
+/// <returns>integer that represents the number of all the Word's ASCII values</returns>
+int Word::ASCIICount() const
+{
+	int sum = 0;
+
+	for (auto l : this->letters)
+		sum += l.ASCIICount();
+
+	return sum;
+}
+/// <summary>
+/// Gets the number of Characters in the Word
+/// </summary>
+/// <returns>integer that represents the number of Characters in the Word</returns>
 int Word::CharacterCount() const
 {
 	int sum = 0;
@@ -1788,10 +1950,18 @@ int Word::CharacterCount() const
 
 	return sum;
 }
+/// <summary>
+/// Gets the number of Letters in the Word
+/// </summary>
+/// <returns>integer that represents the number of letters in the Word</returns>
 int Word::LetterCount() const
 {
-	return Count();
+	return this->letters.size();
 }
+/// <summary>
+/// Gets the number of Diacritics in the Word
+/// </summary>
+/// <returns>integer that represents the number of Diacritics in the Word</returns>
 int Word::DiacriticCount() const
 {
 	int sum = 0;
@@ -1802,6 +1972,11 @@ int Word::DiacriticCount() const
 	return sum;
 }
 
+/// <summary>
+/// Gets the number of occurances of a specified Letter within a Word
+/// </summary>
+/// <param name="l:">the Letter of interest</param>
+/// <returns>integer representing the number of occurances of the desired Letter in the Word</returns>
 int Word::OccuranceOf(Letter l) const
 {
 	return Utilities::occurance_of(this->letters, l);
