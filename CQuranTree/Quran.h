@@ -4,13 +4,23 @@
 
 namespace Quran
 {
-	const int NumChapters	= 114;
-	const int NumVerses		= 6236;
-	const int NumStations	= 7;
-	const int NumParts		= 30;
-	const int NumHalves		= NumParts * 2;
-	const int NumQuarters	= NumHalves * 4;
-	const int NumBowings	= 556;
+	const int NumChapters				= 114;
+	const int NumVerses					= 6236;
+	const int NumVersesBasmallah		= 6348;
+	const int NumWords					= 77878;
+	const int NumWordsBasmallah			= 78326;
+	const int NumWordsWaw				= 0;
+	const int NumWordsBasmallahWaw		= 0;
+	const int NumLetters				= 327792;
+	const int NumLettersBasmallah		= 329920;
+	const int NumLettersWaw				= 0;
+	const int NumLettersBasmallahWaw	= 0;
+	const int NumPages					= 604;
+	const int NumStations				= 7;
+	const int NumParts					= 30;
+	const int NumHalves					= NumParts * 2;
+	const int NumQuarters				= NumHalves * 4;
+	const int NumBowings				= 556;
 
 	enum class RevelationPeriod
 	{
