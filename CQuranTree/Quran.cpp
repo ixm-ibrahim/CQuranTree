@@ -269,83 +269,147 @@ bool Quran::is_medinan(RevelationPeriod r)
 	return r == RevelationPeriod::MEDINAN;
 }
 
-std::string Quran::sound_of(Letter, bool)
+int Quran::to_ascii(Letter l)
 {
-	return "";
+	return Arabic::ASCIIByLetter[Arabic::Letter(l.GetCharacter(), l.GetModification())];
 }
-std::string Quran::sound_of(std::vector<Letter>, bool)
+std::string Quran::to_hex(Letter l)
 {
-	return "";
-}
-std::string Quran::sound_of(Word, bool)
-{
-	return "";
-}
-std::string Quran::sound_of(std::vector<Word>, bool)
-{
-	return "";
-}
-std::string Quran::sound_of(Verse, bool)
-{
-	return "";
+	return Arabic::to_hex(to_ascii(l));
 }
 
-int Quran::abjad_value(Letter)
+std::string Quran::sound_of(Letter l, bool includeDiacritics)
 {
-	return 0;
+	return Arabic::sound_of(l.GetCharacter(), l.GetModification(), l.GetDiacritics(), l.GetPosition(), includeDiacritics);
 }
-int Quran::abjad_value(std::vector<Letter>)
+std::string Quran::sound_of(std::vector<Letter> ls, bool includeDiacritics)
 {
-	return 0;
+	std::string sound = "";
+
+	for (auto& l : ls)
+		sound += sound_of(l, includeDiacritics);
+
+	return sound;
 }
-int Quran::abjad_value(Word)
+std::string Quran::sound_of(Word w, bool includeDiacritics)
 {
-	return 0;
+	std::string sound = "";
+
+	for (auto& l : w.GetLetters())
+		sound += sound_of(l, includeDiacritics);
+
+	return sound;
 }
-int Quran::abjad_value(std::vector<Word>)
+std::string Quran::sound_of(std::vector<Word> ws, bool includeDiacritics)
 {
-	return 0;
+	std::string sound = sound_of(ws[0], includeDiacritics);
+
+	for (unsigned int i = 1; i < ws.size(); i++)
+		sound += " " + sound_of(ws[i], includeDiacritics);
+
+	return sound;
 }
-int Quran::abjad_value(Verse)
+std::string Quran::sound_of(Verse v, bool includeDiacritics)
 {
-	return 0;
-}
-int Quran::abjad_value(std::vector<Verse>)
-{
-	return 0;
-}
-int Quran::abjad_value(Chapter)
-{
-	return 0;
+	return sound_of(v.GetWords(), includeDiacritics);
 }
 
-int Quran::sequential_value(Letter)
+int Quran::abjad_value(Letter l)
 {
-	return 0;
+	return abjad_value(l.GetCharacter());
 }
-int Quran::sequential_value(std::vector<Letter>)
+int Quran::abjad_value(std::vector<Letter> ls)
 {
-	return 0;
+	int sum = 0;
+
+	for (auto& l : ls)
+		sum += abjad_value(l);
+
+	return sum;
 }
-int Quran::sequential_value(Word)
+int Quran::abjad_value(Word w)
 {
-	return 0;
+	int sum = 0;
+
+	for (auto& l : w.GetLetters())
+		sum += abjad_value(l);
+
+	return sum;
 }
-int Quran::sequential_value(std::vector<Word>)
+int Quran::abjad_value(std::vector<Word> ws)
 {
-	return 0;
+	int sum = 0;
+
+	for (auto& w : ws)
+		sum += abjad_value(w);
+
+	return sum;
 }
-int Quran::sequential_value(Verse)
+int Quran::abjad_value(Verse v)
 {
-	return 0;
+	return abjad_value(v.GetWords());
 }
-int Quran::sequential_value(std::vector<Verse>)
+int Quran::abjad_value(std::vector<Verse> vs)
 {
-	return 0;
+	int sum = 0;
+
+	for (auto& v : vs)
+		sum += abjad_value(v);
+
+	return sum;
 }
-int Quran::sequential_value(Chapter)
+int Quran::abjad_value(Chapter c)
 {
-	return 0;
+	return abjad_value(c.GetVerses());
+}
+
+int Quran::sequential_value(Letter l)
+{
+	return sequential_value(l.GetCharacter());
+}
+int Quran::sequential_value(std::vector<Letter> ls)
+{
+	int sum = 0;
+
+	for (auto& l : ls)
+		sum += sequential_value(l);
+
+	return sum;
+}
+int Quran::sequential_value(Word w)
+{
+	int sum = 0;
+
+	for (auto& l : w.GetLetters())
+		sum += sequential_value(l);
+
+	return sum;
+}
+int Quran::sequential_value(std::vector<Word> ws)
+{
+	int sum = 0;
+
+	for (auto& w : ws)
+		sum += sequential_value(w);
+
+	return sum;
+}
+int Quran::sequential_value(Verse v)
+{
+	return sequential_value(v.GetWords());
+}
+int Quran::sequential_value(std::vector<Verse> vs)
+{
+	int sum = 0;
+
+	for (auto& v : vs)
+		sum += sequential_value(v);
+
+	return sum;
+}
+int Quran::sequential_value(Chapter c)
+{
+	return sequential_value(c.GetVerses());
 }
 
 
@@ -356,7 +420,23 @@ int Quran::sequential_value(Chapter)
 
 TextualPosition::TextualPosition()
 {
-
+	this->chapterNum = 0;
+	this->verseNum = 0;
+	this->verseNumBasmallah = 0;
+	this->wordNum = 0;
+	this->wordNumBasmallah = 0;
+	this->wordNumWaw = 0;
+	this->wordNumBasmallahWaw = 0;
+	this->letterNum = 0;
+	this->letterNumBasmallah = 0;
+	this->letterNumWaw = 0;
+	this->letterNumBasmallahWaw = 0;
+	this->pageNum = 0;
+	this->stationNum = 0;
+	this->partNum = 0;
+	this->halfNum = 0;
+	this->quarterNum = 0;
+	this->bowingNum = 0;
 }
 TextualPosition::TextualPosition(int chapterNum, int verseNum, int verseNumBasmallah, int wordNum, int wordNumBasmallah, int wordNumWaw, int wordNumBasmallahWaw, int letterNum, int letterNumBasmallah, int letterNumWaw, int letterNumBasmallahWaw, int pageNum, int stationNum, int partNum, int halfNum, int quarterNum, int bowingNum)
 {
@@ -409,41 +489,64 @@ TextualPosition Word::GetTextualPosition()
 	return this->textualPosition;
 }
 
+Arabic::Letter& Word::operator [](int index)
+{
+	return this->letters[index];
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Verse 
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void Verse::SetTextualPosition(TextualPosition)
+void Verse::SetTextualPosition(TextualPosition t)
 {
-
+	this->textualPosition = t;
 }
-void Verse::SetAttributes(TextualPosition)
+void Verse::SetAttributes(Attributes a)
 {
-
+	this->attributes = a;
 }
 
 Verse::Verse()
 {
-
+	words.clear();
+	textualPosition = TextualPosition();
+	attributes = Attributes();
 }
-Verse::Verse(std::vector<Word>, int, int, TextualPosition, Attributes)
+Verse::Verse(std::vector<Word> words, TextualPosition textualPosition, Attributes attributes)
 {
-
+	this->words = words;
+	this->textualPosition = textualPosition;
+	this->attributes = attributes;
+}
+Verse::~Verse()
+{
+	this->words.clear();
 }
 
 std::vector<Word> Verse::GetWords()
 {
-	return std::vector<Word>();
+	return this->words;
 }
 std::vector<int> Verse::GetASCII()
 {
-	return std::vector<int>();
+	//TODO: allocate vector memory before subsequent calls to addrange
+	std::vector<int> asciis;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		Utilities::addrange(asciis, this->words[i].GetASCII());
+
+	return asciis;
 }
-std::vector<int> Verse::GetHex()
+std::vector<std::string> Verse::GetHex()
 {
-	return std::vector<int>();
+	std::vector<std::string> hexes;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		Utilities::addrange(hexes, this->words[i].GetHex());
+
+	return hexes;
 }
 
 std::string Verse::GetChapterName()
@@ -461,59 +564,90 @@ Verse::Attributes Verse::GetAttributes()
 
 int Verse::GetAbjadValue()
 {
-	return 0;
+	return abjad_value(*this);
 }
 int Verse::GetSequentialValue()
 {
-	return 0;
+	return sequential_value(*this);
 }
 
 std::string Verse::to_string()
 {
-	return "";
+	return sound_of(this->words);
 }
 
-Word& Verse::operator [](int)
+Word& Verse::operator [](int index)
 {
-	return this->words[0];
+	return this->words[index];
 }
-bool Verse::operator ==(Verse)
+bool Verse::operator ==(const Verse& rhs)
 {
-	return 0;
+	if (this->Count() != rhs.Count())
+		return false;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		if (this->words[i] != rhs.words[i])
+			return false;
+
+	return true;
 }
-bool Verse::operator !=(Verse)
+bool Verse::operator !=(const Verse& rhs)
 {
-	return 0;
+	return !(*this == rhs);
 }
 
-int Verse::Count()
+int Verse::Count() const
 {
-	return 0;
+	return this->words.size();
 }
-int Verse::CharacterCount()
+int Verse::CharacterCount() const
 {
-	return 0;
+	int sum = 0;
+
+	for (auto w : this->words)
+		sum += w.CharacterCount();
+
+	return sum;
 }
-int Verse::DiacriticCount()
+int Verse::DiacriticCount() const
 {
-	return 0;
+	int sum = 0;
+
+	for (auto w : this->words)
+		sum += w.DiacriticCount();
+
+	return sum;
 }
-int Verse::LetterCount()
+int Verse::LetterCount() const
 {
-	return 0;
+	int sum = 0;
+
+	for (auto w : this->words)
+		sum += w.LetterCount();
+
+	return sum;
 }
-int Verse::WordCount(bool)
+int Verse::WordCount(bool includeWaw) const
 {
-	return 0;
+	if (includeWaw)
+		return this->Count();
+
+	int sum = 0;
+
+	for (auto& w : this->words)
+		if (!(w.LetterCount() == 1 && w.GetLetters()[0].GetCharacter() == Arabic::Character::WAW))
+			sum++;
+
+	return sum;
 }
 
 bool Verse::IsMeccan()
 {
-	return 0;
+	return is_meccan(this->attributes.revelationPeriod);
 }
 bool Verse::IsMedinan()
 {
-	return 0;
+	return is_medinan(this->attributes.revelationPeriod);
 }
 
 
@@ -521,10 +655,127 @@ bool Verse::IsMedinan()
 // Chapter 
 ///////////////////////////////////////////////////////////////////////////////
 
+void Chapter::PopulateData()
+{
+	// depend on value in attribtues->chapterNum
+}
 
+Chapter::Chapter()
+{
+	this->textualPosition = TextualPosition();
+	this->textualPosition.chapterNum = 0;
+}
+Chapter::Chapter(int chapterNum)
+{
+	this->textualPosition = TextualPosition();
+	this->textualPosition.chapterNum = chapterNum;
+
+	PopulateData();
+}
+Chapter::Chapter(Name name) : Chapter((int) name) {}
 Chapter::~Chapter()
 {
+	this->verses.clear();
+}
 
+std::vector<Verse> Chapter::GetVerses()
+{
+	return this->verses;
+}
+TextualPosition Chapter::GetTextualPosition()
+{
+	return this->textualPosition;
+}
+Chapter::Attributes Chapter::GetAttributes()
+{
+	return this->attributes;
+}
+
+int Chapter::GetAbjadValue()
+{
+	return abjad_value(*this);
+}
+int Chapter::GetSequentialValue()
+{
+	return sequential_value(*this);
+}
+
+std::vector<int> Chapter::GetASCII()
+{
+	std::vector<int> asciis;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		Utilities::addrange(asciis, this->verses[i].GetASCII());
+
+	return asciis;
+}
+std::vector<std::string> Chapter::GetHex()
+{
+	std::vector<std::string> hexes;
+
+	for (unsigned int i = 0; i < this->Count(); i++)
+		Utilities::addrange(hexes, this->verses[i].GetHex());
+
+	return hexes;
+}
+
+Verse& Chapter::operator [](int index)
+{
+	return this->verses[index];
+}
+
+int Chapter::Count() const
+{
+	return verses.size();
+}
+int Chapter::CharacterCount() const
+{
+	int sum = 0;
+
+	for (auto v : this->verses)
+		sum += v.CharacterCount();
+
+	return sum;
+}
+int Chapter::DiacriticCount() const
+{
+	int sum = 0;
+
+	for (auto v : this->verses)
+		sum += v.DiacriticCount();
+
+	return sum;
+}
+int Chapter::LetterCount() const
+{
+	int sum = 0;
+
+	for (auto v : this->verses)
+		sum += v.LetterCount();
+
+	return sum;
+}
+int Chapter::WordCount(bool includeWaw) const
+{
+	int sum = 0;
+
+	for (auto v : this->verses)
+		sum += v.WordCount(includeWaw);
+
+	return sum;
+}
+int Chapter::VerseCount(bool includeBasmallah) const
+{
+	return this->Count() + includeBasmallah;
+}
+
+bool Chapter::IsMeccan()
+{
+	return is_meccan(this->attributes.revelationPeriod);
+}
+bool Chapter::IsMedinan()
+{
+	return is_medinan(this->attributes.revelationPeriod);
 }
 
 
@@ -532,3 +783,18 @@ Chapter::~Chapter()
 // QuranTree 
 ///////////////////////////////////////////////////////////////////////////////
 
+QuranTree::QuranTree() {}
+QuranTree::QuranTree(std::string)
+{
+	// I forgot why I put this here
+}
+QuranTree::~QuranTree()
+{
+	chapters.clear();
+}
+
+void QuranTree::PopulateData()
+{
+	for (unsigned int i = 0; i < NumChapters; i++)
+		chapters.push_back(Chapter(i));
+}

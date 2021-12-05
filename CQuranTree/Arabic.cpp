@@ -684,16 +684,19 @@ int Arabic::sequential_value(std::vector<Word> ws)
 }
 
 /// <summary>
-/// Returns the sound that a Letter makes, with the option to visualize its Diacritics
+/// Returns the sound that a Letter makes with all its members separated into different parameters, with the option to visualize its Diacritics
 /// </summary>
-/// <param name="l:">Letter to convert</param>
+/// <param name="character">the Letter's "character"</param>
+/// <param name="modification">the Letter's "modification"</param>
+/// <param name="diacritics">the Letter's "diacritics"</param>
+/// <param name="position">the Letter's "position"</param>
 /// <param name="includeDiacritics:">if set to true, the Diacritics' sounds will be textualized as well (default true)</param>
 /// <returns>std::string representation of the Letter's sound</returns>
-std::string Arabic::sound_of(Letter l, bool includeDiacritics)
+std::string Arabic::sound_of(Character character, Diacritic modification, std::vector<Diacritic> diacritics, Position position, bool includeDiacritics)
 {
 	std::string sound = "";
 
-	switch (l.GetCharacter())
+	switch (character)
 	{
 		case Character::SPACE:
 		{
@@ -707,7 +710,7 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 		}
 		case Character::ALIF:
 		{
-			switch (l.GetModification())
+			switch (modification)
 			{
 				case Diacritic::MADDAH:
 					sound = "AA";
@@ -716,9 +719,9 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 					sound = "I";
 					break;
 				default:
-					if (l.GetModification() == Diacritic::ALIF_WASLAH)
+					if (modification == Diacritic::ALIF_WASLAH)
 						sound = "Ⱥ";
-					else if (Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_FATHAH) == -1)	// if there is a TANWEEN_FATHAH, get sound from diacritic section
+					else if (Utilities::index_of(diacritics, Diacritic::TANWEEN_FATHAH) == -1)	// if there is a TANWEEN_FATHAH, get sound from diacritic section
 						sound = "A";
 					break;
 			}
@@ -731,10 +734,10 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 		}
 		case Character::TA:
 		{
-			if  (l.GetModification() != Diacritic::MARBUTAH									// if it is not MARBUTAH
-			 || (Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_FATHAH) != -1	// or
-			 ||  Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_KASRAH) != -1	// if there is a TANWEEN
-			 ||  Utilities::index_of(l.GetDiacritics(), Diacritic::TANWEEN_DAMMAH) != -1))
+			if  (modification != Diacritic::MARBUTAH									// if it is not MARBUTAH
+			 || (Utilities::index_of(diacritics, Diacritic::TANWEEN_FATHAH) != -1	// or
+			 || Utilities::index_of(diacritics, Diacritic::TANWEEN_KASRAH) != -1		// if there is a TANWEEN
+			 || Utilities::index_of(diacritics, Diacritic::TANWEEN_DAMMAH) != -1))
 				sound = "T";
 			else
 				sound = "H";
@@ -857,9 +860,9 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 		}
 		case Character::WAW:
 		{
-			if (l.GetModification() == Diacritic::HAMZAH_ABOVE)
+			if (modification == Diacritic::HAMZAH_ABOVE)
 				sound = "'";
-			else if (l.GetPosition() == Position::MIDDLE || l.GetPosition() == Position::END)
+			else if (position == Position::MIDDLE || position == Position::END)
 				sound = "Ū";
 			else
 				sound = "W";
@@ -867,9 +870,9 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 		}
 		case Character::YA:
 		{
-			if (l.GetModification() == Diacritic::ALIF_MAQSURAH)
+			if (modification == Diacritic::ALIF_MAQSURAH)
 				sound = "A";
-			else if (l.GetPosition() == Position::MIDDLE)
+			else if (position == Position::MIDDLE)
 				sound = "Ī";
 			else
 				sound = "Y";
@@ -877,23 +880,23 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 		}
 		default:	// no explicit character
 		{
-			if (Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::HAMZAH) != -1)
+			if (Utilities::index_of<Diacritic>(diacritics, Diacritic::HAMZAH) != -1)
 				sound = "'";
-			else if (Utilities::index_of<Diacritic>(l.GetDiacritics(), Diacritic::ALIF_KHANJARIYAH) != -1)
+			else if (Utilities::index_of<Diacritic>(diacritics, Diacritic::ALIF_KHANJARIYAH) != -1)
 				sound = "ā";
 		}
 	}
-	
+
 	if (!includeDiacritics)
 		return sound;
 
-	if (Utilities::index_of(l.GetDiacritics(), Diacritic::SHADDAH) != -1)
+	if (Utilities::index_of(diacritics, Diacritic::SHADDAH) != -1)
 		sound += sound;
-	if (Utilities::index_of(l.GetDiacritics(), Diacritic::MADDAH) != -1)
+	if (Utilities::index_of(diacritics, Diacritic::MADDAH) != -1)
 		sound += sound;
 
 	// TODO: optimize loop by breaking upon diacritic
-	for (auto& d: l.GetDiacritics())
+	for (auto& d : diacritics)
 	{
 		switch (d)
 		{
@@ -919,6 +922,16 @@ std::string Arabic::sound_of(Letter l, bool includeDiacritics)
 	}
 
 	return sound;
+}
+/// <summary>
+/// Returns the sound that a Letter makes, with the option to visualize its Diacritics
+/// </summary>
+/// <param name="l:">Letter to convert</param>
+/// <param name="includeDiacritics:">if set to true, the Diacritics' sounds will be textualized as well (default true)</param>
+/// <returns>std::string representation of the Letter's sound</returns>
+std::string Arabic::sound_of(Letter l, bool includeDiacritics)
+{
+	return sound_of(l.GetCharacter(), l.GetModification(), l.GetDiacritics(), l.GetPosition(), includeDiacritics);
 }
 /// <summary>
 /// Returns the sound that a collection of Letters make, with the option to visualize their Diacritics
@@ -947,6 +960,21 @@ std::string Arabic::sound_of(Word w, bool includeDiacritics)
 
 	for (auto& l : w.GetLetters())
 		sound += sound_of(l, includeDiacritics);
+
+	return sound;
+}
+/// <summary>
+/// Returns the sound that a sentance of Words makes, with the option to visualize its Diacritics
+/// </summary>
+/// <param name="ws:">sentance of Words to convert</param>
+/// <param name="includeDiacritics:">if set to true, the Diacritics' sounds will be textualized as well (default true)</param>
+/// <returns>std::string representation of the sentance of Words' sound</returns>
+std::string sound_of(std::vector<Word> ws, bool includeDiacritics)
+{
+	std::string sound = sound_of(ws[0], includeDiacritics);
+
+	for (unsigned int i = 1; i < ws.size(); i++)
+		sound += " " + sound_of(ws[i], includeDiacritics);
 
 	return sound;
 }

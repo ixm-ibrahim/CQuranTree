@@ -58,7 +58,7 @@ namespace Quran
 	class Verse;
 	class Chapter;
 
-	class Letter : private Arabic::Letter
+	class Letter : public Arabic::Letter
 	{
 		private:
 			TextualPosition textualPosition;
@@ -71,7 +71,8 @@ namespace Quran
 			TextualPosition GetTextualPosition();
 	};
 	
-	class Word : private Arabic::Word
+	// Note that GetLetters() returns Arabic::Letters, not Quran::Letters, while the [] operator returns a Quran::Letter and not an Arabic::Letter
+	class Word : public Arabic::Word
 	{
 		private:
 			TextualPosition textualPosition;
@@ -82,6 +83,8 @@ namespace Quran
 
 		public:
 			TextualPosition GetTextualPosition();
+
+			Arabic::Letter& operator [](int);
 	};
 
 	class Verse
@@ -117,17 +120,18 @@ namespace Quran
 			Attributes attributes;
 
 			void SetTextualPosition(TextualPosition);
-			void SetAttributes(TextualPosition);
+			void SetAttributes(Attributes);
 
 			friend class Chapter;
 
 		public:
 			Verse();
-			Verse(std::vector<Word>, int, int, TextualPosition, Attributes);
+			Verse(std::vector<Word>, TextualPosition, Attributes);
+			~Verse();
 
 			std::vector<Word> GetWords();
 			std::vector<int> GetASCII();
-			std::vector<int> GetHex();
+			std::vector<std::string> GetHex();
 
 			std::string GetChapterName();
 			TextualPosition GetTextualPosition();
@@ -139,14 +143,14 @@ namespace Quran
 			std::string to_string();
 
 			Word& operator [](int);
-			bool operator ==(Verse);
-			bool operator !=(Verse);
+			bool operator ==(const Verse&);
+			bool operator !=(const Verse&);
 
-			int Count();
-			int CharacterCount();
-			int DiacriticCount();
-			int LetterCount();
-			int WordCount(bool);
+			int Count() const;
+			int CharacterCount() const;
+			int DiacriticCount() const;
+			int LetterCount() const;
+			int WordCount(bool = true) const;
 
 			bool IsMeccan();
 			bool IsMedinan();
@@ -157,7 +161,7 @@ namespace Quran
 		public:
 			struct Attributes
 			{
-				RevelationPeriod revelationPeriod;
+				RevelationPeriod revelationPeriod = RevelationPeriod::UNKNOWN;
 				int numberOfVerses;
 				int numberOfWords;
 				int numberOfLetters;
@@ -173,7 +177,8 @@ namespace Quran
 		public:
 			enum class Name
 			{
-				AL_FATIHA = 1,	// 1
+				UNKNOWN_ERROR = 0,
+				AL_FATIHA,		// 1
 				AL_BAQARAH, 	// 2
 				ALI_IMRAN,  	// 3
 				AL_NISA,    	// 4
@@ -302,16 +307,16 @@ namespace Quran
 			int GetSequentialValue();
 
 			std::vector<int> GetASCII();
-			std::vector<int> GetHex();
+			std::vector<std::string> GetHex();
 
 			Verse& operator [](int);
 
-			int Count();
-			int CharacterCount();
-			int DiacriticCount();
-			int LetterCount();
-			int WordCount(bool);
-			int VerseCount();
+			int Count() const;
+			int CharacterCount() const;
+			int DiacriticCount() const;
+			int LetterCount() const;
+			int WordCount(bool = true) const;
+			int VerseCount(bool = false) const;
 
 			bool IsMeccan();
 			bool IsMedinan();
@@ -319,6 +324,7 @@ namespace Quran
 
 	const std::map<Chapter::Name, int> VerseNumByChapter
 	{
+		{Chapter::Name::UNKNOWN_ERROR,	0},
 		{Chapter::Name::AL_FATIHA,		7},		// 1
 		{Chapter::Name::AL_BAQARAH,		286},	// 2
 		{Chapter::Name::ALI_IMRAN,		200},	// 3
@@ -453,6 +459,9 @@ namespace Quran
 
 	bool is_meccan(RevelationPeriod);
 	bool is_medinan(RevelationPeriod);
+
+	int to_ascii(Letter);
+	std::string to_hex(Letter);
 
 	std::string sound_of(Letter, bool = true);
 	std::string sound_of(std::vector<Letter>, bool = true);

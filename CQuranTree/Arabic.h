@@ -85,7 +85,7 @@ namespace Arabic
 
 	class Letter
 	{
-		private:
+		protected:
 			Character character;
 			Diacritic modification;
 			Position position;
@@ -198,7 +198,7 @@ namespace Arabic
 				Attributes(Type, Tense, Quantity, Gender, Person);
 			};
 
-		private:
+		protected:
 			std::vector<Letter> letters;
 			std::vector<Character> root;
 			Attributes attributes;
@@ -297,9 +297,11 @@ namespace Arabic
 	int sequential_value(Word);
 	int sequential_value(std::vector<Word>);
 
+	std::string sound_of(Character, Diacritic, std::vector<Diacritic>, Position = Position::NONE, bool = true);
 	std::string sound_of(Letter, bool = true);
 	std::string sound_of(std::vector<Letter>, bool = true);
 	std::string sound_of(Word, bool = true);
+	std::string sound_of(std::vector<Word>, bool = true);
 
 	bool is_character(int, bool = false);
 	bool is_character(std::string, bool = false);
