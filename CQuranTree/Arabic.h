@@ -72,6 +72,7 @@ namespace Arabic
 		DAMMAH,
 		SUKOON,
 		SUKOON_WASLAH,
+		SUKOON_ALIF,	// https://tajweed.me/tag/sukoon/
 		SHADDAH,
 		MADDAH,
 		TANWEEN_FATHAH,
@@ -80,7 +81,15 @@ namespace Arabic
 		ALIF_WASLAH,
 		ALIF_KHANJARIYAH,
 		ALIF_MAQSURAH,
+		SMALL_WAW,
+		SMALL_YA,
 		MARBUTAH,
+		GRAND_IMAALAH,
+		ISHMAAM,
+		DOUBLE_NOON,
+		TASHEEL,
+		SEEN_SUBSTITUTION,
+		PSEUDO_LETTER
 	};
 
 	class Letter
@@ -308,8 +317,7 @@ namespace Arabic
 	bool is_diacritic(int);
 	bool is_diacritic(std::string);
 
-	bool is_arabic(int);
-	bool is_arabic(std::string);
+	bool is_arabic(int, bool = false);
 	bool is_arabic(Character, bool = false);
 	bool is_arabic(Diacritic);
 	bool is_arabic(Letter, bool = false);

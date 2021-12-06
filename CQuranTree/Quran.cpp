@@ -8,7 +8,91 @@ using namespace Quran;
 // Quran 
 ///////////////////////////////////////////////////////////////////////////////
 
+/// <summary>
+/// Dictionary for looking up ASCII values by their respective Tajweed symbols
+/// </summary>
+std::map<Tajweed, int> Quran::ASCIIByTajweed
+{
+	{Tajweed::COMPULSORY_STOP,		0},
+	{Tajweed::PROHIBITED_STOP,		0},
+	{Tajweed::GOOD_STOP,			0},
+	{Tajweed::SUFFICIENT_STOP,		0},
+	{Tajweed::EQUALITY_STOP,		0},
+	{Tajweed::PRECAUTIONARY_STOP,	0},
+	{Tajweed::BRIEF_STOP,			1756},
+	{Tajweed::SAJDAH,				0},
+	{Tajweed::MEEM_IQLAB_ABOVE,		1762},
+	{Tajweed::MEEM_IQLAB_BELOW,		1773},
+};
+/// <summary>
+/// Dictionary for looking up Tajweed symbols by their ASCII values
+/// </summary>
+std::map<int, Tajweed> Quran::TajweedByASCII
+{
+	{0,	Tajweed::COMPULSORY_STOP},
+	{0,	Tajweed::PROHIBITED_STOP},
+	{0,	Tajweed::GOOD_STOP},
+	{0,	Tajweed::SUFFICIENT_STOP},
+	{0,	Tajweed::EQUALITY_STOP},
+	{0,	Tajweed::PRECAUTIONARY_STOP},
+	{1756,	Tajweed::BRIEF_STOP},
+	{0,	Tajweed::SAJDAH},
+	{1762,	Tajweed::MEEM_IQLAB_ABOVE},
+	{1773,	Tajweed::MEEM_IQLAB_BELOW},
+};
 
+bool Quran::is_meccan(RevelationPeriod r)
+{
+	return r == RevelationPeriod::MECCAN || r == RevelationPeriod::LATE_MECCAN;
+}
+bool Quran::is_medinan(RevelationPeriod r)
+{
+	return r == RevelationPeriod::MEDINAN;
+}
+
+bool Quran::is_tajweed(int ascii)
+{
+	return TajweedByASCII.count(ascii) == 1;
+}
+
+/// <summary>
+/// Returns true if the ASCII value is a valid arabic character, diacritic, or tajweed symbol, and false otherwise
+/// </summary>
+/// <param name="ascii:">ASCII value to analyze</param>
+/// <returns>boolean representing if the ASCII value is a valid arabic character, diacritic, or tajweed symbol</returns>
+bool Quran::is_arabic(int ascii, bool checkSpace)
+{
+	return Arabic::is_arabic(ascii, checkSpace) || is_tajweed(ascii);
+}
+
+std::string Quran::to_string(Tajweed t)
+{
+	switch (t)
+	{
+		case Tajweed::COMPULSORY_STOP:
+			return "COMPULORY_STOP";
+		case Tajweed::PROHIBITED_STOP:
+			return "PROHIBITED_STOP";
+		case Tajweed::GOOD_STOP:
+			return "GOOD_STOP";
+		case Tajweed::SUFFICIENT_STOP:
+			return "SUFFICIENT_STOP";
+		case Tajweed::EQUALITY_STOP:
+			return "EQUALITY_STOP";
+		case Tajweed::PRECAUTIONARY_STOP:
+			return "PRECAUTIONARY_STOP";
+		case Tajweed::BRIEF_STOP:
+			return "BRIEF_STOP";
+		case Tajweed::SAJDAH:
+			return "SAJDAH";
+		case Tajweed::MEEM_IQLAB_ABOVE:
+			return "MEEM_IQLAB_ABOVE";
+		case Tajweed::MEEM_IQLAB_BELOW:
+			return "MEEM_IQLAB_BELOW";
+	}
+
+	return "NONE";
+}
 std::string Quran::to_string(RevelationPeriod r)
 {
 	switch (r)
@@ -260,18 +344,18 @@ std::string Quran::to_string(Chapter::Name n)
 	return "UNKNOWN_ERROR";
 }
 
-bool Quran::is_meccan(RevelationPeriod r)
+int Quran::to_ascii(Tajweed t)
 {
-	return r == RevelationPeriod::MECCAN || r == RevelationPeriod::LATE_MECCAN;
+	return ASCIIByTajweed[t];
 }
-bool Quran::is_medinan(RevelationPeriod r)
-{
-	return r == RevelationPeriod::MEDINAN;
-}
-
 int Quran::to_ascii(Letter l)
 {
 	return Arabic::ASCIIByLetter[Arabic::Letter(l.GetCharacter(), l.GetModification())];
+}
+
+std::string Quran::to_hex(Tajweed t)
+{
+	return Arabic::to_hex(to_ascii(t));
 }
 std::string Quran::to_hex(Letter l)
 {
@@ -412,6 +496,48 @@ int Quran::sequential_value(Chapter c)
 	return sequential_value(c.GetVerses());
 }
 
+//TODO: implement logger for QuranTree
+//TODO: implement parallel programming
+bool Quran::validate_file(std::string quranPath)
+{
+	std::wifstream quranFile(quranPath);
+	std::wstring line;
+	int lines = 0;
+	int letterCount = 0;
+
+	//quranFile.imbue(std::locale("ar_SA.UTF-8"));
+	quranFile.imbue(std::locale("en_US.UTF-8"));
+
+	while (std::getline(quranFile, line))
+	{
+		lines++;
+
+		int n = 0;
+		for (unsigned int i = 0; i < line.size(); i++)
+		{
+			std::cout << "\r" << lines << "/" << NumVerses;
+			int ascii = int(line[i]);
+			//std::cout << Arabic::to_string(ascii) << "\t";
+
+			// igore BOM (Byte Order Mark)
+			if (ascii == 65279)
+				continue;
+
+			if (!is_arabic(ascii, true))
+			{
+				std::cout << "Unknown character " << ascii << "at (" << lines << ", " << (i+2) << ")" << std::endl;
+				return false;
+			}
+
+			if (Arabic::is_character(ascii))
+				letterCount++;
+		}
+	}
+
+	std::cout << std::endl;
+
+	return lines == NumVerses;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // TextualPosition 
@@ -464,6 +590,19 @@ TextualPosition::TextualPosition(int chapterNum, int verseNum, int verseNumBasma
 // Letter 
 ///////////////////////////////////////////////////////////////////////////////
 
+Letter::~Letter()
+{
+	Reset();
+}
+
+void Letter::Reset()
+{
+	this->character = Arabic::Character::NONE;
+	this->modification = Arabic::Diacritic::NONE;
+	this->position = position;
+	diacritics.clear();
+	tajweed.clear();
+}
 
 void Letter::SetTextualPosition(TextualPosition textualPosition)
 {
@@ -655,9 +794,12 @@ bool Verse::IsMedinan()
 // Chapter 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Chapter::PopulateData()
+void Chapter::PopulateData(std::string quranPath)
 {
 	// depend on value in attribtues->chapterNum
+
+	// confirm valid path to quran text file
+
 }
 
 Chapter::Chapter()
@@ -665,14 +807,14 @@ Chapter::Chapter()
 	this->textualPosition = TextualPosition();
 	this->textualPosition.chapterNum = 0;
 }
-Chapter::Chapter(int chapterNum)
+Chapter::Chapter(int chapterNum, std::string quranPath)
 {
 	this->textualPosition = TextualPosition();
 	this->textualPosition.chapterNum = chapterNum;
-
-	PopulateData();
+	
+	PopulateData(quranPath);
 }
-Chapter::Chapter(Name name) : Chapter((int) name) {}
+Chapter::Chapter(Name name, std::string quranPath) : Chapter((int) name, quranPath) {}
 Chapter::~Chapter()
 {
 	this->verses.clear();
@@ -784,9 +926,9 @@ bool Chapter::IsMedinan()
 ///////////////////////////////////////////////////////////////////////////////
 
 QuranTree::QuranTree() {}
-QuranTree::QuranTree(std::string)
+QuranTree::QuranTree(std::string quranPath)
 {
-	// I forgot why I put this here
+	this->quranPath = quranPath;
 }
 QuranTree::~QuranTree()
 {
@@ -796,5 +938,5 @@ QuranTree::~QuranTree()
 void QuranTree::PopulateData()
 {
 	for (unsigned int i = 0; i < NumChapters; i++)
-		chapters.push_back(Chapter(i));
+		this->chapters.push_back(Chapter(i, this->quranPath));
 }

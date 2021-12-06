@@ -1,16 +1,19 @@
-// CQuranTree.cpp : This file contains the 'main' function. Program execution begins and ends there.
+﻿// CQuranTree.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <iostream>
+//#include <locale.h>
 #include <windows.h>
-#include "Arabic.h"
+#include "Quran.h"
 
 using namespace Arabic;
 
 int main()
 {
-    SetConsoleOutputCP(65001);
-    std::cout << "Hello World!\n";
+    SetConsoleOutputCP(CP_UTF8);
+    //std::setlocale(LC_ALL, "ar_SA.UTF-8");
+
+    std::wcout << "Hello arabic: بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\n";
 
     //std::cout << abjad_value(Character::GHAYN) << std::endl << to_ascii("0x1b36") << std::endl
     //          << sound_of(Letter(Character::TA, Diacritic::MARBUTAH, std::vector<Diacritic> {Diacritic::TANWEEN_FATHAH}))
@@ -61,6 +64,8 @@ int main()
               << sound_of(test1) << " " << sound_of(test1, false) << std::endl
               << sound_of(test2) << std::endl
               << sound_of(test2, false) << std::endl;
+
+    std::cout << Quran::validate_file(".\\Files\\arabic.txt") << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

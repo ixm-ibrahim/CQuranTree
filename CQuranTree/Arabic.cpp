@@ -14,6 +14,7 @@ using namespace Arabic;
 std::map<Letter, int> Arabic::ASCIIByLetter
 {
 	{Letter(Character::SPACE, Diacritic::NONE),				32},
+	{Letter(Character::NONE, Diacritic::PSEUDO_LETTER),		1600},
 	{Letter(Character::HAMZAH, Diacritic::NONE),			1569},
 	{Letter(Character::ALIF, Diacritic::MADDAH),			1570},
 	{Letter(Character::ALIF, Diacritic::HAMZAH_ABOVE),		1571},
@@ -59,6 +60,7 @@ std::map<Letter, int> Arabic::ASCIIByLetter
 std::map<int, Letter> Arabic::LetterByASCII
 {
 	{32,	Letter(Character::SPACE, Diacritic::NONE)},
+	{1600,	Letter(Character::NONE, Diacritic::PSEUDO_LETTER)},
 	{1569,	Letter(Character::HAMZAH, Diacritic::NONE)},
 	{1570,	Letter(Character::ALIF, Diacritic::MADDAH)},
 	{1571,	Letter(Character::ALIF, Diacritic::HAMZAH_ABOVE)},
@@ -103,6 +105,7 @@ std::map<int, Letter> Arabic::LetterByASCII
 /// </summary>
 std::map<Diacritic, int> Arabic::ASCIIByDiacritic
 {
+	{Diacritic::PSEUDO_LETTER,		1600},
 	{Diacritic::TANWEEN_FATHAH,		1611},
 	{Diacritic::TANWEEN_DAMMAH,		1612},
 	{Diacritic::TANWEEN_KASRAH,		1613},
@@ -115,12 +118,21 @@ std::map<Diacritic, int> Arabic::ASCIIByDiacritic
 	{Diacritic::HAMZAH,				1620},
 	{Diacritic::ALIF_KHANJARIYAH,	1648},
 	{Diacritic::SUKOON_WASLAH,		1759},
+	{Diacritic::SUKOON_ALIF,		1760},
+	{Diacritic::SEEN_SUBSTITUTION,	1763},
+	{Diacritic::SMALL_WAW,			1765},
+	{Diacritic::SMALL_YA,			1766},
+	{Diacritic::DOUBLE_NOON,		1768},
+	{Diacritic::GRAND_IMAALAH,		1770},
+	{Diacritic::ISHMAAM,			1771},
+	{Diacritic::TASHEEL,			1772},
 };
 /// <summary>
 /// Dictionary for looking up Diacritics by their ASCII values
 /// </summary>
 std::map<int, Diacritic> Arabic::DiacriticByASCII
 {
+	{1600,	Diacritic::PSEUDO_LETTER},
 	{1611,	Diacritic::TANWEEN_FATHAH},
 	{1612,	Diacritic::TANWEEN_DAMMAH},
 	{1613,	Diacritic::TANWEEN_KASRAH},
@@ -133,6 +145,14 @@ std::map<int, Diacritic> Arabic::DiacriticByASCII
 	{1620,	Diacritic::HAMZAH},
 	{1648,	Diacritic::ALIF_KHANJARIYAH},
 	{1759,	Diacritic::SUKOON_WASLAH},
+	{1760,	Diacritic::SUKOON_ALIF},
+	{1763,	Diacritic::SEEN_SUBSTITUTION},
+	{1765,	Diacritic::SMALL_WAW},
+	{1766,	Diacritic::SMALL_YA},
+	{1768,	Diacritic::DOUBLE_NOON},
+	{1770,	Diacritic::GRAND_IMAALAH},
+	{1771,	Diacritic::GRAND_IMAALAH},
+	{1772,	Diacritic::TASHEEL},
 };
 
 /// <summary>
@@ -274,6 +294,8 @@ std::string Arabic::to_string(Diacritic d)
 {
 	switch (d)
 	{
+		case Diacritic::PSEUDO_LETTER:
+			return "PSEUDO_LETTER";
 		case Diacritic::HAMZAH:
 			return "HAMZAH";
 		case Diacritic::HAMZAH_ABOVE:
@@ -292,6 +314,12 @@ std::string Arabic::to_string(Diacritic d)
 			return "SUKOON";
 		case Diacritic::SUKOON_WASLAH:
 			return "SUKOON_WASLAH";
+		case Diacritic::SUKOON_ALIF:
+			return "SUKOON_ALIF";
+		case Diacritic::SMALL_WAW:
+			return "SMALL_WAW";
+		case Diacritic::SMALL_YA:
+			return "SMALL_YA";
 		case Diacritic::SHADDAH:
 			return "SHADDAH";
 		case Diacritic::MADDAH:
@@ -310,6 +338,16 @@ std::string Arabic::to_string(Diacritic d)
 			return "ALIF_MAQSURAH";
 		case Diacritic::MARBUTAH:
 			return "MARBUTAH";
+		case Diacritic::DOUBLE_NOON:
+			return "DOUBLE_NOON";
+		case Diacritic::GRAND_IMAALAH:
+			return "GRAND_IMAALAH";
+		case Diacritic::ISHMAAM:
+			return "ISHMAAM";
+		case Diacritic::TASHEEL:
+			return "TAS-HEEL";
+		case Diacritic::SEEN_SUBSTITUTION:
+			return "SEEN_SUBSTITUTION";
 	}
 
 	return "NONE";
@@ -721,6 +759,8 @@ std::string Arabic::sound_of(Character character, Diacritic modification, std::v
 				default:
 					if (modification == Diacritic::ALIF_WASLAH)
 						sound = "Ⱥ";
+					else if (Utilities::index_of(diacritics, Diacritic::TASHEEL) != -1)
+						sound = "a";
 					else if (Utilities::index_of(diacritics, Diacritic::TANWEEN_FATHAH) == -1)	// if there is a TANWEEN_FATHAH, get sound from diacritic section
 						sound = "A";
 					break;
@@ -795,7 +835,10 @@ std::string Arabic::sound_of(Character character, Diacritic modification, std::v
 		}
 		case Character::SAD:
 		{
-			sound = "Ṣ";
+			if (Utilities::index_of(diacritics, Diacritic::SEEN_SUBSTITUTION) != -1)
+				sound = "S";
+			else
+				sound = "Ṣ";
 			break;
 		}
 		case Character::DAD:
@@ -878,9 +921,11 @@ std::string Arabic::sound_of(Character character, Diacritic modification, std::v
 				sound = "Y";
 			break;
 		}
-		default:	// no explicit character
+		default:	// Diacritic::PSEUDO_LETTER
 		{
-			if (Utilities::index_of<Diacritic>(diacritics, Diacritic::HAMZAH) != -1)
+			if (Utilities::index_of<Diacritic>(diacritics, Diacritic::GRAND_IMAALAH) != -1)
+				sound = "ey";
+			else if (Utilities::index_of<Diacritic>(diacritics, Diacritic::HAMZAH) != -1)
 				sound = "'";
 			else if (Utilities::index_of<Diacritic>(diacritics, Diacritic::ALIF_KHANJARIYAH) != -1)
 				sound = "ā";
@@ -895,7 +940,6 @@ std::string Arabic::sound_of(Character character, Diacritic modification, std::v
 	if (Utilities::index_of(diacritics, Diacritic::MADDAH) != -1)
 		sound += sound;
 
-	// TODO: optimize loop by breaking upon diacritic
 	for (auto& d : diacritics)
 	{
 		switch (d)
@@ -906,7 +950,11 @@ std::string Arabic::sound_of(Character character, Diacritic modification, std::v
 			case Diacritic::KASRAH:
 				sound += "i";
 				break;
+			case Diacritic::SMALL_YA:
+				sound += "ī";
+				break;
 			case Diacritic::DAMMAH:
+			case Diacritic::SMALL_WAW:
 				sound += "u";
 				break;
 			case Diacritic::TANWEEN_FATHAH:
@@ -1017,7 +1065,7 @@ bool Arabic::is_diacritic(int ascii)
 {
 	// meem saakin - 06e2   <------------
 
-	return (ascii >= 1611 && ascii <= 1620) || ascii == 1648 || ascii == 1759;
+	return ascii == 1600 || (ascii >= 1611 && ascii <= 1620) || ascii == 1648 || ascii == 1759 || ascii == 1760 || ascii == 1763 || ascii == 1765 || ascii == 1766 || ascii == 1768 || (ascii >= 1770 && ascii <= 1772);
 }
 /// <summary>
 /// Checks if a hexadecimal value is a valid arabic diacritic
@@ -1029,17 +1077,19 @@ bool Arabic::is_diacritic(std::string hex)
 	return is_diacritic(to_ascii(hex));
 }
 
+//TODO: is_arabic(int,bool) may have redundant logic in it: just use an OR statement
+
 /// <summary>
 /// Returns true if the ASCII value is a valid arabic character or diacritic, and false otherwise
 /// </summary>
 /// <param name="ascii:">ASCII value to analyze</param>
 /// <returns>boolean representing if the ASCII value is a valid arabic character or diacritic</returns>
-bool Arabic::is_arabic(int ascii)
+bool Arabic::is_arabic(int ascii, bool checkSpace)
 {
-	if (LetterByASCII.count(ascii) == 1)
-		return is_arabic(LetterByASCII[ascii]);
+	if (DiacriticByASCII.count(ascii) == 1)
+		return is_arabic(DiacriticByASCII[ascii]);
 
-	return is_arabic(DiacriticByASCII[ascii]);
+	return is_arabic(LetterByASCII[ascii], checkSpace);
 }
 /// <summary>
 /// Returns true if a Character is a valid arabic ASCII value, and false otherwise
@@ -1057,11 +1107,7 @@ bool Arabic::is_arabic(Character c, bool checkSpace)
 /// <returns>boolean representing if the Diacritic is a valid arabic ASCII value</returns>
 bool Arabic::is_arabic(Diacritic d)
 {
-	int ascii = to_ascii(d);
-
-	// meem saakin - 06e2   <------------
-
-	return (ascii >= 1611 && ascii <= 1620) || ascii == 1648 || ascii == 1759;
+	return is_diacritic(to_ascii(d));
 }
 /// <summary>
 /// Returns true if a Letter contains valid arabic ASCII values, and false otherwise
@@ -1073,6 +1119,8 @@ bool Arabic::is_arabic(Letter l, bool checkSpace)
 	for (auto& d : l.GetDiacritics())
 		if (!is_arabic(d))
 			return false;
+
+	bool test = is_character(to_ascii(l), checkSpace);
 
 	return is_character(to_ascii(l), checkSpace);
 }
@@ -1225,6 +1273,7 @@ void Letter::Reset()
 bool Letter::SetFromASCII(int ascii)
 {
 	if (is_arabic(ascii))
+	{
 		if (is_character(ascii))
 		{
 			this->character = LetterByASCII[ascii].GetCharacter();
@@ -1232,6 +1281,9 @@ bool Letter::SetFromASCII(int ascii)
 		}
 		else if (is_diacritic(ascii))
 			this->diacritics.push_back(DiacriticByASCII[ascii]);
+
+		return true;
+	}
 
 	return false;
 }
