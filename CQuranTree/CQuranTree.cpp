@@ -65,7 +65,7 @@ int main()
               << sound_of(test2) << std::endl
               << sound_of(test2, false) << std::endl;
 
-    std::cout << Quran::validate_file(".\\Files\\arabic.txt") << std::endl;
+    std::cout << Quran::validate_file(".\\Files\\quran-simple.txt") << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -72,7 +72,7 @@ namespace Arabic
 		DAMMAH,
 		SUKOON,
 		SUKOON_WASLAH,
-		SUKOON_ALIF,	// https://tajweed.me/tag/sukoon/
+		SUKOON_ALIF,	// https://symbols.me/tag/sukoon/
 		SHADDAH,
 		MADDAH,
 		TANWEEN_FATHAH,
@@ -83,13 +83,14 @@ namespace Arabic
 		ALIF_MAQSURAH,
 		SMALL_WAW,
 		SMALL_YA,
+		SMALL_YA_ABOVE,
 		MARBUTAH,
 		GRAND_IMAALAH,
 		ISHMAAM,
 		DOUBLE_NOON,
 		TASHEEL,
 		SEEN_SUBSTITUTION,
-		PSEUDO_LETTER
+		TATWEEL
 	};
 
 	class Letter
@@ -144,12 +145,12 @@ namespace Arabic
 
 			bool operator ==(const Letter&);
 			bool operator !=(const Letter&);
-			bool operator <(const Letter& l) const;
+			bool operator <(const Letter&) const;
 
 			int ASCIICount() const;
 			int DiacriticCount() const;
 			
-			bool IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace);
+			bool IsArabic(bool, bool, bool);
 	};
 
 	class Word

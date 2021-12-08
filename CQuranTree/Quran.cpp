@@ -9,36 +9,38 @@ using namespace Quran;
 ///////////////////////////////////////////////////////////////////////////////
 
 /// <summary>
-/// Dictionary for looking up ASCII values by their respective Tajweed symbols
+/// Dictionary for looking up ASCII values by their respective Symbol symbols
 /// </summary>
-std::map<Tajweed, int> Quran::ASCIIByTajweed
+std::map<Symbol, int> Quran::ASCIIBySymbol
 {
-	{Tajweed::COMPULSORY_STOP,		0},
-	{Tajweed::PROHIBITED_STOP,		0},
-	{Tajweed::GOOD_STOP,			0},
-	{Tajweed::SUFFICIENT_STOP,		0},
-	{Tajweed::EQUALITY_STOP,		0},
-	{Tajweed::PRECAUTIONARY_STOP,	0},
-	{Tajweed::BRIEF_STOP,			1756},
-	{Tajweed::SAJDAH,				0},
-	{Tajweed::MEEM_IQLAB_ABOVE,		1762},
-	{Tajweed::MEEM_IQLAB_BELOW,		1773},
+	{Symbol::COMPULSORY_STOP,		1752},
+	{Symbol::PROHIBITED_STOP,		1753},
+	{Symbol::GOOD_STOP,				1750},
+	{Symbol::SUFFICIENT_STOP,		1751},
+	{Symbol::EQUALITY_STOP,			1754},
+	{Symbol::PRECAUTIONARY_STOP,	1755},
+	{Symbol::BRIEF_STOP,			1756},
+	{Symbol::SAJDAH,				1769},
+	{Symbol::MEEM_IQLAB_ABOVE,		1762},
+	{Symbol::MEEM_IQLAB_BELOW,		1773},
+	{Symbol::QUARTER_OF_HALF,		1758},
 };
 /// <summary>
-/// Dictionary for looking up Tajweed symbols by their ASCII values
+/// Dictionary for looking up Symbol symbols by their ASCII values
 /// </summary>
-std::map<int, Tajweed> Quran::TajweedByASCII
+std::map<int, Symbol> Quran::SymbolByASCII
 {
-	{0,	Tajweed::COMPULSORY_STOP},
-	{0,	Tajweed::PROHIBITED_STOP},
-	{0,	Tajweed::GOOD_STOP},
-	{0,	Tajweed::SUFFICIENT_STOP},
-	{0,	Tajweed::EQUALITY_STOP},
-	{0,	Tajweed::PRECAUTIONARY_STOP},
-	{1756,	Tajweed::BRIEF_STOP},
-	{0,	Tajweed::SAJDAH},
-	{1762,	Tajweed::MEEM_IQLAB_ABOVE},
-	{1773,	Tajweed::MEEM_IQLAB_BELOW},
+	{1752,	Symbol::COMPULSORY_STOP},
+	{1753,	Symbol::PROHIBITED_STOP},
+	{1750,	Symbol::GOOD_STOP},
+	{1751,	Symbol::SUFFICIENT_STOP},
+	{1754,	Symbol::EQUALITY_STOP},
+	{1755,	Symbol::PRECAUTIONARY_STOP},
+	{1756,	Symbol::BRIEF_STOP},
+	{1769,	Symbol::SAJDAH},
+	{1762,	Symbol::MEEM_IQLAB_ABOVE},
+	{1773,	Symbol::MEEM_IQLAB_BELOW},
+	{1758,	Symbol::QUARTER_OF_HALF},
 };
 
 bool Quran::is_meccan(RevelationPeriod r)
@@ -50,45 +52,60 @@ bool Quran::is_medinan(RevelationPeriod r)
 	return r == RevelationPeriod::MEDINAN;
 }
 
-bool Quran::is_tajweed(int ascii)
+bool Quran::is_symbol(int ascii)
 {
-	return TajweedByASCII.count(ascii) == 1;
+	return SymbolByASCII.count(ascii) == 1;
+}
+bool Quran::is_symbol(std::string hex)
+{
+	return SymbolByASCII.count(Arabic::to_ascii(hex)) == 1;
 }
 
 /// <summary>
-/// Returns true if the ASCII value is a valid arabic character, diacritic, or tajweed symbol, and false otherwise
+/// Returns true if the ASCII value is a valid arabic character, diacritic, or symbols symbols, and false otherwise
 /// </summary>
 /// <param name="ascii:">ASCII value to analyze</param>
-/// <returns>boolean representing if the ASCII value is a valid arabic character, diacritic, or tajweed symbol</returns>
+/// <returns>boolean representing if the ASCII value is a valid arabic character, diacritic, or symbols symbols</returns>
 bool Quran::is_arabic(int ascii, bool checkSpace)
 {
-	return Arabic::is_arabic(ascii, checkSpace) || is_tajweed(ascii);
+	return Arabic::is_arabic(ascii, checkSpace) || is_symbol(ascii);
+}
+/// <summary>
+/// Returns true if the hexadecimal value is a valid arabic character, diacritic, or symbols symbols, and false otherwise
+/// </summary>
+/// <param name="hex:">hexadecimal value to analyze</param>
+/// <returns>boolean representing if the hexadecimal value is a valid arabic character, diacritic, or symbols symbols</returns>
+bool Quran::is_arabic(std::string hex, bool checkSpace)
+{
+	return Arabic::is_arabic(hex, checkSpace) || is_symbol(hex);
 }
 
-std::string Quran::to_string(Tajweed t)
+std::string Quran::to_string(Symbol t)
 {
 	switch (t)
 	{
-		case Tajweed::COMPULSORY_STOP:
+		case Symbol::COMPULSORY_STOP:
 			return "COMPULORY_STOP";
-		case Tajweed::PROHIBITED_STOP:
+		case Symbol::PROHIBITED_STOP:
 			return "PROHIBITED_STOP";
-		case Tajweed::GOOD_STOP:
+		case Symbol::GOOD_STOP:
 			return "GOOD_STOP";
-		case Tajweed::SUFFICIENT_STOP:
+		case Symbol::SUFFICIENT_STOP:
 			return "SUFFICIENT_STOP";
-		case Tajweed::EQUALITY_STOP:
+		case Symbol::EQUALITY_STOP:
 			return "EQUALITY_STOP";
-		case Tajweed::PRECAUTIONARY_STOP:
+		case Symbol::PRECAUTIONARY_STOP:
 			return "PRECAUTIONARY_STOP";
-		case Tajweed::BRIEF_STOP:
+		case Symbol::BRIEF_STOP:
 			return "BRIEF_STOP";
-		case Tajweed::SAJDAH:
+		case Symbol::SAJDAH:
 			return "SAJDAH";
-		case Tajweed::MEEM_IQLAB_ABOVE:
+		case Symbol::MEEM_IQLAB_ABOVE:
 			return "MEEM_IQLAB_ABOVE";
-		case Tajweed::MEEM_IQLAB_BELOW:
+		case Symbol::MEEM_IQLAB_BELOW:
 			return "MEEM_IQLAB_BELOW";
+		case Symbol::QUARTER_OF_HALF:
+			return "QUARTER_OF_HALF";
 	}
 
 	return "NONE";
@@ -344,16 +361,16 @@ std::string Quran::to_string(Chapter::Name n)
 	return "UNKNOWN_ERROR";
 }
 
-int Quran::to_ascii(Tajweed t)
+int Quran::to_ascii(Symbol t)
 {
-	return ASCIIByTajweed[t];
+	return ASCIIBySymbol[t];
 }
 int Quran::to_ascii(Letter l)
 {
 	return Arabic::ASCIIByLetter[Arabic::Letter(l.GetCharacter(), l.GetModification())];
 }
 
-std::string Quran::to_hex(Tajweed t)
+std::string Quran::to_hex(Symbol t)
 {
 	return Arabic::to_hex(to_ascii(t));
 }
@@ -510,6 +527,9 @@ bool Quran::validate_file(std::string quranPath)
 
 	while (std::getline(quranFile, line))
 	{
+		if (line.size() == 0 || line[0] == '#')
+			continue;
+		
 		lines++;
 
 		int n = 0;
@@ -525,16 +545,20 @@ bool Quran::validate_file(std::string quranPath)
 
 			if (!is_arabic(ascii, true))
 			{
-				std::cout << "Unknown character " << ascii << "at (" << lines << ", " << (i+2) << ")" << std::endl;
+				std::cout << std::endl << "Unknown character " << ascii << " at (" << lines << ", " << (i+2) << ")" << std::endl;
 				return false;
 			}
 
-			if (Arabic::is_character(ascii))
+			if (Arabic::is_character(ascii) || (lines == 79 && n == 36))
+			{
 				letterCount++;
+				n++;
+			}
 		}
 	}
 
 	std::cout << std::endl;
+	std::cout << "Letter Count: " << letterCount << std::endl;
 
 	return lines == NumVerses;
 }
@@ -590,6 +614,11 @@ TextualPosition::TextualPosition(int chapterNum, int verseNum, int verseNumBasma
 // Letter 
 ///////////////////////////////////////////////////////////////////////////////
 
+
+Letter::Letter(Arabic::Character character, Arabic::Diacritic modification, std::vector<Arabic::Diacritic> diacritics, std::vector<Symbol> symbol, Arabic::Position position) : Arabic::Letter(character, modification, diacritics, position)
+{
+	SetSymbols(symbol);
+}
 Letter::~Letter()
 {
 	Reset();
@@ -601,7 +630,7 @@ void Letter::Reset()
 	this->modification = Arabic::Diacritic::NONE;
 	this->position = position;
 	diacritics.clear();
-	tajweed.clear();
+	symbols.clear();
 }
 
 void Letter::SetTextualPosition(TextualPosition textualPosition)
@@ -611,6 +640,127 @@ void Letter::SetTextualPosition(TextualPosition textualPosition)
 TextualPosition Letter::GetTextualPosition()
 {
 	return this->textualPosition;
+}
+
+void Letter::SetSymbols(std::vector<Symbol> symbol)
+{
+	this->symbols = symbol;
+}
+void Letter::SetSymbol(int index, Symbol symbol)
+{
+	this->symbols[index] = symbol;
+}
+void Letter::AddSymbol(Symbol symbol)
+{
+	this->symbols.push_back(symbol);
+}
+void Letter::AddSymbol(int ascii)
+{
+	if (is_symbol(ascii))
+	{
+		Symbol t = SymbolByASCII[ascii];
+
+		if (t != Symbol::NONE)
+			this->symbols.push_back(t);
+	}
+}
+void Letter::AddSymbol(std::string hex)
+{
+	if (is_symbol(hex))
+	{
+		Symbol t = SymbolByASCII[Arabic::to_ascii(hex)];
+
+		if (t != Symbol::NONE)
+			this->symbols.push_back(t);
+	}
+}
+void Letter::RemoveSymbol(int index)
+{
+	Utilities::remove_at(this->symbols, index);
+}
+void Letter::RemoveSymbol(Symbol symbol)
+{
+	Utilities::remove_all(this->symbols, symbol);
+}
+void Letter::ClearSymbol()
+{
+	this->symbols.clear();
+}
+
+std::vector<int> Letter::GetASCII() const
+{
+	std::vector<int> ret;
+
+	if (this->character != Arabic::Character::NONE)
+		ret.push_back(to_ascii(this->character));
+
+	int ascii = to_ascii(this->modification);
+	if (Arabic::is_diacritic(ascii))
+		ret.push_back(ascii);
+
+	for (auto& d : this->diacritics)
+	{
+		ascii = to_ascii(d);
+		if (Arabic::is_diacritic(ascii))
+			ret.push_back(ascii);
+	}
+
+	for (auto& t : this->symbols)
+	{
+		ascii = to_ascii(t);
+		if (is_symbol(ascii))
+			ret.push_back(ascii);
+	}
+
+	return ret;
+}
+std::vector<std::string> Letter::GetHex() const
+{
+	std::vector<std::string> ret;
+
+	if (this->character != Arabic::Character::NONE)
+		ret.push_back(to_hex(this->character));
+
+	std::string hex = to_hex(this->modification);
+	if (Arabic::is_diacritic(hex))
+		ret.push_back(hex);
+
+	for (auto& d : this->diacritics)
+	{
+		hex = to_hex(d);
+		if (Arabic::is_diacritic(hex))
+			ret.push_back(hex);
+	}
+
+	for (auto& t : this->symbols)
+	{
+		hex = to_hex(t);
+		if (is_symbol(hex))
+			ret.push_back(hex);
+	}
+
+	return ret;
+}
+
+int Letter::ASCIICount() const
+{
+	return diacritics.size() + symbols.size() + (int)is_arabic(this->character, true);
+}
+
+bool Letter::IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSymbol, bool checkSpace)
+{
+	if (checkCharacter && (this->character == Arabic::Character::NONE || (!checkSpace && this->character == Arabic::Character::SPACE)))
+		return false;
+	if (checkDiacritic)
+		for (auto& d : this->diacritics)
+			if (!Arabic::is_diacritic(to_ascii(d)))
+				return false;
+	if (checkSymbol)
+		for (auto& t : this->symbols)
+			if (!is_symbol(to_ascii(t)))
+				return false;
+
+	return true;
 }
 
 

@@ -38,10 +38,13 @@
     <Text Include="Files\arabic.txt">
       <Filter>Files</Filter>
     </Text>
-    <Text Include="Files\quran.txt">
+    <Text Include="Files\quran-simple.txt">
       <Filter>Files</Filter>
     </Text>
-    <Text Include="Files\quran-clean.txt">
+    <Text Include="Files\quran-simple-clean.txt">
+      <Filter>Files</Filter>
+    </Text>
+    <Text Include="Files\quran-uthmani.txt">
       <Filter>Files</Filter>
     </Text>
   </ItemGroup>
@@ -58,5 +61,18 @@
     <ClInclude Include="Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Files\quran-data.xml">
+      <Filter>Files</Filter>
+    </Xml>
+    <Xml Include="Files\quran-simple.xml">
+      <Filter>Files</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\quran-simple.sql">
+      <Filter>Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

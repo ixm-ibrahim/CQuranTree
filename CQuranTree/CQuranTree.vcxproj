@@ -149,14 +149,22 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Files\arabic.txt" />
-    <Text Include="Files\quran-clean.txt" />
-    <Text Include="Files\quran.txt" />
+    <Text Include="Files\quran-simple-clean.txt" />
+    <Text Include="Files\quran-simple.txt" />
+    <Text Include="Files\quran-uthmani.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Analysis.h" />
     <ClInclude Include="Arabic.h" />
     <ClInclude Include="Quran.h" />
     <ClInclude Include="Utilities.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Files\quran-data.xml" />
+    <Xml Include="Files\quran-simple.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\quran-simple.sql" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

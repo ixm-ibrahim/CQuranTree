@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Arabic.h"
 
-#define QURAN_PATH ".\\Files\\quran"
+#define QURAN_PATH ".\\Files\\quran-uthmani.txt"
 
 namespace Quran
 {
@@ -26,8 +26,8 @@ namespace Quran
 	const int NumQuarters				= NumHalves * 4;
 	const int NumBowings				= 556;
 
-	// http://www.islamguiden.com/arabic/etajweed1.html
-	enum class Tajweed
+	// http://www.islamguiden.com/arabic/esymbol1.html
+	enum class Symbol
 	{
 		NONE = 0,
 		COMPULSORY_STOP,
@@ -40,6 +40,7 @@ namespace Quran
 		SAJDAH,
 		MEEM_IQLAB_ABOVE,
 		MEEM_IQLAB_BELOW,
+		QUARTER_OF_HALF
 	};
 
 	enum class RevelationPeriod
@@ -81,7 +82,7 @@ namespace Quran
 	class Letter : public Arabic::Letter
 	{
 		private:
-			std::vector<Tajweed> tajweed;
+			std::vector<Symbol> symbols;
 			TextualPosition textualPosition;
 
 			void SetTextualPosition(TextualPosition);
@@ -89,29 +90,28 @@ namespace Quran
 			friend class Word;
 
 		public:
-			Letter(Arabic::Character, Arabic::Diacritic, std::vector<Arabic::Diacritic>, std::vector<Tajweed>, Arabic::Position = Arabic::Position::NONE);
+			Letter(Arabic::Character, Arabic::Diacritic, std::vector<Arabic::Diacritic>, std::vector<Symbol>, Arabic::Position = Arabic::Position::NONE);
 			~Letter();
 
 			void Reset();
 
 			TextualPosition GetTextualPosition();
 
-			void SetTajweed(std::vector<Tajweed>);
-			void SetTajweed(int, Tajweed);
-			void AddTajweed(Tajweed);
-			void AddTajweed(int);
-			void AddTajweed(std::string);
-			void RemoveTajweed(int);
-			void RemoveTajweed(Tajweed);
-			void ClearTajweed();
+			void SetSymbols(std::vector<Symbol>);
+			void SetSymbol(int, Symbol);
+			void AddSymbol(Symbol);
+			void AddSymbol(int);
+			void AddSymbol(std::string);
+			void RemoveSymbol(int);
+			void RemoveSymbol(Symbol);
+			void ClearSymbol();
 
 			std::vector<int> GetASCII() const;
 			std::vector<std::string> GetHex() const;
 
 			int ASCIICount() const;
-			int DiacriticCount() const;
 
-			bool IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSpace);
+			bool IsArabic(bool, bool, bool, bool);
 	};
 	
 	// Note that GetLetters() returns Arabic::Letters, not Quran::Letters, while the [] operator returns a Quran::Letter and not an Arabic::Letter
@@ -130,8 +130,8 @@ namespace Quran
 			Arabic::Letter& operator [](int);
 	};
 
-	extern std::map<Tajweed, int> ASCIIByTajweed;
-	extern std::map<int, Tajweed> TajweedByASCII;
+	extern std::map<Symbol, int> ASCIIBySymbol;
+	extern std::map<int, Symbol> SymbolByASCII;
 
 	class Verse
 	{
@@ -208,6 +208,7 @@ namespace Quran
 			struct Attributes
 			{
 				RevelationPeriod revelationPeriod = RevelationPeriod::UNKNOWN;
+				int chronologicalOrder;
 				int numberOfVerses;
 				int numberOfWords;
 				int numberOfLetters;
@@ -219,6 +220,7 @@ namespace Quran
 			Attributes attributes;
 
 			void PopulateData(std::string);
+			void PopulateData(std::ifstream);
 
 		public:
 			enum class Name
@@ -504,18 +506,20 @@ namespace Quran
 	bool is_meccan(RevelationPeriod);
 	bool is_medinan(RevelationPeriod);
 
-	bool is_tajweed(int);
+	bool is_symbol(int);
+	bool is_symbol(std::string);
 
 	bool is_arabic(int, bool = true);
+	bool is_arabic(std::string, bool = true);
 
-	std::string to_string(Tajweed);
+	std::string to_string(Symbol);
 	std::string to_string(RevelationPeriod);
 	std::string to_string(Chapter::Name);
 
-	int to_ascii(Tajweed);
+	int to_ascii(Symbol);
 	int to_ascii(Letter);
 
-	std::string to_hex(Tajweed);
+	std::string to_hex(Symbol);
 	std::string to_hex(Letter);
 
 	std::string sound_of(Letter, bool = true);
