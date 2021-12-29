@@ -4,7 +4,7 @@
 
 namespace Analysis
 {
-	int occurance_of(std::vector<Arabic::Word>, Arabic::Letter);
-	int occurance_of(std::vector<Arabic::Word>, Arabic::Word);
-	int occurance_of(std::vector<Arabic::Word>, std::vector<Arabic::Word>);
+	int occurance_of(std::vector<Arabic_old::Word>, Arabic_old::Letter);
+	int occurance_of(std::vector<Arabic_old::Word>, Arabic_old::Word);
+	int occurance_of(std::vector<Arabic_old::Word>, std::vector<Arabic_old::Word>);
 }

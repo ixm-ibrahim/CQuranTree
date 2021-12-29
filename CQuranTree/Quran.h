@@ -2,11 +2,496 @@
 
 #include <fstream>
 #include <iostream>
-#include "Arabic.h"
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
+#include "Utilities.h"
+//#include "Arabic.h"
 
 #define QURAN_PATH ".\\Files\\quran-uthmani.txt"
 
+namespace Arabic
+{
+
+	class Character
+	{
+		public:
+			enum class Type
+			{
+				UNKNOWN = 0,
+				LETTER,
+				DIACRITIC,
+				SYMBOL
+			};
+
+		protected:
+			int ascii = 0;
+			Type type = Type::UNKNOWN;
+
+		public:
+
+			int GetASCII();
+			Type GetType();
+
+			virtual void Reset(int) = 0;
+			virtual void SetASCII(int) = 0;
+			virtual void SetType(Type) = 0;
+			virtual std::string ToString() = 0;
+	};
+
+	class Letter : public Character
+	{
+		public:
+			enum class Value
+			{
+				NONE,
+				ALIF,
+				BA,
+				TA,
+				THA,
+				JEEM,
+				HHA,
+				KHA,
+				DAL,
+				DHAL,
+				RA,
+				ZAYN,
+				SEEN,
+				SHEEN,
+				SAD,
+				DAD,
+				TTA,
+				THHA,
+				AYN,
+				GHAYN,
+				FA,
+				QAF,
+				KAF,
+				LAM,
+				MEEM,
+				NOON,
+				HA,
+				WAW,
+				YA,
+				HAMZAH
+			};
+			enum class Modification
+			{
+				NONE = 0,
+				MADDAH,
+				HAMZAH_ABOVE,
+				HAMZAH_BELOW,
+				HAMZAH_MIDDLE,
+				MARBUTAH,
+				MAQSURAH,
+				KHANJARIYAH,
+				WASLAH
+			};
+			enum class Position
+			{
+				NONE = 0,
+				ISOLATED,
+				BEGINNING,
+				MIDDLE,
+				END
+			};
+
+		private:
+			Value value = Value::NONE;
+			Modification modification = Modification::NONE;
+			Position position = Position::NONE;
+
+		public:
+			Letter();
+			Letter(int, Position = Position::NONE);
+			Letter(Value, Position = Position::NONE);
+			Letter(int, Modification, Position = Position::NONE);
+			Letter(Value, Modification, Position = Position::NONE);
+
+			int GetAbjadValue();
+			int GetSequentialValue();
+
+			void Reset();
+
+			void SetASCII(int);
+			void SetType(Type);
+
+			Modification GetModification();
+			void SetModification(Modification);
+
+			Position GetPosition();
+			void SetPosition(Position);
+
+			std::string SoundOf();
+
+			std::string ToString();
+	};
+
+	class Diacritic : public Character
+	{
+		public:
+			enum class Value
+			{
+				NONE = 0,
+				TATWEEL,
+				TANWEEN_FATHAH,
+				TANWEEN_DAMMAH,
+				TANWEEN_KASRAH,
+				FATHAH,
+				DAMMAH,
+				KASRAH,
+				SHADDAH,
+				SUKOON,
+				MADDAH,
+				HAMZAH, // when used as a letter
+				ALIF_KHANJARIYAH,
+				SUKOON_WASLAH,
+				SUKOON_ALIF,	// https://symbols.me/tag/sukoon/
+				SEEN_SUBSTITUTION,
+				SMALL_WAW,
+				SMALL_YA,
+				SMALL_YA_ABOVE,
+				DOUBLE_NOON,
+				GRAND_IMAALAH,
+				ISHMAAM,
+				TASHEEL,
+				// Modified characters
+				HAMZAH_ABOVE,
+				HAMZAH_BELOW,
+				HAMZAH_MIDDLE,
+				ALIF_WASLAH,
+				ALIF_MAQSURAH,
+				MARBUTAH,
+			};
+
+		private:
+			Value value;
+
+		public:
+			Diacritic();
+			Diacritic(int);
+			Diacritic(Value);
+
+			void Reset();
+
+			void SetASCII(int);
+			void SetType(Type);
+
+			std::string ToString();
+
+	};
+
+	// http://www.islamguiden.com/arabic/esymbol1.html
+	class Symbol : public Character
+	{
+		public:
+			enum class Value
+			{
+				NONE = 0,
+				COMPULSORY_STOP,
+				PROHIBITED_STOP,
+				GOOD_STOP,
+				SUFFICIENT_STOP,
+				EQUALITY_STOP,
+				PRECAUTIONARY_STOP,
+				BRIEF_STOP,
+				SAJDAH,
+				MEEM_IQLAB_ABOVE,
+				MEEM_IQLAB_BELOW,
+				QUARTER_OF_HALF
+			};
+
+		private:
+			Value value;
+
+		public:
+			Symbol();
+			Symbol(int);
+			Symbol(Value);
+
+			void SetASCII(int);
+			void SetType(Type);
+
+			void Reset();
+
+			std::string ToString();
+	};
+
+}
+
+using namespace Arabic;
+
 namespace Quran
+{
+	std::map<std::string, int> settings;
+
+	struct TextualPosition
+	{
+		int chapterNum;
+		int verseNum;
+		int wordNum;
+		int letterNum;
+		int pageNum;
+		int stationNum;
+		int partNum;
+		int halfNum;
+		int quarterNum;
+		int bowingNum;
+		int basmallahNum;
+		int independentWawNum;
+		int hamzahLetterNum;
+		int hamzahAlifLamNum;
+
+		TextualPosition();
+		TextualPosition(int, int, int, int, int, int, int, int, int, int, int, int, int);
+	};
+	enum class RevelationPeriod
+	{
+		UNKNOWN = 0,
+		MAKKAN = 1,
+		MADINAN = 2,
+		LATE_MAKKAN = -1,
+	};
+	struct Grammar
+	{
+		enum class Type
+		{
+			NONE = 0,
+			NOUN,
+			VERB,
+			ADJECTIVE,
+			ADVERB,
+			PRONOUN
+		};
+		enum class Tense
+		{
+			NONE = 0,
+			ROOT,
+			PAST,
+			PRESENT,
+			FUTURE,
+			COMMAND
+		};
+		enum class Quantity
+		{
+			NONE = 0,
+			SINGULAR,
+			DUAL,
+			PLURAL
+		};
+		enum class Gender
+		{
+			NONE = 0,
+			MASCULINE,
+			FEMININE
+		};
+		enum class Person
+		{
+			NONE = 0,
+			FIRST,
+			SECOND,
+			THRID,
+			FOURTH
+		};
+	};
+	struct Attributes
+	{
+		TextualPosition textualPosition;
+		Grammar grammar;
+		RevelationPeriod revelationPeriod;
+		Character::Type characterType;
+		bool isBasmallah;
+		bool isIndependentWaw;
+		bool isHamzahBetweenLamAlif;
+	};
+
+	class CQuranCharacter;
+	class CQuranWord;
+	class CQuranVerse;
+	class CQuranChapter;
+
+	class CQuranNode
+	{
+		public:
+			enum class Type
+			{
+				CHARACTER = 1,
+				WORD,
+				VERSE,
+				CHAPTER
+			};
+
+		protected:
+			Type type;
+			Attributes attributes;
+
+			CQuranCharacter* nextCharacter;
+			CQuranCharacter* previousCharacter;
+			CQuranWord* nextWord;
+			CQuranWord* currentWord;
+			CQuranWord* previousWord;
+			CQuranVerse* nextVerse;
+			CQuranVerse* currentVerse;
+			CQuranVerse* previousVerse;
+			CQuranChapter* nextChapter;
+			CQuranChapter* currentChapter;
+			CQuranChapter* previousChapter;
+
+		public:
+			Type GetType();
+
+			Attributes GetAttributes();
+			void SetAttributes(Attributes);
+
+			CQuranCharacter* GetNextCharacter();
+			void SetNextCharacter(CQuranCharacter*, bool = false);
+			CQuranCharacter* GetPreviousCharacter();
+			void SetPreviousCharacter(CQuranCharacter*, bool = false);
+			CQuranWord* GetNextWord();
+			void SetNextWord(CQuranWord*, bool = false);
+			CQuranWord* GetPreviousWord();
+			void SetPreviousWord(CQuranWord*, bool = false);
+			CQuranVerse* GetNextVerse();
+			void SetNextVerse(CQuranVerse*, bool = false);
+			CQuranVerse* GetPreviousVerse();
+			void SetPreviousVerse(CQuranVerse*, bool = false);
+			CQuranChapter* GetNextChapter();
+			void SetNextChapter(CQuranChapter*, bool = false);
+			CQuranChapter* GetPreviousChapter();
+			void SetPreviousChapter(CQuranChapter*, bool = false);
+
+			CQuranWord* GetCurrenttWord();
+			CQuranVerse* GetCurrenttVerse();
+			CQuranChapter* GetCurrenttChapter();
+
+			CQuranCharacter* GetSymbolAt(int);
+			CQuranCharacter* GetDiacriticAt(int);
+			CQuranCharacter* GetLetterAt(int);
+			CQuranCharacter* GetCharacterAt(int);
+			CQuranWord* GetWordAt(int, bool);
+			CQuranVerse* GetBasmallahAt(int);
+			CQuranVerse* GetVerseAt(int);
+			CQuranChapter* GetMakkanChapterAt(int);
+			CQuranChapter* GetMadinanChapterAt(int);
+			CQuranChapter* GetChapterAt(int);
+
+			CQuranCharacter* GetNextLetter(bool, bool, bool);
+			CQuranCharacter* GetPreviousLetter(bool, bool, bool);
+			CQuranCharacter* GetNextDiacritic(bool, bool, bool);
+			CQuranCharacter* GetPreviousDiacritic(bool, bool, bool);
+			CQuranCharacter* GetNextSymbol();
+			CQuranCharacter* GetPreviousSymbol();
+
+			CQuranWord* GetNextWawWord();
+			CQuranWord* GetPreviousWawWord();
+
+			CQuranVerse* GetNextBasmallah();
+			CQuranVerse* GetPreviousBasmallah();
+			CQuranVerse* GetNextPage();
+			CQuranVerse* GetPreviousPage();
+			CQuranVerse* GetNextStation();
+			CQuranVerse* GetPreviousStation();
+			CQuranVerse* GetNextPart();
+			CQuranVerse* GetPreviousPart();
+			CQuranVerse* GetNextHalf();
+			CQuranVerse* GetPreviousHalf();
+			CQuranVerse* GetNextQuarter();
+			CQuranVerse* GetPreviousQuarter();
+			CQuranVerse* GetNextBowing();
+			CQuranVerse* GetPreviousBowing();
+
+			CQuranChapter* GetNextMakkanChapter();
+			CQuranChapter* GetPreviousMakkanChapter();
+			CQuranChapter* GetNextMadinanChapter();
+			CQuranChapter* GetPreviousMadinanChapter();
+
+			virtual std::string ToString() = 0;
+			virtual std::string SoundOf() = 0;
+	};
+
+	class CQuranCharacter : public CQuranNode
+	{
+		private:
+			Character* character;
+
+		public:
+			CQuranCharacter();
+			CQuranCharacter(Character*);
+			CQuranCharacter(Character*, Attributes);
+			~CQuranCharacter();
+
+			std::string ToString();
+			std::string SoundOf();
+	};
+	
+	class CQuranWord : public CQuranNode
+	{
+		private:
+			std::vector<CQuranCharacter*> word;
+
+		public:
+			CQuranWord();
+			CQuranWord(std::vector<CQuranCharacter*>);
+			CQuranWord(std::vector<CQuranCharacter*>, Attributes);
+			~CQuranWord();
+
+			std::vector<CQuranCharacter*> GetWord();
+
+			std::string ToString();
+			std::string SoundOf();
+	};
+	
+	class CQuranVerse : public CQuranNode
+	{
+		private:
+			std::vector<CQuranWord*> verse;
+
+		public:
+			CQuranVerse();
+			CQuranVerse(std::vector<CQuranWord*>);
+			CQuranVerse(std::vector<CQuranWord*>, Attributes);
+			~CQuranVerse();
+
+			std::vector<CQuranWord*> GetVerse();
+
+			std::string ToString();
+			std::string SoundOf();
+	};
+	
+	class CQuranChapter : public CQuranNode
+	{
+		private:
+			std::vector<CQuranVerse*> chapter;
+
+		public:
+			CQuranChapter();
+			CQuranChapter(std::vector<CQuranVerse*>);
+			CQuranChapter(std::vector<CQuranVerse*>, Attributes);
+			~CQuranChapter();
+
+			std::vector<CQuranVerse*> GetChapter();
+
+			std::string ToString();
+			std::string SoundOf();
+	};
+
+	class CQuranTree
+	{
+		private:
+			std::vector<CQuranChapter*> chapters;
+
+		public:
+			CQuranTree();
+			CQuranTree(std::vector<CQuranChapter*>);
+			CQuranTree(std::vector<CQuranChapter*>, Attributes);
+			~CQuranTree();
+
+			std::vector<CQuranChapter*> GetQuran();
+	};
+}
+/*
+namespace Quran_old
 {
 	const int NumChapters				= 114;
 	const int NumVerses					= 6236;
@@ -79,7 +564,7 @@ namespace Quran
 	class Verse;
 	class Chapter;
 
-	class Letter : public Arabic::Letter
+	class Letter : public Arabic_old::Letter
 	{
 		private:
 			std::vector<Symbol> symbols;
@@ -90,7 +575,7 @@ namespace Quran
 			friend class Word;
 
 		public:
-			Letter(Arabic::Character, Arabic::Diacritic, std::vector<Arabic::Diacritic>, std::vector<Symbol>, Arabic::Position = Arabic::Position::NONE);
+			Letter(Arabic_old::Character, Arabic_old::Diacritic, std::vector<Arabic_old::Diacritic>, std::vector<Symbol>, Arabic_old::Position = Arabic_old::Position::NONE);
 			~Letter();
 
 			void Reset();
@@ -114,8 +599,8 @@ namespace Quran
 			bool IsArabic(bool, bool, bool, bool);
 	};
 	
-	// Note that GetLetters() returns Arabic::Letters, not Quran::Letters, while the [] operator returns a Quran::Letter and not an Arabic::Letter
-	class Word : public Arabic::Word
+	// Note that GetLetters() returns Arabic_old::Letters, not Quran::Letters, while the [] operator returns a Quran::Letter and not an Arabic_old::Letter
+	class Word : public Arabic_old::Word
 	{
 		private:
 			TextualPosition textualPosition;
@@ -127,7 +612,7 @@ namespace Quran
 		public:
 			TextualPosition GetTextualPosition();
 
-			Arabic::Letter& operator [](int);
+			Arabic_old::Letter& operator [](int);
 	};
 
 	extern std::map<Symbol, int> ASCIIBySymbol;
@@ -506,12 +991,18 @@ namespace Quran
 	bool is_meccan(RevelationPeriod);
 	bool is_medinan(RevelationPeriod);
 
+	bool is_character(int);
+	bool is_character(int, int, int);
+	bool is_character(int, int, int, int, int, int, int);
+	bool is_character(std::string, std::string = "");
+
 	bool is_symbol(int);
 	bool is_symbol(std::string);
 
 	bool is_arabic(int, bool = true);
 	bool is_arabic(std::string, bool = true);
 
+	std::string to_string(int);
 	std::string to_string(Symbol);
 	std::string to_string(RevelationPeriod);
 	std::string to_string(Chapter::Name);
@@ -522,6 +1013,7 @@ namespace Quran
 	std::string to_hex(Symbol);
 	std::string to_hex(Letter);
 
+	std::string sound_of(int);
 	std::string sound_of(Letter, bool = true);
 	std::string sound_of(std::vector<Letter>, bool = true);
 	std::string sound_of(Word, bool = true);
@@ -546,3 +1038,4 @@ namespace Quran
 
 	bool validate_file(std::string);
 }
+*/

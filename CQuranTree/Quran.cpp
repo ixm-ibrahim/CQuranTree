@@ -1,6 +1,6 @@
 #include "Quran.h"
 
-using namespace Quran;
+using namespace Quran_old;
 
 
 
@@ -11,7 +11,7 @@ using namespace Quran;
 /// <summary>
 /// Dictionary for looking up ASCII values by their respective Symbol symbols
 /// </summary>
-std::map<Symbol, int> Quran::ASCIIBySymbol
+std::map<Symbol, int> Quran_old::ASCIIBySymbol
 {
 	{Symbol::COMPULSORY_STOP,		1752},
 	{Symbol::PROHIBITED_STOP,		1753},
@@ -28,7 +28,7 @@ std::map<Symbol, int> Quran::ASCIIBySymbol
 /// <summary>
 /// Dictionary for looking up Symbol symbols by their ASCII values
 /// </summary>
-std::map<int, Symbol> Quran::SymbolByASCII
+std::map<int, Symbol> Quran_old::SymbolByASCII
 {
 	{1752,	Symbol::COMPULSORY_STOP},
 	{1753,	Symbol::PROHIBITED_STOP},
@@ -43,22 +43,42 @@ std::map<int, Symbol> Quran::SymbolByASCII
 	{1758,	Symbol::QUARTER_OF_HALF},
 };
 
-bool Quran::is_meccan(RevelationPeriod r)
+bool Quran_old::is_meccan(RevelationPeriod r)
 {
 	return r == RevelationPeriod::MECCAN || r == RevelationPeriod::LATE_MECCAN;
 }
-bool Quran::is_medinan(RevelationPeriod r)
+bool Quran_old::is_medinan(RevelationPeriod r)
 {
 	return r == RevelationPeriod::MEDINAN;
 }
 
-bool Quran::is_symbol(int ascii)
+bool Quran_old::is_character(int ascii)
+{
+	return Arabic_old::is_character(ascii);
+}
+bool Quran_old::is_character(int ascii, int previous, int previous2)
+{
+	return Arabic_old::is_character(ascii) || (ascii == 1620 && (previous == 1618 || (previous == 1600 && previous2 == 1618)));
+}
+bool Quran_old::is_character(int ascii, int previous, int previous2, int previous3, int previous4, int after, int after2)
+{
+	bool alifAfter = after == 1575 || (!Arabic_old::is_character(after) && after2 == 1575);
+	bool lamBefore = previous == 1604 || (previous == 1600 && previous2 == 1604) || (previous == 1600 && !Arabic_old::is_character(previous2) && previous3 == 1604) || (!Arabic_old::is_character(previous) && !Arabic_old::is_character(previous2) && !Arabic_old::is_character(previous3) && previous4 == 1604);
+	
+	return Arabic_old::is_character(ascii) || (ascii == 1620 && alifAfter && lamBefore);
+}
+bool Quran_old::is_character(std::string hex, std::string previous)
+{
+	return is_character(Arabic_old::to_ascii(hex), Arabic_old::to_ascii(previous), 0);
+}
+
+bool Quran_old::is_symbol(int ascii)
 {
 	return SymbolByASCII.count(ascii) == 1;
 }
-bool Quran::is_symbol(std::string hex)
+bool Quran_old::is_symbol(std::string hex)
 {
-	return SymbolByASCII.count(Arabic::to_ascii(hex)) == 1;
+	return SymbolByASCII.count(Arabic_old::to_ascii(hex)) == 1;
 }
 
 /// <summary>
@@ -66,21 +86,32 @@ bool Quran::is_symbol(std::string hex)
 /// </summary>
 /// <param name="ascii:">ASCII value to analyze</param>
 /// <returns>boolean representing if the ASCII value is a valid arabic character, diacritic, or symbols symbols</returns>
-bool Quran::is_arabic(int ascii, bool checkSpace)
+bool Quran_old::is_arabic(int ascii, bool checkSpace)
 {
-	return Arabic::is_arabic(ascii, checkSpace) || is_symbol(ascii);
+	return Arabic_old::is_arabic(ascii, checkSpace) || is_symbol(ascii);
 }
 /// <summary>
 /// Returns true if the hexadecimal value is a valid arabic character, diacritic, or symbols symbols, and false otherwise
 /// </summary>
 /// <param name="hex:">hexadecimal value to analyze</param>
 /// <returns>boolean representing if the hexadecimal value is a valid arabic character, diacritic, or symbols symbols</returns>
-bool Quran::is_arabic(std::string hex, bool checkSpace)
+bool Quran_old::is_arabic(std::string hex, bool checkSpace)
 {
-	return Arabic::is_arabic(hex, checkSpace) || is_symbol(hex);
+	return Arabic_old::is_arabic(hex, checkSpace) || is_symbol(hex);
 }
 
-std::string Quran::to_string(Symbol t)
+std::string Quran_old::to_string(int ascii)
+{
+	if (SymbolByASCII.count(ascii) == 1)
+		return to_string(SymbolByASCII[ascii]);
+	else if (Arabic_old::DiacriticByASCII.count(ascii) == 1)
+		return to_string(Arabic_old::DiacriticByASCII[ascii]);
+	else if (Arabic_old::LetterByASCII.count(ascii) == 1)
+		return to_string(Arabic_old::LetterByASCII[ascii].GetCharacter());
+
+	return "NONE";
+}
+std::string Quran_old::to_string(Symbol t)
 {
 	switch (t)
 	{
@@ -110,7 +141,7 @@ std::string Quran::to_string(Symbol t)
 
 	return "NONE";
 }
-std::string Quran::to_string(RevelationPeriod r)
+std::string Quran_old::to_string(RevelationPeriod r)
 {
 	switch (r)
 	{
@@ -124,7 +155,7 @@ std::string Quran::to_string(RevelationPeriod r)
 
 	return "UNKNOWN";
 }
-std::string Quran::to_string(Chapter::Name n)
+std::string Quran_old::to_string(Chapter::Name n)
 {
 	switch (n)
 	{
@@ -361,29 +392,40 @@ std::string Quran::to_string(Chapter::Name n)
 	return "UNKNOWN_ERROR";
 }
 
-int Quran::to_ascii(Symbol t)
+int Quran_old::to_ascii(Symbol t)
 {
 	return ASCIIBySymbol[t];
 }
-int Quran::to_ascii(Letter l)
+int Quran_old::to_ascii(Letter l)
 {
-	return Arabic::ASCIIByLetter[Arabic::Letter(l.GetCharacter(), l.GetModification())];
+	return Arabic_old::ASCIIByLetter[Arabic_old::Letter(l.GetCharacter(), l.GetModification())];
 }
 
-std::string Quran::to_hex(Symbol t)
+std::string Quran_old::to_hex(Symbol t)
 {
-	return Arabic::to_hex(to_ascii(t));
+	return Arabic_old::to_hex(to_ascii(t));
 }
-std::string Quran::to_hex(Letter l)
+std::string Quran_old::to_hex(Letter l)
 {
-	return Arabic::to_hex(to_ascii(l));
+	return Arabic_old::to_hex(to_ascii(l));
 }
 
-std::string Quran::sound_of(Letter l, bool includeDiacritics)
+std::string Quran_old::sound_of(int ascii)
 {
-	return Arabic::sound_of(l.GetCharacter(), l.GetModification(), l.GetDiacritics(), l.GetPosition(), includeDiacritics);
+	if (SymbolByASCII.count(ascii) == 1)
+		return to_string(SymbolByASCII[ascii]);
+	else if (Arabic_old::DiacriticByASCII.count(ascii) == 1)
+		return to_string(Arabic_old::DiacriticByASCII[ascii]);
+	else if (Arabic_old::LetterByASCII.count(ascii) == 1)
+		return Arabic_old::LetterByASCII[ascii].to_string();
+
+	return "";
 }
-std::string Quran::sound_of(std::vector<Letter> ls, bool includeDiacritics)
+std::string Quran_old::sound_of(Letter l, bool includeDiacritics)
+{
+	return Arabic_old::sound_of(l.GetCharacter(), l.GetModification(), l.GetDiacritics(), l.GetPosition(), includeDiacritics);
+}
+std::string Quran_old::sound_of(std::vector<Letter> ls, bool includeDiacritics)
 {
 	std::string sound = "";
 
@@ -392,7 +434,7 @@ std::string Quran::sound_of(std::vector<Letter> ls, bool includeDiacritics)
 
 	return sound;
 }
-std::string Quran::sound_of(Word w, bool includeDiacritics)
+std::string Quran_old::sound_of(Word w, bool includeDiacritics)
 {
 	std::string sound = "";
 
@@ -401,7 +443,7 @@ std::string Quran::sound_of(Word w, bool includeDiacritics)
 
 	return sound;
 }
-std::string Quran::sound_of(std::vector<Word> ws, bool includeDiacritics)
+std::string Quran_old::sound_of(std::vector<Word> ws, bool includeDiacritics)
 {
 	std::string sound = sound_of(ws[0], includeDiacritics);
 
@@ -410,16 +452,16 @@ std::string Quran::sound_of(std::vector<Word> ws, bool includeDiacritics)
 
 	return sound;
 }
-std::string Quran::sound_of(Verse v, bool includeDiacritics)
+std::string Quran_old::sound_of(Verse v, bool includeDiacritics)
 {
 	return sound_of(v.GetWords(), includeDiacritics);
 }
 
-int Quran::abjad_value(Letter l)
+int Quran_old::abjad_value(Letter l)
 {
 	return abjad_value(l.GetCharacter());
 }
-int Quran::abjad_value(std::vector<Letter> ls)
+int Quran_old::abjad_value(std::vector<Letter> ls)
 {
 	int sum = 0;
 
@@ -428,7 +470,7 @@ int Quran::abjad_value(std::vector<Letter> ls)
 
 	return sum;
 }
-int Quran::abjad_value(Word w)
+int Quran_old::abjad_value(Word w)
 {
 	int sum = 0;
 
@@ -437,7 +479,7 @@ int Quran::abjad_value(Word w)
 
 	return sum;
 }
-int Quran::abjad_value(std::vector<Word> ws)
+int Quran_old::abjad_value(std::vector<Word> ws)
 {
 	int sum = 0;
 
@@ -446,11 +488,11 @@ int Quran::abjad_value(std::vector<Word> ws)
 
 	return sum;
 }
-int Quran::abjad_value(Verse v)
+int Quran_old::abjad_value(Verse v)
 {
 	return abjad_value(v.GetWords());
 }
-int Quran::abjad_value(std::vector<Verse> vs)
+int Quran_old::abjad_value(std::vector<Verse> vs)
 {
 	int sum = 0;
 
@@ -459,16 +501,16 @@ int Quran::abjad_value(std::vector<Verse> vs)
 
 	return sum;
 }
-int Quran::abjad_value(Chapter c)
+int Quran_old::abjad_value(Chapter c)
 {
 	return abjad_value(c.GetVerses());
 }
 
-int Quran::sequential_value(Letter l)
+int Quran_old::sequential_value(Letter l)
 {
 	return sequential_value(l.GetCharacter());
 }
-int Quran::sequential_value(std::vector<Letter> ls)
+int Quran_old::sequential_value(std::vector<Letter> ls)
 {
 	int sum = 0;
 
@@ -477,7 +519,7 @@ int Quran::sequential_value(std::vector<Letter> ls)
 
 	return sum;
 }
-int Quran::sequential_value(Word w)
+int Quran_old::sequential_value(Word w)
 {
 	int sum = 0;
 
@@ -486,7 +528,7 @@ int Quran::sequential_value(Word w)
 
 	return sum;
 }
-int Quran::sequential_value(std::vector<Word> ws)
+int Quran_old::sequential_value(std::vector<Word> ws)
 {
 	int sum = 0;
 
@@ -495,11 +537,11 @@ int Quran::sequential_value(std::vector<Word> ws)
 
 	return sum;
 }
-int Quran::sequential_value(Verse v)
+int Quran_old::sequential_value(Verse v)
 {
 	return sequential_value(v.GetWords());
 }
-int Quran::sequential_value(std::vector<Verse> vs)
+int Quran_old::sequential_value(std::vector<Verse> vs)
 {
 	int sum = 0;
 
@@ -508,22 +550,27 @@ int Quran::sequential_value(std::vector<Verse> vs)
 
 	return sum;
 }
-int Quran::sequential_value(Chapter c)
+int Quran_old::sequential_value(Chapter c)
 {
 	return sequential_value(c.GetVerses());
 }
 
 //TODO: implement logger for QuranTree
 //TODO: implement parallel programming
-bool Quran::validate_file(std::string quranPath)
+bool Quran_old::validate_file(std::string quranPath)
 {
 	std::wifstream quranFile(quranPath);
 	std::wstring line;
 	int lines = 0;
+	int wordCount = 0;
 	int letterCount = 0;
+	int letterWordCount = 0;
 
 	//quranFile.imbue(std::locale("ar_SA.UTF-8"));
 	quranFile.imbue(std::locale("en_US.UTF-8"));
+
+	//std::vector<Word> words(6236);
+	std::vector<Word> words;
 
 	while (std::getline(quranFile, line))
 	{
@@ -532,12 +579,29 @@ bool Quran::validate_file(std::string quranPath)
 		
 		lines++;
 
+		//wordCount++;
+
+		// 188 (2:181) counts as 2
+		// 1166 (8:6) counts as 2
+		// 1744 (13:37) counts as 2
+		//bool print = lines % 100 == 0;
+		//bool print = lines >= 2100 && lines <= 2200;
+		bool print = false;
+
+		Word word;
+
 		int n = 0;
 		for (unsigned int i = 0; i < line.size(); i++)
-		{
+		{//
 			std::cout << "\r" << lines << "/" << NumVerses;
 			int ascii = int(line[i]);
-			//std::cout << Arabic::to_string(ascii) << "\t";
+			int previous = (i == 0) ? 0 : int(line[i-1]);
+			int previous2 = (i <= 1) ? 0 : int(line[i-2]);
+			int previous3 = (i <= 2) ? 0 : int(line[i-3]);
+			int previous4 = (i <= 3) ? 0 : int(line[i-4]);
+			int after = (i >= line.size() - 1) ? 0 : int(line[i+1]);
+			int after2 = (i >= line.size() - 2) ? 0 : int(line[i+2]);
+			//std::cout << Arabic_old::to_string(ascii) << "\t";
 
 			// igore BOM (Byte Order Mark)
 			if (ascii == 65279)
@@ -548,16 +612,40 @@ bool Quran::validate_file(std::string quranPath)
 				std::cout << std::endl << "Unknown character " << ascii << " at (" << lines << ", " << (i+2) << ")" << std::endl;
 				return false;
 			}
-
-			if (Arabic::is_character(ascii) || (lines == 79 && n == 36))
+			//if (Quran_old::is_character(ascii, previous, previous2))
+			//else if (Quran_old::is_character(ascii, previous, previous2, previous3, previous4, after, after2) || (lines == 79 && n == 36))
+			else if (Quran_old::is_character(ascii, 0, 0, 0, 0, 0, 0) || (lines == 79 && n == 36))
 			{
+				word.AddLetter(Arabic_old::Letter((lines == 79 && n == 36) ? 1575 : ascii));
+				
 				letterCount++;
+				
 				n++;
 			}
+			//else if (ascii == ' ' && (!Quran_old::is_symbol(previous) || previous == ASCIIBySymbol[Symbol::MEEM_IQLAB_ABOVE] || previous == ASCIIBySymbol[Symbol::MEEM_IQLAB_BELOW]) && (i + 1 != line.size() - 1))
+			
+			if ((i == line.size() - 1 && word.Count() != 0) || (ascii == ' ' && (!Quran_old::is_symbol(previous) || previous == ASCIIBySymbol[Symbol::MEEM_IQLAB_ABOVE] || previous == ASCIIBySymbol[Symbol::MEEM_IQLAB_BELOW]) && (i + 1 != line.size() - 1)))
+			{
+				if (print) std::cout << std::endl;
+
+				wordCount++;
+				
+				letterWordCount += word.CharacterCount();
+				words.push_back(word);
+				word.Reset();
+			}
+			
+			if (print) if (Quran_old::is_symbol(ascii)) std::cout << to_string(ascii) << std::endl; else std::cout << lines << "\t" << wordCount << "\t" << letterCount << "\t" << n << "\t" << ascii << "\t" << sound_of(ascii) << std::endl;
 		}
+
+		if (print) std::cout << "------------------------------------------" << std::endl;
+
+		if (lines == 16000)
+			break;
 	}
 
 	std::cout << std::endl;
+	std::cout << "Word Count: " << wordCount << std::endl;
 	std::cout << "Letter Count: " << letterCount << std::endl;
 
 	return lines == NumVerses;
@@ -615,7 +703,7 @@ TextualPosition::TextualPosition(int chapterNum, int verseNum, int verseNumBasma
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Letter::Letter(Arabic::Character character, Arabic::Diacritic modification, std::vector<Arabic::Diacritic> diacritics, std::vector<Symbol> symbol, Arabic::Position position) : Arabic::Letter(character, modification, diacritics, position)
+Letter::Letter(Arabic_old::Character character, Arabic_old::Diacritic modification, std::vector<Arabic_old::Diacritic> diacritics, std::vector<Symbol> symbol, Arabic_old::Position position) : Arabic_old::Letter(character, modification, diacritics, position)
 {
 	SetSymbols(symbol);
 }
@@ -626,8 +714,8 @@ Letter::~Letter()
 
 void Letter::Reset()
 {
-	this->character = Arabic::Character::NONE;
-	this->modification = Arabic::Diacritic::NONE;
+	this->character = Arabic_old::Character::NONE;
+	this->modification = Arabic_old::Diacritic::NONE;
 	this->position = position;
 	diacritics.clear();
 	symbols.clear();
@@ -668,7 +756,7 @@ void Letter::AddSymbol(std::string hex)
 {
 	if (is_symbol(hex))
 	{
-		Symbol t = SymbolByASCII[Arabic::to_ascii(hex)];
+		Symbol t = SymbolByASCII[Arabic_old::to_ascii(hex)];
 
 		if (t != Symbol::NONE)
 			this->symbols.push_back(t);
@@ -691,17 +779,17 @@ std::vector<int> Letter::GetASCII() const
 {
 	std::vector<int> ret;
 
-	if (this->character != Arabic::Character::NONE)
+	if (this->character != Arabic_old::Character::NONE)
 		ret.push_back(to_ascii(this->character));
 
 	int ascii = to_ascii(this->modification);
-	if (Arabic::is_diacritic(ascii))
+	if (Arabic_old::is_diacritic(ascii))
 		ret.push_back(ascii);
 
 	for (auto& d : this->diacritics)
 	{
 		ascii = to_ascii(d);
-		if (Arabic::is_diacritic(ascii))
+		if (Arabic_old::is_diacritic(ascii))
 			ret.push_back(ascii);
 	}
 
@@ -718,17 +806,17 @@ std::vector<std::string> Letter::GetHex() const
 {
 	std::vector<std::string> ret;
 
-	if (this->character != Arabic::Character::NONE)
+	if (this->character != Arabic_old::Character::NONE)
 		ret.push_back(to_hex(this->character));
 
 	std::string hex = to_hex(this->modification);
-	if (Arabic::is_diacritic(hex))
+	if (Arabic_old::is_diacritic(hex))
 		ret.push_back(hex);
 
 	for (auto& d : this->diacritics)
 	{
 		hex = to_hex(d);
-		if (Arabic::is_diacritic(hex))
+		if (Arabic_old::is_diacritic(hex))
 			ret.push_back(hex);
 	}
 
@@ -749,11 +837,11 @@ int Letter::ASCIICount() const
 
 bool Letter::IsArabic(bool checkCharacter, bool checkDiacritic, bool checkSymbol, bool checkSpace)
 {
-	if (checkCharacter && (this->character == Arabic::Character::NONE || (!checkSpace && this->character == Arabic::Character::SPACE)))
+	if (checkCharacter && (this->character == Arabic_old::Character::NONE || (!checkSpace && this->character == Arabic_old::Character::SPACE)))
 		return false;
 	if (checkDiacritic)
 		for (auto& d : this->diacritics)
-			if (!Arabic::is_diacritic(to_ascii(d)))
+			if (!Arabic_old::is_diacritic(to_ascii(d)))
 				return false;
 	if (checkSymbol)
 		for (auto& t : this->symbols)
@@ -778,7 +866,7 @@ TextualPosition Word::GetTextualPosition()
 	return this->textualPosition;
 }
 
-Arabic::Letter& Word::operator [](int index)
+Arabic_old::Letter& Word::operator [](int index)
 {
 	return this->letters[index];
 }
@@ -840,7 +928,7 @@ std::vector<std::string> Verse::GetHex()
 
 std::string Verse::GetChapterName()
 {
-	return Quran::to_string((Chapter::Name) this->attributes.chapterNum);
+	return Quran_old::to_string((Chapter::Name) this->attributes.chapterNum);
 }
 TextualPosition Verse::GetTextualPosition()
 {
@@ -924,7 +1012,7 @@ int Verse::WordCount(bool includeWaw) const
 	int sum = 0;
 
 	for (auto& w : this->words)
-		if (!(w.LetterCount() == 1 && w.GetLetters()[0].GetCharacter() == Arabic::Character::WAW))
+		if (!(w.LetterCount() == 1 && w.GetLetters()[0].GetCharacter() == Arabic_old::Character::WAW))
 			sum++;
 
 	return sum;

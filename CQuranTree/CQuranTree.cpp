@@ -6,7 +6,7 @@
 #include <windows.h>
 #include "Quran.h"
 
-using namespace Arabic;
+using namespace Arabic_old;
 
 int main()
 {
@@ -65,7 +65,7 @@ int main()
               << sound_of(test2) << std::endl
               << sound_of(test2, false) << std::endl;
 
-    std::cout << Quran::validate_file(".\\Files\\quran-simple.txt") << std::endl;
+    std::cout << Quran_old::validate_file(".\\Files\\quran-uthmani.txt") << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

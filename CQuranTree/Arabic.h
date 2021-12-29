@@ -6,7 +6,7 @@
 #include <vector>
 #include "Utilities.h"
 
-namespace Arabic
+namespace Arabic_old
 {
 	enum class Character
 	{
@@ -63,34 +63,35 @@ namespace Arabic
 	enum class Diacritic
 	{
 		NONE = 0,
-		HAMZAH, // when used as a letter
-		HAMZAH_ABOVE,
-		HAMZAH_BELOW,
-		HAMZAH_MIDDLE,
+		TATWEEL,
+		TANWEEN_FATHAH,
+		TANWEEN_DAMMAH,
+		TANWEEN_KASRAH,
 		FATHAH,
-		KASRAH,
 		DAMMAH,
+		KASRAH,
+		SHADDAH,
 		SUKOON,
+		MADDAH,
+		HAMZAH, // when used as a letter
+		ALIF_KHANJARIYAH,
 		SUKOON_WASLAH,
 		SUKOON_ALIF,	// https://symbols.me/tag/sukoon/
-		SHADDAH,
-		MADDAH,
-		TANWEEN_FATHAH,
-		TANWEEN_KASRAH,
-		TANWEEN_DAMMAH,
-		ALIF_WASLAH,
-		ALIF_KHANJARIYAH,
-		ALIF_MAQSURAH,
+		SEEN_SUBSTITUTION,
 		SMALL_WAW,
 		SMALL_YA,
 		SMALL_YA_ABOVE,
-		MARBUTAH,
+		DOUBLE_NOON,
 		GRAND_IMAALAH,
 		ISHMAAM,
-		DOUBLE_NOON,
 		TASHEEL,
-		SEEN_SUBSTITUTION,
-		TATWEEL
+		// Modified characters
+		HAMZAH_ABOVE,
+		HAMZAH_BELOW,
+		HAMZAH_MIDDLE,
+		ALIF_WASLAH,
+		ALIF_MAQSURAH,
+		MARBUTAH,
 	};
 
 	class Letter
