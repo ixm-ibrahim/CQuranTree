@@ -2,228 +2,33 @@
 
 #include <fstream>
 #include <iostream>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
 #include "Utilities.h"
-//#include "Arabic.h"
+#include "Arabic.h"
 
 #define QURAN_PATH ".\\Files\\quran-uthmani.txt"
-
-namespace Arabic
-{
-
-	class Character
-	{
-		public:
-			enum class Type
-			{
-				UNKNOWN = 0,
-				LETTER,
-				DIACRITIC,
-				SYMBOL
-			};
-
-		protected:
-			int ascii = 0;
-			Type type = Type::UNKNOWN;
-
-		public:
-
-			int GetASCII();
-			Type GetType();
-
-			virtual void Reset(int) = 0;
-			virtual void SetASCII(int) = 0;
-			virtual void SetType(Type) = 0;
-			virtual std::string ToString() = 0;
-	};
-
-	class Letter : public Character
-	{
-		public:
-			enum class Value
-			{
-				NONE,
-				ALIF,
-				BA,
-				TA,
-				THA,
-				JEEM,
-				HHA,
-				KHA,
-				DAL,
-				DHAL,
-				RA,
-				ZAYN,
-				SEEN,
-				SHEEN,
-				SAD,
-				DAD,
-				TTA,
-				THHA,
-				AYN,
-				GHAYN,
-				FA,
-				QAF,
-				KAF,
-				LAM,
-				MEEM,
-				NOON,
-				HA,
-				WAW,
-				YA,
-				HAMZAH
-			};
-			enum class Modification
-			{
-				NONE = 0,
-				MADDAH,
-				HAMZAH_ABOVE,
-				HAMZAH_BELOW,
-				HAMZAH_MIDDLE,
-				MARBUTAH,
-				MAQSURAH,
-				KHANJARIYAH,
-				WASLAH
-			};
-			enum class Position
-			{
-				NONE = 0,
-				ISOLATED,
-				BEGINNING,
-				MIDDLE,
-				END
-			};
-
-		private:
-			Value value = Value::NONE;
-			Modification modification = Modification::NONE;
-			Position position = Position::NONE;
-
-		public:
-			Letter();
-			Letter(int, Position = Position::NONE);
-			Letter(Value, Position = Position::NONE);
-			Letter(int, Modification, Position = Position::NONE);
-			Letter(Value, Modification, Position = Position::NONE);
-
-			int GetAbjadValue();
-			int GetSequentialValue();
-
-			void Reset();
-
-			void SetASCII(int);
-			void SetType(Type);
-
-			Modification GetModification();
-			void SetModification(Modification);
-
-			Position GetPosition();
-			void SetPosition(Position);
-
-			std::string SoundOf();
-
-			std::string ToString();
-	};
-
-	class Diacritic : public Character
-	{
-		public:
-			enum class Value
-			{
-				NONE = 0,
-				TATWEEL,
-				TANWEEN_FATHAH,
-				TANWEEN_DAMMAH,
-				TANWEEN_KASRAH,
-				FATHAH,
-				DAMMAH,
-				KASRAH,
-				SHADDAH,
-				SUKOON,
-				MADDAH,
-				HAMZAH, // when used as a letter
-				ALIF_KHANJARIYAH,
-				SUKOON_WASLAH,
-				SUKOON_ALIF,	// https://symbols.me/tag/sukoon/
-				SEEN_SUBSTITUTION,
-				SMALL_WAW,
-				SMALL_YA,
-				SMALL_YA_ABOVE,
-				DOUBLE_NOON,
-				GRAND_IMAALAH,
-				ISHMAAM,
-				TASHEEL,
-				// Modified characters
-				HAMZAH_ABOVE,
-				HAMZAH_BELOW,
-				HAMZAH_MIDDLE,
-				ALIF_WASLAH,
-				ALIF_MAQSURAH,
-				MARBUTAH,
-			};
-
-		private:
-			Value value;
-
-		public:
-			Diacritic();
-			Diacritic(int);
-			Diacritic(Value);
-
-			void Reset();
-
-			void SetASCII(int);
-			void SetType(Type);
-
-			std::string ToString();
-
-	};
-
-	// http://www.islamguiden.com/arabic/esymbol1.html
-	class Symbol : public Character
-	{
-		public:
-			enum class Value
-			{
-				NONE = 0,
-				COMPULSORY_STOP,
-				PROHIBITED_STOP,
-				GOOD_STOP,
-				SUFFICIENT_STOP,
-				EQUALITY_STOP,
-				PRECAUTIONARY_STOP,
-				BRIEF_STOP,
-				SAJDAH,
-				MEEM_IQLAB_ABOVE,
-				MEEM_IQLAB_BELOW,
-				QUARTER_OF_HALF
-			};
-
-		private:
-			Value value;
-
-		public:
-			Symbol();
-			Symbol(int);
-			Symbol(Value);
-
-			void SetASCII(int);
-			void SetType(Type);
-
-			void Reset();
-
-			std::string ToString();
-	};
-
-}
 
 using namespace Arabic;
 
 namespace Quran
 {
+	const int NumChapters = 114;
+	const int NumVerses = 6236;
+	const int NumVersesBasmallah = 6348;
+	const int NumWords = 77878 +3;
+	const int NumWordsBasmallah = 78326 + 3;
+	const int NumWordsWaw = 0;
+	const int NumWordsBasmallahWaw = 0;
+	const int NumLetters = 327792;
+	const int NumLettersBasmallah = 329920;
+	const int NumLettersWaw = 0;
+	const int NumLettersBasmallahWaw = 0;
+	const int NumPages = 604;
+	const int NumStations = 7;
+	const int NumParts = 30;
+	const int NumHalves = NumParts * 2;
+	const int NumQuarters = NumHalves * 4;
+	const int NumBowings = 556;
+
 	struct Attributes
 	{
 		struct TextualPosition
@@ -332,7 +137,7 @@ namespace Quran
 		public:
 			enum class Type
 			{
-				ERROR = 0,
+				NONE = 0,
 				CHARACTER,
 				WORD,
 				VERSE,

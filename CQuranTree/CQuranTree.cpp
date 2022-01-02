@@ -6,7 +6,7 @@
 #include <windows.h>
 #include "Quran.h"
 
-using namespace Arabic_old;
+using namespace Arabic;
 
 int main()
 {
@@ -18,7 +18,7 @@ int main()
     //std::cout << abjad_value(Character::GHAYN) << std::endl << to_ascii("0x1b36") << std::endl
     //          << sound_of(Letter(Character::TA, Diacritic::MARBUTAH, std::vector<Diacritic> {Diacritic::TANWEEN_FATHAH}))
     //          << sound_of(Letter(Character::TA, Diacritic::MARBUTAH));
-
+    /*
     std::vector<Letter> ibrahim
     {
         Letter(Character::ALIF, Diacritic::HAMZAH_BELOW, std::vector<Diacritic> {Diacritic::KASRAH}),
@@ -66,6 +66,8 @@ int main()
               << sound_of(test2, false) << std::endl;
 
     std::cout << Quran_old::validate_file(".\\Files\\quran-uthmani.txt") << std::endl;
+
+    */
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -1,5 +1,9 @@
 #include "Quran.h"
 
+
+
+
+/*
 using namespace Quran_old;
 
 
@@ -1178,3 +1182,5 @@ void QuranTree::PopulateData()
 	for (unsigned int i = 0; i < NumChapters; i++)
 		this->chapters.push_back(Chapter(i, this->quranPath));
 }
+
+*/

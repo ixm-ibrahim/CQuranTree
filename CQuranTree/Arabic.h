@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <map>
 #include <sstream>
@@ -6,322 +6,256 @@
 #include <vector>
 #include "Utilities.h"
 
-namespace Arabic_old
+
+namespace Arabic
 {
-	enum class Character
-	{
-		NONE = 0,
-		SPACE = 32,
-		HAMZAH = -1,
-		ALIF = 1,
-		BA = 2,
-		JEEM = 3,
-		DAL = 4,
-		HA = 5,
-		WAW = 6,
-		ZAYN = 7,
-		HHA = 8,
-		TTA = 9,
-		YA = 10,
-		KAF = 20,
-		LAM = 30,
-		MEEM = 40,
-		NOON = 50,
-		SEEN = 60,
-		AYN = 70,
-		FA = 80,
-		SAD = 90,
-		QAF = 100,
-		RA = 200,
-		SHEEN = 300,
-		TA = 400,
-		THA = 500,
-		KHA = 600,
-		DHAL = 700,
-		DAD = 800,
-		THHA = 900,
-		GHAYN = 1000,
-		ONE,
-		TWO,
-		THREE,
-		FOUR,
-		FIVE,
-		SIX,
-		SEVEN,
-		EIGHT,
-		NINE,
-		ZERO,
-	};
-	enum class Position
-	{
-		NONE = 0,
-		ISOLATED,
-		BEGINNING,
-		MIDDLE,
-		END
-	};
-	enum class Diacritic
-	{
-		NONE = 0,
-		TATWEEL,
-		TANWEEN_FATHAH,
-		TANWEEN_DAMMAH,
-		TANWEEN_KASRAH,
-		FATHAH,
-		DAMMAH,
-		KASRAH,
-		SHADDAH,
-		SUKOON,
-		MADDAH,
-		HAMZAH, // when used as a letter
-		ALIF_KHANJARIYAH,
-		SUKOON_WASLAH,
-		SUKOON_ALIF,	// https://symbols.me/tag/sukoon/
-		SEEN_SUBSTITUTION,
-		SMALL_WAW,
-		SMALL_YA,
-		SMALL_YA_ABOVE,
-		DOUBLE_NOON,
-		GRAND_IMAALAH,
-		ISHMAAM,
-		TASHEEL,
-		// Modified characters
-		HAMZAH_ABOVE,
-		HAMZAH_BELOW,
-		HAMZAH_MIDDLE,
-		ALIF_WASLAH,
-		ALIF_MAQSURAH,
-		MARBUTAH,
-	};
 
-	class Letter
-	{
-		protected:
-			Character character;
-			Diacritic modification;
-			Position position;
-			std::vector<Diacritic> diacritics;
-
-		public:
-			Letter(Position = Position::NONE);
-			Letter(int, Position = Position::NONE);
-			Letter(std::string, Position = Position::NONE);
-			Letter(std::vector<int>, Position = Position::NONE);
-			Letter(std::vector<std::string>, Position = Position::NONE);
-			Letter(Character, Position = Position::NONE);
-			Letter(Character, std::vector<Diacritic>, Position = Position::NONE);
-			Letter(Character, Diacritic, Position = Position::NONE);
-			Letter(Character, Diacritic, std::vector<Diacritic>, Position = Position::NONE);
-			~Letter();
-
-			void Reset();
-
-			bool SetFromASCII(int);
-			Character GetCharacter() const;
-			void SetCharacter(Character, bool = true);
-			void SetCharacter(Character, Diacritic);
-			void SetCharacter(int, bool = true);
-			void SetCharacter(std::string, bool = true);
-			Diacritic GetModification() const;
-			void SetModification(Diacritic);
-			std::vector<Diacritic> GetDiacritics();
-			void SetDiacritics(std::vector<Diacritic>);
-			void SetDiacritic(int, Diacritic);
-			void AddDiacritic(Diacritic);
-			void AddDiacritic(int);
-			void AddDiacritic(std::string);
-			void RemoveDiacritic(int);
-			void RemoveDiacritic(Diacritic);
-			void ClearDiacritics();
-			Position GetPosition() const;
-			void SetPosition(Position);
-
-			std::vector<int> GetASCII() const;
-			std::vector<std::string> GetHex() const;
-
-			int GetAbjadValue();
-			int GetSequentialValue();
-
-			std::string to_string(bool = false);
-
-			bool operator ==(const Letter&);
-			bool operator !=(const Letter&);
-			bool operator <(const Letter&) const;
-
-			int ASCIICount() const;
-			int DiacriticCount() const;
-			
-			bool IsArabic(bool, bool, bool);
-	};
-
-	class Word
+	class Character
 	{
 		public:
 			enum class Type
 			{
-				NONE = 0,
-				NOUN,
-				VERB,
-				ADJECTIVE,
-				ADVERB,
-				PRONOUN
-			};
-			enum class Tense
-			{
-				NONE = 0,
-				ROOT,
-				PAST,
-				PRESENT,
-				FUTURE,
-				COMMAND
-			};
-			enum class Quantity
-			{
-				NONE = 0,
-				SINGULAR,
-				DUAL,
-				PLURAL
-			};
-			enum class Gender
-			{
-				NONE = 0,
-				MASCULINE,
-				FEMININE
-			};
-			enum class Person
-			{
-				NONE = 0,
-				FIRST,
-				SECOND,
-				THRID,
-				FOURTH
-			};
-
-			struct Attributes
-			{
-				Type type;
-				Tense tense;
-				Quantity quantity;
-				Gender gender;
-				Person person;
-
-				Attributes();
-				Attributes(Type, Tense, Quantity, Gender, Person);
+				UNKNOWN = 0,
+				LETTER,
+				DIACRITIC,
+				SYMBOL
 			};
 
 		protected:
-			std::vector<Letter> letters;
-			std::vector<Character> root;
-			Attributes attributes;
+			int ascii = 0;
+			Type type = Type::UNKNOWN;
 
 		public:
-			Word();
-			Word(Letter);
-			Word(std::vector<Letter>);
-			Word(std::vector<int>);
-			Word(std::vector<std::string>);
-			~Word();
 
-			std::vector<Letter> GetLetters() const;
-			void SetLetters(std::vector<Letter>, bool = true);
-			void SetLetter(int, Letter, bool = true);
-			void AddLetter(Letter, bool = true);
-			void InsertLetter(int, Letter, bool = true);
-			void RemoveLetter(int, bool = true);
+			int GetASCII();
+			Type GetType();
 
-			std::vector<Character> GetRoot() const;
-			void SetRoot(std::vector<Character>);
-			void SetRootCharacter(int, Character);
-			void AddRootCharacter(Character);
-			void InsertRootCharacter(int, Character);
-			void RemoveRootCharacter(int);
+			bool operator ==(const Character&);
+			bool operator !=(const Character&);
 
-			void SetAttributes(Attributes);
-			Attributes GetAttributes() const;
-			void SetType(Type);
-			void SetTense(Tense);
-			void SetQuantity(Quantity);
-			void SetGender(Gender);
-			void SetPerson(Person);
-
-			void ResetAttributes();
-			void Reset();
-
-			std::vector<int> GetASCII() const;
-			std::vector<std::string> GetHex() const;
-
-			int GetAbjadValue() const;
-			int GetSequentialValue() const;
-
-			std::string to_string(bool = true);
-
-			Letter& operator [](int);
-			bool operator ==(const Word&);
-			bool operator !=(const Word&);
-			Word operator +(const Letter&);
-			Word& operator --();
-
-			int Count() const;
-			int ASCIICount() const;
-			int CharacterCount() const;
-			int LetterCount() const;
-			int DiacriticCount() const;
-
-			int OccuranceOf(Letter) const;
+			virtual void Reset() = 0;
+			virtual void SetASCII(int) = 0;
+			virtual std::string ToString() = 0;
 	};
 
-	extern std::map<Letter, int> ASCIIByLetter;
-	extern std::map<int, Letter> LetterByASCII;
+	class Letter : public Character
+	{
+		public:
+			enum class Value
+			{
+				NONE,
+				ALIF,
+				BA,
+				TA,
+				THA,
+				JEEM,
+				HHA,
+				KHA,
+				DAL,
+				DHAL,
+				RA,
+				ZAYN,
+				SEEN,
+				SHEEN,
+				SAD,
+				DAD,
+				TTA,
+				THHA,
+				AYN,
+				GHAYN,
+				FA,
+				QAF,
+				KAF,
+				LAM,
+				MEEM,
+				NOON,
+				HA,
+				WAW,
+				YA,
+				HAMZAH
+			};
+			enum class Modification
+			{
+				NONE = 0,
+				MADDAH,
+				HAMZAH_ABOVE,
+				HAMZAH_BELOW,
+				HAMZAH_MIDDLE,
+				MARBUTAH,
+				MAQSURAH,
+				KHANJARIYAH,
+				WASLAH
+			};
+			enum class Position
+			{
+				NONE = 0,
+				ISOLATED,
+				BEGINNING,
+				MIDDLE,
+				END
+			};
 
-	extern std::map<Diacritic, int> ASCIIByDiacritic;
-	extern std::map<int, Diacritic> DiacriticByASCII;
+		private:
+			Value value = Value::NONE;
+			Modification modification = Modification::NONE;
+			Position position = Position::NONE;
+
+		public:
+			Letter();
+			Letter(int, Position = Position::NONE);
+			Letter(Value, Position = Position::NONE);
+			Letter(int, Modification, Position = Position::NONE);
+			Letter(Value, Modification, Position = Position::NONE);
+
+			void Reset();
+
+			void SetASCII(int);
+			Value GetValue();
+
+			Modification GetModification();
+			void SetModification(Modification);
+
+			Position GetPosition();
+			void SetPosition(Position);
+
+			int GetAbjadValue();
+			int GetSequentialValue();
+
+			std::string SoundOf();
+			std::string ToString();
+	};
+
+	class Diacritic : public Character
+	{
+		public:
+			enum class Value
+			{
+				NONE = 0,
+				TATWEEL,
+				TANWEEN_FATHAH,
+				TANWEEN_DAMMAH,
+				TANWEEN_KASRAH,
+				FATHAH,
+				DAMMAH,
+				KASRAH,
+				SHADDAH,
+				SUKOON,
+				MADDAH,
+				HAMZAH,			// when used as a letter
+				ALIF_KHANJARIYAH,
+				SUKOON_WASLAH,
+				SUKOON_ALIF,	// https://symbols.me/tag/sukoon/
+				SEEN_SUBSTITUTION,
+				SMALL_WAW,
+				SMALL_YA,
+				SMALL_YA_ABOVE,
+				DOUBLE_NOON,
+				GRAND_IMAALAH,	// see Quran 11:41
+				ISHMAAM,		// see Quran 12:11
+				TASHEEL,		// see Quran 41:44
+				// Modified characters
+				HAMZAH_ABOVE,
+				HAMZAH_BELOW,
+				HAMZAH_MIDDLE,
+				ALIF_WASLAH,
+				ALIF_MAQSURAH,
+				MARBUTAH,
+			};
+
+		private:
+			Value value;
+
+		public:
+			Diacritic();
+			Diacritic(int);
+			Diacritic(Value);
+
+			void Reset();
+
+			void SetASCII(int);
+			Value GetValue();
+
+			std::string ToString();
+
+	};
+
+	class Symbol : public Character
+	{
+		public:
+			// http://www.islamguiden.com/arabic/esymbol1.html
+			enum class Value
+			{
+				NONE = 0,
+				COMPULSORY_STOP,
+				PROHIBITED_STOP,
+				GOOD_STOP,
+				SUFFICIENT_STOP,
+				EQUALITY_STOP,
+				PRECAUTIONARY_STOP,
+				BRIEF_STOP,
+				SAJDAH,
+				MEEM_IQLAB_ABOVE,
+				MEEM_IQLAB_BELOW,
+				QUARTER_OF_HALF
+			};
+
+		private:
+			Value value;
+
+		public:
+			Symbol();
+			Symbol(int);
+			Symbol(Value);
+
+			void SetASCII(int);
+			Value GetValue();
+
+			void Reset();
+
+			std::string ToString();
+	};
 	
+	typedef Character::Type character_t;
+	typedef Letter::Value letter_t;
+	typedef Letter::Modification modification_t;
+	typedef Letter::Position position_t;
+	typedef Diacritic::Value diacritic_t;
+	typedef Symbol::Value symbol_t;
+
 	std::string to_string(int);
-	std::string to_string(Character);
-	std::string to_string(Position);
-	std::string to_string(Diacritic);
-	std::string to_string(Word::Type);
-	std::string to_string(Word::Tense);
-	std::string to_string(Word::Person);
-	std::string to_string(Word::Quantity);
-	std::string to_string(Word::Gender);
+	std::string to_string(Character*);
 
 	int to_ascii(std::string);
-	int to_ascii(Character);
-	int to_ascii(Diacritic);
-	int to_ascii(Letter);
-
 	std::string to_hex(int);
-	std::string to_hex(Character);
-	std::string to_hex(Diacritic);
-	std::string to_hex(Letter);
 
-	int abjad_value(Character);
-	int abjad_value(Letter);
-	int abjad_value(std::vector<Letter>);
-	int abjad_value(Word);
-	int abjad_value(std::vector<Word>);
+	character_t get_type(int);
 
-	int sequential_value(Character);
-	int sequential_value(Letter);
-	int sequential_value(std::vector<Letter>);
-	int sequential_value(Word);
-	int sequential_value(std::vector<Word>);
+	letter_t get_letter(int);
+	diacritic_t get_diacritic(int);
+	symbol_t get_symbol(int);
 
-	std::string sound_of(Character, Diacritic, std::vector<Diacritic>, Position = Position::NONE, bool = true);
-	std::string sound_of(Letter, bool = true);
-	std::string sound_of(std::vector<Letter>, bool = true);
-	std::string sound_of(Word, bool = true);
-	std::string sound_of(std::vector<Word>, bool = true);
+	int abjad_value(int);
+	int abjad_value(Character*);
+	int abjad_value(Letter*);
+	int abjad_value(std::vector<Character*>);
 
-	bool is_character(int, bool = false);
-	bool is_character(std::string, bool = false);
+	int sequential_value(int, bool = false);
+	int sequential_value(Character*, bool = false);
+	int sequential_value(Letter*, bool = false);
+	int sequential_value(std::vector<Character*>, bool = false);
+
+	std::string sound_of(int, bool = true);
+	std::string sound_of(int, std::vector<Diacritic*>, bool = true);
+	std::string sound_of(Character*, bool = true);
+	std::string sound_of(Character*, std::vector<Diacritic*>, bool = true);
+	std::string sound_of(std::vector<Character*>, bool = true);
+
+	bool is_letter(int, bool = false);
 	bool is_diacritic(int);
-	bool is_diacritic(std::string);
-
+	bool is_symbol(int);
 	bool is_arabic(int, bool = false);
-	bool is_arabic(Character, bool = false);
-	bool is_arabic(Diacritic);
-	bool is_arabic(Letter, bool = false);
-	bool is_arabic(Word, bool = false);
-};
+
+	bool has_modification(int);
+	bool has_harakah(std::vector<Diacritic*>);
+	bool has_diacritic(std::vector<Diacritic*>, Diacritic d);
+}
