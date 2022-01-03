@@ -106,7 +106,7 @@ namespace Quran
 			UNKNOWN = 0,
 			MAKKAN = 1,
 			MADINAN = 2,
-			LATE_MAKKAN = -1,
+			LATE_MAKKAN = 3,
 		};
 
 		TextualPosition textualPosition;
@@ -147,6 +147,7 @@ namespace Quran
 			Attributes attributes;
 
 			CQuranCharacter* nextCharacter;
+			CQuranCharacter* currentCharacter;
 			CQuranCharacter* previousCharacter;
 			CQuranWord* nextWord;
 			CQuranWord* currentWord;
@@ -181,6 +182,7 @@ namespace Quran
 			CQuranChapter* GetPreviousChapter();
 			void SetPreviousChapter(CQuranChapter*, bool = false);
 
+			CQuranCharacter* GetCurrentCharacter();
 			CQuranWord* GetCurrentWord();
 			CQuranVerse* GetCurrentVerse();
 			CQuranChapter* GetCurrentChapter();
@@ -433,9 +435,11 @@ namespace Quran
 			int DistanceBetween(CQuranCharacter*, CQuranCharacter*, SearchParameters = SearchParameters::DEFAULT);
 			int DistanceBetween(CQuranCharacter*, CQuranWord*, SearchParameters = SearchParameters::DEFAULT);
 			int DistanceBetween(CQuranCharacter*, CQuranVerse*, SearchParameters = SearchParameters::DEFAULT);
+			
 			int DistanceBetween(CQuranWord*, CQuranCharacter*, SearchParameters = SearchParameters::DEFAULT);
 			int DistanceBetween(CQuranWord*, CQuranWord*, SearchParameters = SearchParameters::DEFAULT);
 			int DistanceBetween(CQuranWord*, CQuranVerse*, SearchParameters = SearchParameters::DEFAULT);
+			
 			int DistanceBetween(CQuranVerse*, CQuranCharacter*, SearchParameters = SearchParameters::DEFAULT);
 			int DistanceBetween(CQuranVerse*, CQuranWord*, SearchParameters = SearchParameters::DEFAULT);
 			int DistanceBetween(CQuranVerse*, CQuranVerse*, SearchParameters = SearchParameters::DEFAULT);
