@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -30,12 +29,14 @@ namespace Arabic
 			int GetASCII();
 			Type GetType();
 
+			std::string SoundOf();
+			std::string ToString();
+
 			bool operator ==(const Character&);
 			bool operator !=(const Character&);
 
 			virtual void Reset() = 0;
 			virtual void SetASCII(int) = 0;
-			virtual std::string ToString() = 0;
 	};
 
 	class Letter : public Character
@@ -104,12 +105,12 @@ namespace Arabic
 			Letter();
 			Letter(int, Position = Position::NONE);
 			Letter(Value, Position = Position::NONE);
-			Letter(int, Modification, Position = Position::NONE);
 			Letter(Value, Modification, Position = Position::NONE);
 
 			void Reset();
-
 			void SetASCII(int);
+
+			void GetValue(Value);
 			Value GetValue();
 
 			Modification GetModification();
@@ -120,9 +121,6 @@ namespace Arabic
 
 			int GetAbjadValue();
 			int GetSequentialValue();
-
-			std::string SoundOf();
-			std::string ToString();
 	};
 
 	class Diacritic : public Character
@@ -171,12 +169,10 @@ namespace Arabic
 			Diacritic(Value);
 
 			void Reset();
-
 			void SetASCII(int);
+
+			void GetValue(Value);
 			Value GetValue();
-
-			std::string ToString();
-
 	};
 
 	class Symbol : public Character
@@ -207,12 +203,11 @@ namespace Arabic
 			Symbol(int);
 			Symbol(Value);
 
-			void SetASCII(int);
-			Value GetValue();
-
 			void Reset();
+			void SetASCII(int);
 
-			std::string ToString();
+			void GetValue(Value);
+			Value GetValue();
 	};
 	
 	typedef Character::Type character_t;
@@ -225,12 +220,17 @@ namespace Arabic
 	std::string to_string(int);
 	std::string to_string(Character*);
 
+	int to_ascii(letter_t, modification_t = modification_t::NONE);
+	int to_ascii(diacritic_t);
+	int to_ascii(symbol_t);
+
 	int to_ascii(std::string);
 	std::string to_hex(int);
 
 	character_t get_type(int);
 
 	letter_t get_letter(int);
+	modification_t get_modification(int);
 	diacritic_t get_diacritic(int);
 	symbol_t get_symbol(int);
 

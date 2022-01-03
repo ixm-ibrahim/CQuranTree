@@ -2,8 +2,9 @@
 
 #include <fstream>
 #include <iostream>
-#include "Utilities.h"
+#include <map>
 #include "Arabic.h"
+#include "Utilities.h"
 
 #define QURAN_PATH ".\\Files\\quran-uthmani.txt"
 
@@ -93,7 +94,7 @@ namespace Quran
 				FOURTH
 			};
 
-			std::vector<Letter::Value> root;
+			std::vector<letter_t> root;
 			Type type;
 			Tense tense;
 			Quantity quantity;
@@ -111,7 +112,7 @@ namespace Quran
 		TextualPosition textualPosition;
 		Grammar grammar;
 		RevelationPeriod revelationPeriod;
-		Character::Type characterType;
+		character_t characterType;
 		bool hasSymbol;
 		bool isBasmallah;
 		bool isIndependentWaw;
@@ -119,12 +120,9 @@ namespace Quran
 	};
 	enum class SearchParameters
 	{
-		DEFAULT						= 0,
-		NO_INFO						= 10,
-		STOP_AFTER_VERSE			= 11,
-		STOP_AFTER_CHAPTER			= 12,
-		STOP_AFTER_VERSE_NO_INFO	= 110,
-		STOP_AFTER_CHAPTER_NO_INFO	= 120,
+		DEFAULT				= 0,
+		STOP_AFTER_VERSE	= 1,
+		STOP_AFTER_CHAPTER	= 2,
 	};
 
 	class CQuranCharacter;
@@ -226,46 +224,46 @@ namespace Quran
 
 			CQuranWord* GetNextWord(std::vector<int>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetNextWord(std::vector<Character>, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			CQuranWord* GetNextWord(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranWord* GetNextWord(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetNextWord(CQuranWord*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetPreviousWord(std::vector<int>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetPreviousWord(std::vector<Character>, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			CQuranWord* GetPreviousWord(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranWord* GetPreviousWord(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetPreviousWord(CQuranWord*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 
 			CQuranWord* GetNextWordWithRoot(std::vector<int>, SearchParameters = SearchParameters::DEFAULT);
-			CQuranWord* GetNextWordWithRoot(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranWord* GetNextWordWithRoot(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetNextWordWithRoot(CQuranWord*, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetPreviousWordWithRoot(std::vector<int>, SearchParameters = SearchParameters::DEFAULT);
-			CQuranWord* GetPreviousWordWithRoot(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranWord* GetPreviousWordWithRoot(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranWord* GetPreviousWordWithRoot(CQuranWord*, SearchParameters = SearchParameters::DEFAULT);
 
 			CQuranVerse* GetNextVerse(CQuranVerse*, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerse(CQuranVerse*, SearchParameters = SearchParameters::DEFAULT);
 
 			CQuranVerse* GetNextVerseWithRoot(std::vector<int>, SearchParameters = SearchParameters::DEFAULT);
-			CQuranVerse* GetNextVerseWithRoot(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranVerse* GetNextVerseWithRoot(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetNextVerseWithRoot(CQuranWord*, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithRoot(std::vector<int>, SearchParameters = SearchParameters::DEFAULT);
-			CQuranVerse* GetPreviousVerseWithRoot(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranVerse* GetPreviousVerseWithRoot(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithRoot(CQuranWord*, SearchParameters = SearchParameters::DEFAULT);
 
 			CQuranVerse* GetNextVerseWithWord(std::vector<int>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetNextVerseWithWord(std::vector<Character>, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			CQuranVerse* GetNextVerseWithWord(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranVerse* GetNextVerseWithWord(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetNextVerseWithWord(CQuranWord*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithWord(std::vector<int>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithWord(std::vector<Character>, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			CQuranVerse* GetPreviousVerseWithWord(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranVerse* GetPreviousVerseWithWord(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithWord(CQuranWord*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 
 			CQuranVerse* GetNextVerseWithPhrase(std::vector<std::vector<int>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetNextVerseWithPhrase(std::vector<std::vector<Character>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			CQuranVerse* GetNextVerseWithPhrase(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranVerse* GetNextVerseWithPhrase(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetNextVerseWithPhrase(std::vector<CQuranWord*>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithPhrase(std::vector<std::vector<int>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithPhrase(std::vector<std::vector<Character>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			CQuranVerse* GetPreviousVerseWithPhrase(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			CQuranVerse* GetPreviousVerseWithPhrase(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			CQuranVerse* GetPreviousVerseWithPhrase(std::vector<CQuranWord*>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 
 			virtual std::string ToString() = 0;
@@ -293,11 +291,12 @@ namespace Quran
 	{
 		private:
 			std::vector<CQuranCharacter*> word;
+			std::string translation;
 
 		public:
 			CQuranWord();
-			CQuranWord(std::vector<CQuranCharacter*>);
-			CQuranWord(std::vector<CQuranCharacter*>, Attributes);
+			CQuranWord(std::vector<CQuranCharacter*>, std::string = "");
+			CQuranWord(std::vector<CQuranCharacter*>, Attributes, std::string = "");
 			~CQuranWord();
 
 			std::vector<CQuranCharacter*> GetWord();
@@ -361,8 +360,11 @@ namespace Quran
 			std::vector<State> state;
 
 			void PopulateData();
+			void DeleteData();
 
 		public:
+			bool Debug = false;
+
 			CQuranTree();
 			~CQuranTree();
 
@@ -381,45 +383,45 @@ namespace Quran
 
 
 			int GetLetterCount(int, SearchParameters = SearchParameters::DEFAULT);
-			int GetLetterCount(Letter::Value, SearchParameters = SearchParameters::DEFAULT);
+			int GetLetterCount(letter_t, SearchParameters = SearchParameters::DEFAULT);
 			int GetDiacriticCount(int, SearchParameters = SearchParameters::DEFAULT);
-			int GetDiacriticCount(Diacritic::Value, SearchParameters = SearchParameters::DEFAULT);
+			int GetDiacriticCount(diacritic_t, SearchParameters = SearchParameters::DEFAULT);
 			int GetSymbolCount(int, SearchParameters = SearchParameters::DEFAULT);
-			int GetSymbolCount(Symbol::Value, SearchParameters = SearchParameters::DEFAULT);
+			int GetSymbolCount(symbol_t, SearchParameters = SearchParameters::DEFAULT);
 			int GetCharacterCount(int, SearchParameters = SearchParameters::DEFAULT);
 			int GetCharacterCount(Character, SearchParameters = SearchParameters::DEFAULT);
 			int GetCharacterCount(CQuranCharacter*, SearchParameters = SearchParameters::DEFAULT);
 
-			int GetWordCount(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);				// (ex.with word, display counts of each grammatical category)
+			int GetWordCount(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);				// (ex.with word, display counts of each grammatical category)
 			int GetWordCount(std::vector<Character>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			int GetWordCount(CQuranWord*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 
-			int GetVerseCount(std::vector<std::vector<Letter::Value>>, SearchParameters = SearchParameters::DEFAULT);
+			int GetVerseCount(std::vector<std::vector<letter_t>>, SearchParameters = SearchParameters::DEFAULT);
 			int GetVerseCount(std::vector<std::vector<Character>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			int GetVerseCount(CQuranVerse*, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			int GetPhraseCount(std::vector<std::vector<Letter::Value>>, SearchParameters = SearchParameters::DEFAULT);
+			int GetPhraseCount(std::vector<std::vector<letter_t>>, SearchParameters = SearchParameters::DEFAULT);
 			int GetPhraseCount(std::vector<std::vector<Character>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			int GetPhraseCount(CQuranVerse*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 
 
 			std::vector<CQuranCharacter*> GetOccurancesOfLetter(int, SearchParameters = SearchParameters::DEFAULT);
-			std::vector<CQuranCharacter*> GetOccurancesOfLetter(Letter::Value, SearchParameters = SearchParameters::DEFAULT);
+			std::vector<CQuranCharacter*> GetOccurancesOfLetter(letter_t, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranCharacter*> GetOccurancesOfDiacritic(int, SearchParameters = SearchParameters::DEFAULT);
-			std::vector<CQuranCharacter*> GetOccurancesOfDiacritic(Diacritic::Value, SearchParameters = SearchParameters::DEFAULT);
+			std::vector<CQuranCharacter*> GetOccurancesOfDiacritic(diacritic_t, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranCharacter*> GetOccurancesOfSymbol(int, SearchParameters = SearchParameters::DEFAULT);
-			std::vector<CQuranCharacter*> GetOccurancesOfSymbol(Symbol::Value, SearchParameters = SearchParameters::DEFAULT);
+			std::vector<CQuranCharacter*> GetOccurancesOfSymbol(symbol_t, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranCharacter*> GetOccurancesOfCharacter(int, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranCharacter*> GetOccurancesOfCharacter(Character, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranCharacter*> GetOccurancesOfCharacter(CQuranCharacter*, SearchParameters = SearchParameters::DEFAULT);
 
-			std::vector<CQuranWord*> GetOccurancesOfWord(std::vector<Letter::Value>, SearchParameters = SearchParameters::DEFAULT);
+			std::vector<CQuranWord*> GetOccurancesOfWord(std::vector<letter_t>, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranWord*> GetOccurancesOfWord(std::vector<Character>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranWord*> GetOccurancesOfWord(CQuranWord*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 
-			std::vector<CQuranVerse*> GetOccurancesOfVerse(std::vector<std::vector<Letter::Value>>, SearchParameters = SearchParameters::DEFAULT);
+			std::vector<CQuranVerse*> GetOccurancesOfVerse(std::vector<std::vector<letter_t>>, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranVerse*> GetOccurancesOfVerse(std::vector<std::vector<Character>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranVerse*> GetOccurancesOfVerse(CQuranVerse*, bool = false, SearchParameters = SearchParameters::DEFAULT);
-			std::vector<CQuranVerse*> GetOccurancesOfPhrase(std::vector<std::vector<Letter::Value>>, SearchParameters = SearchParameters::DEFAULT);
+			std::vector<CQuranVerse*> GetOccurancesOfPhrase(std::vector<std::vector<letter_t>>, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranVerse*> GetOccurancesOfPhrase(std::vector<std::vector<Character>>, bool = false, SearchParameters = SearchParameters::DEFAULT);
 			std::vector<CQuranVerse*> GetOccurancesOfPhrase(CQuranVerse*, bool = false, SearchParameters = SearchParameters::DEFAULT);
 

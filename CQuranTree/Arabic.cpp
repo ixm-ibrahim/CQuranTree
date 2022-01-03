@@ -172,6 +172,169 @@ std::string Arabic::to_string(Character* c)
 	return to_string(c->GetASCII());
 }
 
+int Arabic::to_ascii(letter_t letter, modification_t modification)
+{
+	switch (letter)
+	{
+		case letter_t::HAMZAH:
+			if (modification == modification_t::HAMZAH_MIDDLE)
+				return 1574;
+			return 1569;
+		case letter_t::ALIF:
+			if (modification == modification_t::MADDAH)
+				return 1570;
+			if (modification == modification_t::HAMZAH_ABOVE)
+				return 1571;
+			if (modification == modification_t::HAMZAH_BELOW)
+				return 1573;
+			if (modification == modification_t::KHANJARIYAH)
+				return 1648;
+			if (modification == modification_t::WASLAH)
+				return 1649;
+			return 1575;
+		case letter_t::BA:
+			return 1576;
+		case letter_t::TA:
+			if (modification == modification_t::MARBUTAH)
+				return 1577;
+			return 1578;
+		case letter_t::THA:
+			return 1579;
+		case letter_t::JEEM:
+			return 1580;
+		case letter_t::HHA:
+			return 1581;
+		case letter_t::KHA:
+			return 1582;
+		case letter_t::DAL:
+			return 1583;
+		case letter_t::DHAL:
+			return 1584;
+		case letter_t::RA:
+			return 1585;
+		case letter_t::ZAYN:
+			return 1586;
+		case letter_t::SEEN:
+			return 1587;
+		case letter_t::SHEEN:
+			return 1588;
+		case letter_t::SAD:
+			return 1589;
+		case letter_t::DAD:
+			return 1590;
+		case letter_t::TTA:
+			return 1591;
+		case letter_t::THHA:
+			return 1592;
+		case letter_t::AYN:
+			return 1593;
+		case letter_t::GHAYN:
+			return 1594;
+		case letter_t::FA:
+			return 1601;
+		case letter_t::QAF:
+			return 1602;
+		case letter_t::KAF:
+			return 1603;
+		case letter_t::LAM:
+			return 1604;
+		case letter_t::MEEM:
+			return 1605;
+		case letter_t::NOON:
+			return 1606;
+		case letter_t::HA:
+			return 1607;
+		case letter_t::WAW:
+			if (modification == modification_t::HAMZAH_ABOVE)
+				return 1572;
+			return 1608;
+		case letter_t::YA:
+			if (modification == modification_t::MAQSURAH)
+				return 1609;
+			return 1610;
+	}
+
+	return 0;
+}
+int Arabic::to_ascii(diacritic_t diacritic)
+{
+	switch (diacritic)
+	{
+		case diacritic_t::TANWEEN_FATHAH:
+			return 1611;
+		case diacritic_t::TANWEEN_DAMMAH:
+			return 1612;
+		case diacritic_t::TANWEEN_KASRAH:
+			return 1613;
+		case diacritic_t::FATHAH:
+			return 1614;
+		case diacritic_t::DAMMAH:
+			return 1615;
+		case diacritic_t::KASRAH:
+			return 1616;
+		case diacritic_t::SHADDAH:
+			return 1617;
+		case diacritic_t::SUKOON:
+			return 1618;
+		case diacritic_t::MADDAH:
+			return 1619;
+		case diacritic_t::HAMZAH:
+			return 1620;
+		case diacritic_t::SUKOON_WASLAH:
+			return 1759;
+		case diacritic_t::SUKOON_ALIF:
+			return 1760;
+		case diacritic_t::SEEN_SUBSTITUTION:
+			return 1763;
+		case diacritic_t::SMALL_WAW:
+			return 1765;
+		case diacritic_t::SMALL_YA:
+			return 1766;
+		case diacritic_t::SMALL_YA_ABOVE:
+			return 1767;
+		case diacritic_t::DOUBLE_NOON:
+			return 1768;
+		case diacritic_t::GRAND_IMAALAH:
+			return 1770;
+		case diacritic_t::ISHMAAM:
+			return 1771;
+		case diacritic_t::TASHEEL:
+			return 1772;
+	}
+
+	return 0;
+}
+int Arabic::to_ascii(symbol_t symbol)
+{
+	switch (symbol)
+	{
+		case symbol_t::GOOD_STOP:
+			return 1750;
+		case symbol_t::SUFFICIENT_STOP:
+			return 1751;
+		case symbol_t::COMPULSORY_STOP:
+			return 1752;
+		case symbol_t::PROHIBITED_STOP:
+			return 1753;
+		case symbol_t::EQUALITY_STOP:
+			return 1754;
+		case symbol_t::PRECAUTIONARY_STOP:
+			return 1755;
+		case symbol_t::BRIEF_STOP:
+			return 1756;
+		case symbol_t::QUARTER_OF_HALF:
+			return 1758;
+		case symbol_t::MEEM_IQLAB_ABOVE:
+			return 1762;
+		case symbol_t::SAJDAH:
+			return 1769;
+		case symbol_t::MEEM_IQLAB_BELOW:
+			return 1773;
+	}
+
+	return 0;
+}
+
 int Arabic::to_ascii(std::string hex)
 {
 	int n = 0;
@@ -187,45 +350,45 @@ std::string Arabic::to_hex(int ascii)
 	return ss.str();
 }
 
-Character::Type Arabic::get_type(int ascii)
+character_t Arabic::get_type(int ascii)
 {
 	if (is_letter(ascii))
-		return Character::Type::LETTER;
+		return character_t::LETTER;
 	if (is_diacritic(ascii))
-		return Character::Type::DIACRITIC;
+		return character_t::DIACRITIC;
 	if (is_symbol(ascii))
-		return Character::Type::SYMBOL;
+		return character_t::SYMBOL;
 	
-	return Character::Type::UNKNOWN;
+	return character_t::UNKNOWN;
 }
 
-letter_t get_letter(int ascii)
+letter_t Arabic::get_letter(int ascii)
 {
 	if (is_letter(ascii))
 		switch(ascii)
 		{
-			case 32:
-				return letter_t::SPACE;
-			case 1600:
-				return letter_t::TATWEEL;
+			case 32:	// space
+				break;
+			case 1600:	// tatweel
+				break;
 			case 1569:
 				return letter_t::HAMZAH;
-			case 1570:
-				return letter_t::ALIF_MADDAH;
-			case 1571:
-				return letter_t::ALIF_HAMZAH_ABOVE;
-			case 1572:
-				return letter_t::WAW_HAMZAH_ABOVE;
-			case 1573:
-				return letter_t::ALIF with HAMZAH_BELOW;
-			case 1574:
-				return letter_t::HAMZAH_MIDDLE;
+			case 1570:	// alif with maddah
+				return letter_t::ALIF;
+			case 1571:	// alif with hamzah above
+				return letter_t::ALIF;
+			case 1572:	// waw with hamzah above
+				return letter_t::WAW;
+			case 1573:	// alif with hamzah below
+				return letter_t::ALIF;
+			case 1574:	// hamzah middle
+				return letter_t::HAMZAH;
 			case 1575:
 				return letter_t::ALIF;
 			case 1576:
 				return letter_t::BA;
-			case 1577:
-				return letter_t::TA MARBUTAH;
+			case 1577:	// ta marbutah
+				return letter_t::TA;
 			case 1578:
 				return letter_t::TA;
 			case 1579:
@@ -276,33 +439,121 @@ letter_t get_letter(int ascii)
 				return letter_t::HA;
 			case 1608:
 				return letter_t::WAW;
-			case 1609:
-				return letter_t::ALIF_MAQSURAH;
+			case 1609:	// alif maqsurah
+				return letter_t::YA;
 			case 1610:
 				return letter_t::YA;
-			case 1648:
-				return letter_t::ALIF_KHANJARIYAH;
-			case 1649:
-				return letter_t::ALIF_WASLAH;
+			case 1648:	// alif khanjariyah
+				break;
+			case 1649:	// alif waslah
+				return letter_t::ALIF;
 		}
 
 	return letter_t::NONE;
 }
-diacritic_t get_diacritic(int ascii)
+modification_t Arabic::get_modification(int ascii)
+{
+	if (has_modification(ascii))
+		switch (ascii)
+		{
+			case 1570:	// alif with maddah
+				return modification_t::MADDAH;
+			case 1571:	// alif with hamzah above
+			case 1572:	// waw with hamzah above
+				return modification_t::HAMZAH_ABOVE;
+			case 1573:	// alif with hamzah below
+				return modification_t::HAMZAH_BELOW;
+			case 1574:	// hamzah middle
+				return modification_t::HAMZAH_MIDDLE;
+			case 1577:	// ta marbutah
+				return modification_t::MARBUTAH;
+			case 1609:	// alif maqsurah
+				return modification_t::MAQSURAH;
+			case 1648:	// alif khanjariyah
+				return modification_t::KHANJARIYAH;
+			case 1649:	// alif waslah
+				return modification_t::WASLAH;
+		}
+
+	return modification_t::NONE;
+}
+diacritic_t Arabic::get_diacritic(int ascii)
 {
 	if (is_diacritic(ascii))
-	{
-
-	}
+		switch (ascii)
+		{
+			case 1611:
+				return diacritic_t::TANWEEN_FATHAH;
+			case 1612:
+				return diacritic_t::TANWEEN_DAMMAH;
+			case 1613:
+				return diacritic_t::TANWEEN_KASRAH;
+			case 1614:
+				return diacritic_t::FATHAH;
+			case 1615:
+				return diacritic_t::DAMMAH;
+			case 1616:
+				return diacritic_t::KASRAH;
+			case 1617:
+				return diacritic_t::SHADDAH;
+			case 1618:
+				return diacritic_t::SUKOON;
+			case 1619:
+				return diacritic_t::MADDAH;
+			case 1620:
+				return diacritic_t::HAMZAH;
+			case 1759:
+				return diacritic_t::SUKOON_WASLAH;
+			case 1760:
+				return diacritic_t::SUKOON_ALIF;
+			case 1763:
+				return diacritic_t::SEEN_SUBSTITUTION;
+			case 1765:
+				return diacritic_t::SMALL_WAW;
+			case 1766:
+				return diacritic_t::SMALL_YA;
+			case 1767:
+				return diacritic_t::SMALL_YA_ABOVE;
+			case 1768:
+				return diacritic_t::DOUBLE_NOON;
+			case 1770:
+				return diacritic_t::GRAND_IMAALAH;
+			case 1771:
+				return diacritic_t::ISHMAAM;
+			case 1772:
+				return diacritic_t::TASHEEL;
+		}
 
 	return diacritic_t::NONE;
 }
-symbol_t get_symbol(int ascii)
+symbol_t Arabic::get_symbol(int ascii)
 {
 	if (is_symbol(ascii))
-	{
-
-	}
+		switch (ascii)
+		{
+			case 1750:
+				return symbol_t::GOOD_STOP;
+			case 1751:
+				return symbol_t::SUFFICIENT_STOP;
+			case 1752:
+				return symbol_t::COMPULSORY_STOP;
+			case 1753:
+				return symbol_t::PROHIBITED_STOP;
+			case 1754:
+				return symbol_t::EQUALITY_STOP;
+			case 1755:
+				return symbol_t::PRECAUTIONARY_STOP;
+			case 1756:
+				return symbol_t::BRIEF_STOP;
+			case 1758:
+				return symbol_t::QUARTER_OF_HALF;
+			case 1762:
+				return symbol_t::MEEM_IQLAB_ABOVE;
+			case 1769:
+				return symbol_t::SAJDAH;
+			case 1773:
+				return symbol_t::MEEM_IQLAB_BELOW;
+		}
 
 	return symbol_t::NONE;
 }
@@ -384,19 +635,19 @@ int Arabic::abjad_value(int ascii)
 
 	return 0;
 }
-int Arabic::abjad_value(Character* c)
+int Arabic::abjad_value(Character* character)
 {
-	return abjad_value(c->GetASCII());
+	return abjad_value(character->GetASCII());
 }
-int Arabic::abjad_value(Letter* l)
+int Arabic::abjad_value(Letter* letter)
 {
-	return abjad_value(l->GetASCII());
+	return abjad_value(letter->GetASCII());
 }
-int Arabic::abjad_value(std::vector<Character*> cs)
+int Arabic::abjad_value(std::vector<Character*> characters)
 {
 	int sum = 0;
 
-	for (auto c : cs)
+	for (auto c : characters)
 		sum += abjad_value(c);
 
 	return sum;
@@ -553,19 +804,19 @@ int Arabic::sequential_value(int ascii, bool modern)
 
 	return 0;
 }
-int Arabic::sequential_value(Character* c, bool modern)
+int Arabic::sequential_value(Character* character, bool modern)
 {
-	return sequential_value(c->GetASCII(), modern);
+	return sequential_value(character->GetASCII(), modern);
 }
-int Arabic::sequential_value(Letter* l, bool modern)
+int Arabic::sequential_value(Letter* letter, bool modern)
 {
-	return sequential_value(l->GetASCII(), modern);
+	return sequential_value(letter->GetASCII(), modern);
 }
-int Arabic::sequential_value(std::vector<Character*> cs, bool modern)
+int Arabic::sequential_value(std::vector<Character*> characters, bool modern)
 {
 	int sum = 0;
 
-	for (auto c : cs)
+	for (auto c : characters)
 		sum += sequential_value(c, modern);
 
 	return sum;
@@ -623,7 +874,7 @@ std::string Arabic::sound_of(int ascii, std::vector<Diacritic*> diacritics, bool
 			}
 			case 1575:		// alif
 			{
-				if (has_diacritic(diacritics, diacritic_t::SUKOON) || has_diacritic(diacritics, Diacritic::Value::SUKOON_ALIF))
+				if (has_diacritic(diacritics, diacritic_t::SUKOON) || has_diacritic(diacritics, diacritic_t::SUKOON_ALIF))
 					sound = "Ⱥ";
 				else if (has_diacritic(diacritics, diacritic_t::TASHEEL))
 					sound = "a";
@@ -764,7 +1015,7 @@ std::string Arabic::sound_of(int ascii, std::vector<Diacritic*> diacritics, bool
 			}
 			case 1608:		// waw
 			{
-				//sound = (position == Letter::Position::MIDDLE || position == Letter::Position::END) ? "Ū" : "W";
+				//sound = (position == position_t::MIDDLE || position == position_t::END) ? "Ū" : "W";
 				sound = (diacritics.size() == 0 || has_diacritic(diacritics, diacritic_t::SUKOON)) ? "W" : "Ū";
 				break;
 			}
@@ -1042,6 +1293,7 @@ bool Arabic::has_diacritic(std::vector<Diacritic*> diacritics, Diacritic d)
 // Character 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 int Character::GetASCII()
 {
 	return this->ascii;
@@ -1049,6 +1301,15 @@ int Character::GetASCII()
 character_t Character::GetType()
 {
 	return this->type;
+}
+
+std::string Character::SoundOf()
+{
+	return sound_of(this->ascii);
+}
+std::string Character::ToString()
+{
+	return to_string(this->ascii);
 }
 
 bool Character::operator ==(const Character& rhs)
@@ -1060,95 +1321,164 @@ bool Character::operator !=(const Character& rhs)
 	return !(*this == rhs);
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // Letter 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 Letter::Letter()
 {
-	this->ascii == 0;
-	this->type == character_t::UNKNOWN;
-
-	this->value == letter_t::NONE;
-	this->modification == modification_t::NONE;
-	this->position == position_t::NONE;
+	Reset();
 }
-Letter::Letter(int ascii, Position = Position::NONE) : Letter()
+Letter::Letter(int ascii, Position position) : Letter()
 {
-
+	this->SetASCII(ascii);
+	this->position = position;
 }
-Letter::Letter(Value, Position = Position::NONE)
+Letter::Letter(Value value, Position position) : Letter()
 {
-
+	this->ascii = to_ascii(value);
+	this->value = value;
+	this->modification = Modification::NONE;
+	this->position = position;
 }
-Letter::Letter(int, Modification, Position = Position::NONE)
+Letter::Letter(Value value, Modification modification, Position position) : Letter()
 {
-
-}
-Letter::Letter(Value, Modification, Position = Position::NONE)
-{
-
+	this->ascii = to_ascii(value, modification);
+	this->value = value;
+	this->modification = modification;
+	this->position = position;
 }
 
 void Letter::Reset()
 {
+	this->ascii = 0;
+	this->type = character_t::LETTER;
 
+	this->value = letter_t::NONE;
+	this->modification = modification_t::NONE;
+	this->position = position_t::NONE;
 }
 
-void Letter::SetASCII(int)
+void Letter::SetASCII(int ascii)
 {
-
+	this->ascii = ascii;
+	this->value = get_letter(ascii);
+	this->modification = get_modification(ascii);
 }
 letter_t Letter::GetValue()
 {
-
+	return this->value;
 }
 
 modification_t Letter::GetModification()
 {
-
+	return this->modification;
 }
-void Letter::SetModification(modification_t)
+void Letter::SetModification(modification_t m)
 {
-
+	this->modification = m;
+	this->ascii = to_ascii(this->value, m);
 }
 
 position_t Letter::GetPosition()
 {
-
+	return this->position;
 }
-void Letter::SetPosition(position_t)
+void Letter::SetPosition(position_t p)
 {
-
+	this->position = p;
 }
 
 int Letter::GetAbjadValue()
 {
-
+	return abjad_value(this->ascii);
 }
 int Letter::GetSequentialValue()
 {
-
+	return sequential_value(this->ascii);
 }
 
-std::string Letter::SoundOf()
-{
-
-}
-std::string Letter::ToString()
-{
-
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Diacritic 
 ///////////////////////////////////////////////////////////////////////////////
 
 
+Diacritic::Diacritic()
+{
+	Reset();
+}
+Diacritic::Diacritic(int ascii)
+{
+	this->SetASCII(ascii);
+}
+Diacritic::Diacritic(Value value)
+{
+	this->GetValue(value);
+}
+
+void Diacritic::Reset()
+{
+	this->ascii = 0;
+	this->value = diacritic_t::NONE;
+}
+void Diacritic::SetASCII(int ascii)
+{
+	this->ascii = ascii;
+	this->value = get_diacritic(ascii);
+}
+
+void Diacritic::GetValue(Value value)
+{
+	this->ascii = to_ascii(value);
+	this->value = value;
+}
+diacritic_t Diacritic::GetValue()
+{
+	return this->value;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Symbol 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+Symbol::Symbol()
+{
+	Reset();
+}
+Symbol::Symbol(int ascii)
+{
+	this->SetASCII(ascii);
+}
+Symbol::Symbol(Value value)
+{
+	this->GetValue(value);
+}
+
+void Symbol::Reset()
+{
+	this->ascii = 0;
+	this->value = symbol_t::NONE;
+}
+void Symbol::SetASCII(int ascii)
+{
+	this->ascii = ascii;
+	this->value = get_symbol(ascii);
+}
+
+void Symbol::GetValue(Value value)
+{
+	this->ascii = to_ascii(value);
+	this->value = value;
+}
+symbol_t Symbol::GetValue()
+{
+	return this->value;
+}
 
 
 /*
@@ -1318,11 +1648,11 @@ std::string Arabic_old::to_string(int ascii)
 /// <summary>
 /// Converts a Character to a string
 /// </summary>
-/// <param name="c:">Character to convert</param>
+/// <param name="character:">Character to convert</param>
 /// <returns>string representation of a Character</returns>
-std::string Arabic_old::to_string(Character c)
+std::string Arabic_old::to_string(Character character)
 {
-	switch (c)
+	switch (character)
 	{
 		case Character::NONE:
 			return "NONE"
@@ -1620,11 +1950,11 @@ int Arabic_old::to_ascii(std::string hex)
 /// <summary>
 /// Converts a Character to its ascii representation
 /// </summary>
-/// <param name="c:">Character to convert</param>
+/// <param name="character:">Character to convert</param>
 /// <returns>ascii representation of a Character (without additional diacritics)</returns>
-int Arabic_old::to_ascii(Character c)
+int Arabic_old::to_ascii(Character character)
 {
-	return ASCIIByLetter[Letter(c)]
+	return ASCIIByLetter[Letter(character)]
 }
 /// <summary>
 /// Converts a Diacritic to its ascii representation
@@ -1640,9 +1970,9 @@ int Arabic_old::to_ascii(Diacritic d)
 /// </summary>
 /// <param name="rhs:">Letter to convert</param>
 /// <returns>ascii representation of a Letter</returns>
-int Arabic_old::to_ascii(Letter l)
+int Arabic_old::to_ascii(Letter letter)
 {
-	return ASCIIByLetter[l]
+	return ASCIIByLetter[letter]
 }
 
 /// <summary>
@@ -1659,11 +1989,11 @@ std::string Arabic_old::to_hex(int n)
 /// <summary>
 /// Converts a Character to its hexadecimal representation
 /// </summary>
-/// <param name="c:">Character to convert</param>
+/// <param name="character:">Character to convert</param>
 /// <returns>hexadecimal representation of a Character</returns>
-std::string Arabic_old::to_hex(Character c)
+std::string Arabic_old::to_hex(Character character)
 {
-	return to_hex(to_ascii(c))
+	return to_hex(to_ascii(character))
 }
 /// <summary>
 /// Converts a Diacritic to its hexadecimal representation
@@ -1679,28 +2009,28 @@ std::string Arabic_old::to_hex(Diacritic d)
 /// </summary>
 /// <param name="rhs:">Letter to convert</param>
 /// <returns>hexadecimal representation of a Letter</returns>
-std::string Arabic_old::to_hex(Letter l)
+std::string Arabic_old::to_hex(Letter letter)
 {
-	return to_hex(to_ascii(l))
+	return to_hex(to_ascii(letter))
 }
 
 /// <summary>
 /// Returns the abjad value of a Character
 /// </summary>
-/// <param name="c:">Character to convert</param>
+/// <param name="character:">Character to convert</param>
 /// <returns>abjad value of a Character</returns>
-int Arabic_old::abjad_value(Character c)
+int Arabic_old::abjad_value(Character character)
 {
-	return abs(static_cast<int>(c))
+	return abs(static_cast<int>(character))
 }
 /// <summary>
 /// Returns the abjad value of a Letter
 /// </summary>
 /// <param name="rhs:">Letter to convert</param>
 /// <returns>abjad value of a Letter</returns>
-int Arabic_old::abjad_value(Letter l)
+int Arabic_old::abjad_value(Letter letter)
 {
-	return abjad_value(l.GetCharacter())
+	return abjad_value(letter.GetCharacter())
 }
 /// <summary>
 /// Returns the abjad value of a vector of Letters
@@ -1711,8 +2041,8 @@ int Arabic_old::abjad_value(std::vector<Letter> ls)
 {
 	int sum = 0
 
-	for (auto& l : ls)
-		sum += abjad_value(l)
+	for (auto& letter : ls)
+		sum += abjad_value(letter)
 
 	return sum
 }
@@ -1725,8 +2055,8 @@ int Arabic_old::abjad_value(Word w)
 {
 	int sum = 0
 
-	for (auto& l : w.GetLetters())
-		sum += abjad_value(l)
+	for (auto& letter : w.GetLetters())
+		sum += abjad_value(letter)
 
 	return sum
 }
@@ -1750,11 +2080,11 @@ int Arabic_old::abjad_value(std::vector<Word> ws)
 /// <summary>
 /// Returns the sequential value of a Character
 /// </summary>
-/// <param name="c:">Character to convert</param>
+/// <param name="character:">Character to convert</param>
 /// <returns>sequential value of a Character</returns>
-int Arabic_old::sequential_value(Character c)
+int Arabic_old::sequential_value(Character character)
 {
-	switch (c)
+	switch (character)
 	{
 		case Character::HAMZAH:
 		case Character::ALIF:
@@ -1822,9 +2152,9 @@ int Arabic_old::sequential_value(Character c)
 /// </summary>
 /// <param name="rhs:">Letter to convert</param>
 /// <returns>sequential value of a Letter</returns>
-int Arabic_old::sequential_value(Letter l)
+int Arabic_old::sequential_value(Letter letter)
 {
-	return sequential_value(l.GetCharacter())
+	return sequential_value(letter.GetCharacter())
 }
 /// <summary>
 /// Returns the sequential value of a vector of Letters
@@ -1835,8 +2165,8 @@ int Arabic_old::sequential_value(std::vector<Letter> ls)
 {
 	int sum = 0
 
-	for (auto& l : ls)
-		sum += sequential_value(l)
+	for (auto& letter : ls)
+		sum += sequential_value(letter)
 
 	return sum
 }
@@ -1849,8 +2179,8 @@ int Arabic_old::sequential_value(Word w)
 {
 	int sum = 0
 
-	for (auto& l : w.GetLetters())
-		sum += sequential_value(l)
+	for (auto& letter : w.GetLetters())
+		sum += sequential_value(letter)
 
 	return sum
 }
@@ -2125,12 +2455,12 @@ std::string Arabic_old::sound_of(Character character, Diacritic modification, st
 /// <summary>
 /// Returns the sound that a Letter makes, with the option to visualize its Diacritics
 /// </summary>
-/// <param name="l:">Letter to convert</param>
+/// <param name="letter:">Letter to convert</param>
 /// <param name="includeDiacritics:">if set to true, the Diacritics' sounds will be textualized as well (default true)</param>
 /// <returns>std::string representation of the Letter's sound</returns>
-std::string Arabic_old::sound_of(Letter l, bool includeDiacritics)
+std::string Arabic_old::sound_of(Letter letter, bool includeDiacritics)
 {
-	return sound_of(l.GetCharacter(), l.GetModification(), l.GetDiacritics(), l.GetPosition(), includeDiacritics)
+	return sound_of(letter.GetCharacter(), letter.GetModification(), letter.GetDiacritics(), letter.GetPosition(), includeDiacritics)
 }
 /// <summary>
 /// Returns the sound that a collection of Letters make, with the option to visualize their Diacritics
@@ -2142,8 +2472,8 @@ std::string Arabic_old::sound_of(std::vector<Letter> ls, bool includeDiacritics)
 {
 	std::string sound = ""
 
-	for (auto& l : ls)
-		sound += sound_of(l, includeDiacritics)
+	for (auto& letter : ls)
+		sound += sound_of(letter, includeDiacritics)
 
 	return sound
 }
@@ -2157,8 +2487,8 @@ std::string Arabic_old::sound_of(Word w, bool includeDiacritics)
 {
 	std::string sound = ""
 
-	for (auto& l : w.GetLetters())
-		sound += sound_of(l, includeDiacritics)
+	for (auto& letter : w.GetLetters())
+		sound += sound_of(letter, includeDiacritics)
 
 	return sound
 }
@@ -2247,9 +2577,9 @@ bool Arabic_old::is_arabic(int ascii, bool checkSpace)
 /// </summary>
 /// <param name="ascii:">Character to analyze</param>
 /// <returns>boolean representing if the Character is a valid arabic ASCII value</returns>
-bool Arabic_old::is_arabic(Character c, bool checkSpace)
+bool Arabic_old::is_arabic(Character character, bool checkSpace)
 {
-	return is_character(to_ascii(c), checkSpace)
+	return is_character(to_ascii(character), checkSpace)
 }
 /// <summary>
 /// Returns true if a Diacritic is a valid arabic ASCII value, and false otherwise
@@ -2265,15 +2595,15 @@ bool Arabic_old::is_arabic(Diacritic d)
 /// </summary>
 /// <param name="rhs:">Letter to analyze</param>
 /// <returns>boolean representing if the Letter contains valid arabic ASCII values</returns>
-bool Arabic_old::is_arabic(Letter l, bool checkSpace)
+bool Arabic_old::is_arabic(Letter letter, bool checkSpace)
 {
-	for (auto& d : l.GetDiacritics())
+	for (auto& d : letter.GetDiacritics())
 		if (!is_arabic(d))
 			return false
 
-	bool test = is_character(to_ascii(l), checkSpace)
+	bool test = is_character(to_ascii(letter), checkSpace)
 
-	return is_character(to_ascii(l), checkSpace)
+	return is_character(to_ascii(letter), checkSpace)
 }
 /// <summary>
 /// Returns true if a Word contains valid arabic ASCII values, and false otherwise
@@ -2282,8 +2612,8 @@ bool Arabic_old::is_arabic(Letter l, bool checkSpace)
 /// <returns>boolean representing if the Word contains valid arabic ASCII values</returns>
 bool Arabic_old::is_arabic(Word w, bool checkSpace)
 {
-	for (auto& l: w.GetLetters())
-		if (!is_arabic(l, checkSpace))
+	for (auto& letter: w.GetLetters())
+		if (!is_arabic(letter, checkSpace))
 			return false
 
 	return true
@@ -2795,10 +3125,10 @@ Word::Word()
 /// <summary>
 /// Word constructor using a Letter
 /// </summary>
-/// <param name="l:">the Letter to add</param>
-Word::Word(Letter l) : Word()
+/// <param name="letter:">the Letter to add</param>
+Word::Word(Letter letter) : Word()
 {
-	this->letters.push_back(l)
+	this->letters.push_back(letter)
 }
 /// <summary>
 /// Word constructor using a std::vector of Letters
@@ -3162,8 +3492,8 @@ int Word::ASCIICount() const
 {
 	int sum = 0
 
-	for (auto l : this->letters)
-		sum += l.ASCIICount()
+	for (auto letter : this->letters)
+		sum += letter.ASCIICount()
 
 	return sum
 }
@@ -3175,8 +3505,8 @@ int Word::CharacterCount() const
 {
 	int sum = 0
 
-	for (auto l : this->letters)
-		if (l.GetCharacter() != Character::NONE)
+	for (auto letter : this->letters)
+		if (letter.GetCharacter() != Character::NONE)
 			sum ++
 
 	return sum
@@ -3197,8 +3527,8 @@ int Word::DiacriticCount() const
 {
 	int sum = 0
 
-	for (auto l : this->letters)
-		sum += l.DiacriticCount()
+	for (auto letter : this->letters)
+		sum += letter.DiacriticCount()
 
 	return sum
 }
@@ -3206,10 +3536,10 @@ int Word::DiacriticCount() const
 /// <summary>
 /// Gets the number of occurances of a specified Letter within a Word
 /// </summary>
-/// <param name="l:">the Letter of interest</param>
+/// <param name="letter:">the Letter of interest</param>
 /// <returns>integer representing the number of occurances of the desired Letter in the Word</returns>
-int Word::OccuranceOf(Letter l) const
+int Word::OccuranceOf(Letter letter) const
 {
-	return Utilities::occurance_of(this->letters, l)
+	return Utilities::occurance_of(this->letters, letter)
 }
 */
