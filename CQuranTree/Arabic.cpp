@@ -1235,6 +1235,10 @@ bool Arabic::is_letter(int ascii, bool checkspace)
 		|| (ascii >= 1600 && ascii <= 1610)		// and alif waslah (1649) can be either a Letter or
 		|| (ascii >= 1648 && ascii <= 1649);	// Diacritic, depending on the use case
 }
+bool Arabic::is_letter(Character* character, bool checkspace)
+{
+	return character->GetType() == character_t::LETTER && (!checkspace || character->GetASCII() == ' ');
+}
 bool Arabic::is_diacritic(int ascii)
 {
 	// meem saakin - 1762/0x6e2   <------------	// does not appear in quran text?
@@ -1248,6 +1252,10 @@ bool Arabic::is_diacritic(int ascii)
 		|| (ascii >= 1765 && ascii <= 1768)
 		|| (ascii >= 1770 && ascii <= 1772);
 }
+bool Arabic::is_diacritic(Character* character)
+{
+	return character->GetType() == character_t::DIACRITIC;
+}
 bool Arabic::is_symbol(int ascii)
 {
 	return (ascii >= 1750 && ascii <= 1756)
@@ -1255,6 +1263,10 @@ bool Arabic::is_symbol(int ascii)
 		||  ascii == 1762
 		||  ascii == 1769
 		||  ascii == 1773;
+}
+bool Arabic::is_symbol(Character* character)
+{
+	return character->GetType() == character_t::SYMBOL;
 }
 bool Arabic::is_arabic(int ascii, bool checkspace)
 {

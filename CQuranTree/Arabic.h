@@ -220,7 +220,7 @@ namespace Arabic
 	std::string to_string(int);
 	std::string to_string(Character*);
 
-	int to_ascii(letter_t, modification_t = modification_t::NONE);
+	int to_ascii(letter_t, modification_t = modification_t::NONE);\
 	int to_ascii(diacritic_t);
 	int to_ascii(symbol_t);
 
@@ -251,8 +251,11 @@ namespace Arabic
 	std::string sound_of(std::vector<Character*>, bool = true);
 
 	bool is_letter(int, bool = false);
+	bool is_letter(Character*, bool = false);
 	bool is_diacritic(int);
+	bool is_diacritic(Character*);
 	bool is_symbol(int);
+	bool is_symbol(Character*);
 	bool is_arabic(int, bool = false);
 
 	bool has_modification(int);

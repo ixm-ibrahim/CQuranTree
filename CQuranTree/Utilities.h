@@ -5,6 +5,19 @@
 namespace Utilities
 {
 	template <class T>
+	bool equals(std::vector<T> a, std::vector<T> b)
+	{
+		if (a.size() != b.size())
+			return false;
+		
+		for (unsigned int i = 0; i < a.size(); i++)
+			if (a[i] != b[i])
+				return false;
+
+		return true;
+	}
+	
+	template <class T>
 	int index_of(std::vector<T> vec, T elem)
 	{
 		for (unsigned int i = 0; i < vec.size(); i++)
