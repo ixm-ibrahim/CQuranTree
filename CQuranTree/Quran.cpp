@@ -12,9 +12,203 @@ bool Quran::is_makkan(revelation_t r)
 {
 	return r == revelation_t::MAKKAN || r == revelation_t::LATE_MAKKAN;
 }
+bool Quran::is_makkan(CQuranNode* n)
+{
+	return is_makkan(n->GetAttributes().revelationPeriod);
+}
 bool Quran::is_madinan(revelation_t r)
 {
 	return r == revelation_t::MADINAN;
+}
+bool Quran::is_madinan(CQuranNode* n)
+{
+	return is_madinan(n->GetAttributes().revelationPeriod);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Attributes 
+///////////////////////////////////////////////////////////////////////////////
+
+
+Attributes::Attributes()
+{
+	this->textualPosition = TextualPosition();
+	this->grammar = Grammar();
+	this->revelationPeriod = RevelationPeriod::UNKNOWN;
+	this->characterType = character_t::UNKNOWN;
+	this->hasSymbol = false;
+	this->isBasmallah = false;
+	this->hasIndependentWaw = false;
+	this->isHamzahBetweenLamAlif = false;
+}
+Attributes::Attributes(TextualPosition textualPosition, Grammar grammar, RevelationPeriod revelationPeriod, character_t characterType, bool hasSymbol, bool isBasmallah, bool hasIndependentWaw, bool isHamzahBetweenLamAlif)
+{
+	this->textualPosition = textualPosition;
+	this->grammar = grammar;
+	this->revelationPeriod = revelationPeriod;
+	this->characterType = characterType;
+	this->hasSymbol = hasSymbol;
+	this->isBasmallah = isBasmallah;
+	this->hasIndependentWaw = hasIndependentWaw;
+	this->isHamzahBetweenLamAlif = isHamzahBetweenLamAlif;
+}
+
+void Attributes::copy(Attributes& to, Attributes from)
+{
+	TextualPosition::copy(to.textualPosition, from.textualPosition);
+	Grammar::copy(to.grammar, from.grammar);
+	to.revelationPeriod = from.revelationPeriod;
+	to.characterType = from.characterType;
+	to.hasSymbol = from.hasSymbol;
+	to.isBasmallah = from.isBasmallah;
+	to.hasIndependentWaw = from.hasIndependentWaw;
+	to.isHamzahBetweenLamAlif = from.isHamzahBetweenLamAlif;
+}
+
+Attributes Attributes::operator =(const Attributes& rhs)
+{
+	copy(*this, rhs);
+	return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// TextualPosition 
+///////////////////////////////////////////////////////////////////////////////
+
+
+Attributes::TextualPosition::TextualPosition()
+{
+	this->chapterNum = 0;
+	this->verseNum = 0;
+	this->verseNumInChapter = 0;
+	this->wordNum = 0;
+	this->wordNumInVerse = 0;
+	this->wordNumInChapter = 0;
+	this->letterNum = 0;
+	this->letterNumInWord = 0;
+	this->letterNumInVerse = 0;
+	this->letterNumInChapter = 0;
+	this->characterNum = 0;
+	this->characterNumInLetter = 0;
+	this->characterNumInWord = 0;
+	this->characterNumInVerse = 0;
+	this->characterNumInChapter = 0;
+	this->pageNum = 0;
+	this->stationNum = 0;
+	this->partNum = 0;
+	this->halfNum = 0;
+	this->quarterNum = 0;
+	this->bowingNum = 0;
+	this->basmallahNum = 0;
+	this->independentWawNum = 0;
+	this->hamzahLetterNum = 0;
+	this->hamzahBetweenAlifLamNum = 0;
+}
+Attributes::TextualPosition::TextualPosition(int chapterNum, int verseNum, int verseNumInChapter, int wordNum, int wordNumInVerse, int wordNumInChapter, int letterNum, int letterNumInWord, int letterNumInVerse, int letterNumInChapter, int characterNum, int characterNumInLetter, int characterNumInWord, int characterNumInVerse, int characterNumInChapter, int pageNum, int stationNum, int partNum, int halfNum, int quarterNum, int bowingNum, int basmallahNum, int independentWawNum, int hamzahLetterNum, int hamzahBetweenAlifLamNum)
+{
+	this->chapterNum = chapterNum;
+	this->verseNum = verseNum;
+	this->verseNumInChapter = verseNumInChapter;
+	this->wordNum = wordNum;
+	this->wordNumInVerse = wordNumInVerse;
+	this->wordNumInChapter = wordNumInChapter;
+	this->letterNum = letterNum;
+	this->letterNumInWord = letterNumInWord;
+	this->letterNumInVerse = letterNumInVerse;
+	this->letterNumInChapter = letterNumInChapter;
+	this->characterNum = characterNum;
+	this->characterNumInLetter = characterNumInLetter;
+	this->characterNumInWord = characterNumInWord;
+	this->characterNumInVerse = characterNumInVerse;
+	this->characterNumInChapter = characterNumInChapter;
+	this->pageNum = pageNum;
+	this->stationNum = stationNum;
+	this->partNum = partNum;
+	this->halfNum = halfNum;
+	this->quarterNum = quarterNum;
+	this->bowingNum = bowingNum;
+	this->basmallahNum = basmallahNum;
+	this->independentWawNum = independentWawNum;
+	this->hamzahLetterNum = hamzahLetterNum;
+	this->hamzahBetweenAlifLamNum = hamzahBetweenAlifLamNum;
+}
+
+void Attributes::TextualPosition::copy(TextualPosition& to, TextualPosition from)
+{
+	to.chapterNum = from.chapterNum;
+	to.verseNum = from.verseNum;
+	to.verseNumInChapter = from.verseNumInChapter;
+	to.wordNum = from.wordNum;
+	to.wordNumInVerse = from.wordNumInVerse;
+	to.wordNumInChapter = from.wordNumInChapter;
+	to.letterNum = from.letterNum;
+	to.letterNumInWord = from.letterNumInWord;
+	to.letterNumInVerse = from.letterNumInVerse;
+	to.letterNumInChapter = from.letterNumInChapter;
+	to.characterNum = from.characterNum;
+	to.characterNumInLetter = from.characterNumInLetter;
+	to.characterNumInWord = from.characterNumInWord;
+	to.characterNumInVerse = from.characterNumInVerse;
+	to.characterNumInChapter = from.characterNumInChapter;
+	to.pageNum = from.pageNum;
+	to.stationNum = from.stationNum;
+	to.partNum = from.partNum;
+	to.halfNum = from.halfNum;
+	to.quarterNum = from.quarterNum;
+	to.bowingNum = from.bowingNum;
+	to.basmallahNum = from.basmallahNum;
+	to.independentWawNum = from.independentWawNum;
+	to.hamzahLetterNum = from.hamzahLetterNum;
+	to.hamzahBetweenAlifLamNum = from.hamzahBetweenAlifLamNum;
+}
+
+Attributes::TextualPosition Attributes::TextualPosition::operator =(const TextualPosition& rhs)
+{
+	copy(*this, rhs);
+	return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Grammar 
+///////////////////////////////////////////////////////////////////////////////
+
+
+Attributes::Grammar::Grammar()
+{
+	this->root = std::vector<letter_t>(0);
+	this->type = Type::NONE;
+	this->tense = Tense::NONE;
+	this->quantity = Quantity::NONE;
+	this->gender = Gender::NONE;
+	this->person = Person::NONE;
+}
+Attributes::Grammar::Grammar(std::vector<letter_t> root, Type type, Tense tense, Quantity quantity, Gender gender, Person person)
+{
+	this->root = root;
+	this->type = type;
+	this->tense = tense;
+	this->quantity = quantity;
+	this->gender = gender;
+	this->person = person;
+}
+
+void Attributes::Grammar::copy(Grammar& to, Grammar from)
+{
+	to.root = from.root;
+	to.type = from.type;
+	to.tense = from.tense;
+	to.quantity = from.quantity;
+	to.gender = from.gender;
+	to.person = from.person;
+}
+
+Attributes::Grammar  Attributes::Grammar::operator =(const Grammar& rhs)
+{
+	copy(*this, rhs);
+	return *this;
 }
 
 
@@ -22,7 +216,7 @@ bool Quran::is_madinan(revelation_t r)
 // CQuranNode 
 ///////////////////////////////////////////////////////////////////////////////
 
-//@TODO: make sure symbols are ignored in searches!!! (except for searching specifically for symbols obviously)
+
 bool CQuranNode::copy_links_and_attributes(CQuranNode* newN, CQuranNode* oldN, bool deleteOldN)
 {
 	if (newN->type != oldN->type)
@@ -40,7 +234,7 @@ bool CQuranNode::copy_links_and_attributes(CQuranNode* newN, CQuranNode* oldN, b
 	newN->previousVerse = oldN->previousVerse;
 	newN->nextChapter = oldN->nextChapter;
 	newN->previousChapter = oldN->previousChapter;
-	// this will be updated as needed in the following section
+	// the following will be updated as needed in the following section
 	newN->currentCharacter = oldN->currentCharacter;
 	newN->currentWord = oldN->currentWord;
 	newN->currentVerse = oldN->currentVerse;
@@ -475,7 +669,7 @@ CQuranWord* CQuranNode::GetNextWawWord()
 	{
 		current = current->nextWord;
 
-		if (current->GetAttributes().isIndependentWaw)
+		if (current->GetAttributes().hasIndependentWaw)
 			return current;
 	} while (current != nullptr);
 
@@ -489,7 +683,7 @@ CQuranWord* CQuranNode::GetPreviousWawWord()
 	{
 		current = current->previousWord;
 
-		if (current->GetAttributes().isIndependentWaw)
+		if (current->GetAttributes().hasIndependentWaw)
 			return current;
 	} while (current != nullptr);
 
@@ -848,7 +1042,7 @@ CQuranCharacter* CQuranNode::GetPreviousCharacter(CQuranCharacter* character)
 	return nullptr;
 }
 
-CQuranWord* CQuranNode::GetNextWord(std::vector<int> asciis, bool includeDiacritics)
+CQuranWord* CQuranNode::GetNextWord(std::vector<int> asciis, int searchParameters)
 {
 	auto current = this->currentWord;
 
@@ -856,7 +1050,7 @@ CQuranWord* CQuranNode::GetNextWord(std::vector<int> asciis, bool includeDiacrit
 	{
 		current = current->nextWord;
 
-		if (CQuranTree::Equals(current, asciis, includeDiacritics))
+		if (CQuranTree::Equals(current, asciis, searchParameters))
 			return current;
 	} while (current != nullptr);
 
@@ -876,7 +1070,21 @@ CQuranWord* CQuranNode::GetNextWord(std::vector<letter_t> letters)
 
 	return nullptr;
 }
-CQuranWord* CQuranNode::GetNextWord(std::vector<Character*> characters, bool includeDiacritics)
+CQuranWord* CQuranNode::GetNextWord(std::vector<Character*> characters, int searchParameters)
+{
+	auto current = this->currentWord;
+	
+	do
+	{
+		current = current->nextWord;
+
+		if (CQuranTree::Equals(current, characters, searchParameters))
+			return current;
+	} while (current != nullptr);
+
+	return nullptr;
+}
+CQuranWord* CQuranNode::GetNextWord(std::vector<CQuranCharacter*> characters, int searchParameters)
 {
 	auto current = this->currentWord;
 
@@ -884,13 +1092,13 @@ CQuranWord* CQuranNode::GetNextWord(std::vector<Character*> characters, bool inc
 	{
 		current = current->nextWord;
 
-		if (CQuranTree::Equals(current, characters, includeDiacritics))
+		if (CQuranTree::Equals(current, characters, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
-CQuranWord* CQuranNode::GetNextWord(std::vector<CQuranCharacter*> characters, bool includeDiacritics)
+CQuranWord* CQuranNode::GetNextWord(CQuranWord* word, int searchParameters)
 {
 	auto current = this->currentWord;
 
@@ -898,27 +1106,13 @@ CQuranWord* CQuranNode::GetNextWord(std::vector<CQuranCharacter*> characters, bo
 	{
 		current = current->nextWord;
 
-		if (CQuranTree::Equals(current, characters, includeDiacritics))
+		if (CQuranTree::Equals(current, word, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
-CQuranWord* CQuranNode::GetNextWord(CQuranWord* word, bool includeDiacritics)
-{
-	auto current = this->currentWord;
-
-	do
-	{
-		current = current->nextWord;
-
-		if (CQuranTree::Equals(current, word, includeDiacritics))
-			return current;
-	} while (current != nullptr);
-
-	return nullptr;
-}
-CQuranWord* CQuranNode::GetPreviousWord(std::vector<int> asciis, bool includeDiacritics)
+CQuranWord* CQuranNode::GetPreviousWord(std::vector<int> asciis, int searchParameters)
 {
 	auto current = this->currentWord;
 
@@ -926,7 +1120,7 @@ CQuranWord* CQuranNode::GetPreviousWord(std::vector<int> asciis, bool includeDia
 	{
 		current = current->previousWord;
 
-		if (CQuranTree::Equals(current, asciis, includeDiacritics))
+		if (CQuranTree::Equals(current, asciis, searchParameters))
 			return current;
 	} while (current != nullptr);
 
@@ -946,7 +1140,7 @@ CQuranWord* CQuranNode::GetPreviousWord(std::vector<letter_t> letters)
 
 	return nullptr;
 }
-CQuranWord* CQuranNode::GetPreviousWord(std::vector<Character*> characters, bool includeDiacritics)
+CQuranWord* CQuranNode::GetPreviousWord(std::vector<Character*> characters, int searchParameters)
 {
 	auto current = this->currentWord;
 
@@ -954,13 +1148,13 @@ CQuranWord* CQuranNode::GetPreviousWord(std::vector<Character*> characters, bool
 	{
 		current = current->previousWord;
 
-		if (CQuranTree::Equals(current, characters, includeDiacritics))
+		if (CQuranTree::Equals(current, characters, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
-CQuranWord* CQuranNode::GetPreviousWord(std::vector<CQuranCharacter*> characters, bool includeDiacritics)
+CQuranWord* CQuranNode::GetPreviousWord(std::vector<CQuranCharacter*> characters, int searchParameters)
 {
 	auto current = this->currentWord;
 
@@ -968,13 +1162,13 @@ CQuranWord* CQuranNode::GetPreviousWord(std::vector<CQuranCharacter*> characters
 	{
 		current = current->previousWord;
 
-		if (CQuranTree::Equals(current, characters, includeDiacritics))
+		if (CQuranTree::Equals(current, characters, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
-CQuranWord* CQuranNode::GetPreviousWord(CQuranWord* word, bool includeDiacritics)
+CQuranWord* CQuranNode::GetPreviousWord(CQuranWord* word, int searchParameters)
 {
 	auto current = this->currentWord;
 
@@ -982,7 +1176,7 @@ CQuranWord* CQuranNode::GetPreviousWord(CQuranWord* word, bool includeDiacritics
 	{
 		current = current->previousWord;
 
-		if (CQuranTree::Equals(current, word, includeDiacritics))
+		if (CQuranTree::Equals(current, word, searchParameters))
 			return current;
 	} while (current != nullptr);
 
@@ -1194,7 +1388,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithRoot(CQuranWord* word)
 	return nullptr;
 }
 
-CQuranVerse* CQuranNode::GetNextVerseWithWord(std::vector<int> asciis, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetNextVerseWithWord(std::vector<int> asciis, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1202,7 +1396,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithWord(std::vector<int> asciis, bool incl
 	{
 		current = current->nextVerse;
 
-		if (CQuranTree::Contains(current, asciis, includeDiacritics))
+		if (CQuranTree::Contains(current, asciis, searchParameters))
 			return current;
 	} while (current != nullptr);
 
@@ -1222,7 +1416,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithWord(std::vector<letter_t> letters)
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetNextVerseWithWord(std::vector<Character*> characters, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetNextVerseWithWord(std::vector<Character*> characters, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1230,13 +1424,13 @@ CQuranVerse* CQuranNode::GetNextVerseWithWord(std::vector<Character*> characters
 	{
 		current = current->nextVerse;
 
-		if (CQuranTree::Contains(current, characters, includeDiacritics))
+		if (CQuranTree::Contains(current, characters, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetNextVerseWithWord(CQuranWord* word, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetNextVerseWithWord(CQuranWord* word, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1244,13 +1438,13 @@ CQuranVerse* CQuranNode::GetNextVerseWithWord(CQuranWord* word, bool includeDiac
 	{
 		current = current->nextVerse;
 
-		if (CQuranTree::Contains(current, word, includeDiacritics))
+		if (CQuranTree::Contains(current, word, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetPreviousVerseWithWord(std::vector<int> asciis, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetPreviousVerseWithWord(std::vector<int> asciis, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1258,7 +1452,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithWord(std::vector<int> asciis, bool 
 	{
 		current = current->previousVerse;
 
-		if (CQuranTree::Contains(current, asciis, includeDiacritics))
+		if (CQuranTree::Contains(current, asciis, searchParameters))
 			return current;
 	} while (current != nullptr);
 
@@ -1278,7 +1472,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithWord(std::vector<letter_t> letters)
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetPreviousVerseWithWord(std::vector<Character*> characters, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetPreviousVerseWithWord(std::vector<Character*> characters, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1286,13 +1480,13 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithWord(std::vector<Character*> charac
 	{
 		current = current->previousVerse;
 
-		if (CQuranTree::Contains(current, characters, includeDiacritics))
+		if (CQuranTree::Contains(current, characters, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetPreviousVerseWithWord(CQuranWord* word, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetPreviousVerseWithWord(CQuranWord* word, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1300,14 +1494,14 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithWord(CQuranWord* word, bool include
 	{
 		current = current->previousVerse;
 
-		if (CQuranTree::Contains(current, word, includeDiacritics))
+		if (CQuranTree::Contains(current, word, searchParameters))
 			return current;
 	} while (current != nullptr);
 
 	return nullptr;
 }
 
-CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<int> asciis, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<int> asciis, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1321,7 +1515,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<int> asciis, bool in
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()) && !includeDiacritics)
+			if (is_symbol(testC->GetCharacter()) || (is_diacritic(testC->GetCharacter()) && !searchParameters))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1357,7 +1551,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<letter_t> phrase)
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()))
+			if (is_symbol(testC->GetCharacter()) || is_diacritic(testC->GetCharacter()))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1379,7 +1573,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<letter_t> phrase)
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<Character*> phrase, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<Character*> phrase, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1393,7 +1587,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<Character*> phrase, 
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()) && !includeDiacritics)
+			if (is_symbol(testC->GetCharacter()) || (is_diacritic(testC->GetCharacter()) && !searchParameters))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1415,7 +1609,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<Character*> phrase, 
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<CQuranCharacter*> phrase, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<CQuranCharacter*> phrase, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1429,7 +1623,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<CQuranCharacter*> ph
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()) && !includeDiacritics)
+			if (is_symbol(testC->GetCharacter()) || (is_diacritic(testC->GetCharacter()) && !searchParameters))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1451,7 +1645,7 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<CQuranCharacter*> ph
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<CQuranWord*> phrase, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<CQuranWord*> phrase, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1481,13 +1675,13 @@ CQuranVerse* CQuranNode::GetNextVerseWithPhrase(std::vector<CQuranWord*> phrase,
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<int> asciis, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<int> asciis, int searchParameters)
 {
 	auto current = this->currentVerse;
 
 	do
 	{
-		current = current->nextVerse;
+		current = current->previousVerse;
 
 		auto testC = current->currentCharacter;
 		auto nextStart = testC->GetNextCharacter();
@@ -1495,7 +1689,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<int> asciis, boo
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()) && !includeDiacritics)
+			if (is_symbol(testC->GetCharacter()) || (is_diacritic(testC->GetCharacter()) && !searchParameters))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1531,7 +1725,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<letter_t> phrase
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()))
+			if (is_symbol(testC->GetCharacter()) || is_diacritic(testC->GetCharacter()))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1553,7 +1747,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<letter_t> phrase
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<Character*> phrase, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<Character*> phrase, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1567,7 +1761,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<Character*> phra
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()) && !includeDiacritics)
+			if (is_symbol(testC->GetCharacter()) || (is_diacritic(testC->GetCharacter()) && !searchParameters))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1589,7 +1783,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<Character*> phra
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<CQuranCharacter*> phrase, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<CQuranCharacter*> phrase, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1603,7 +1797,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<CQuranCharacter*
 
 		while (testC != nullptr && testC->GetAttributes().textualPosition.verseNum == current->attributes.textualPosition.verseNum)
 		{
-			if (Arabic::is_diacritic(testC->GetCharacter()) && !includeDiacritics)
+			if (is_symbol(testC->GetCharacter()) || (is_diacritic(testC->GetCharacter()) && !searchParameters))
 			{
 				testC = testC->GetNextCharacter();
 				continue;
@@ -1625,7 +1819,7 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<CQuranCharacter*
 
 	return nullptr;
 }
-CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<CQuranWord*> phrase, bool includeDiacritics)
+CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<CQuranWord*> phrase, int searchParameters)
 {
 	auto current = this->currentVerse;
 
@@ -1664,32 +1858,43 @@ CQuranVerse* CQuranNode::GetPreviousVerseWithPhrase(std::vector<CQuranWord*> phr
 
 CQuranCharacter::CQuranCharacter()
 {
-
+	this->type = node_t::CHARACTER;
+	this->attributes = Attributes();
+	this->character = nullptr;
 }
-CQuranCharacter::CQuranCharacter(Character*)
+CQuranCharacter::CQuranCharacter(Character* c) : CQuranCharacter()
 {
-
+	this->character = c;
 }
-CQuranCharacter::CQuranCharacter(Character*, Attributes)
+CQuranCharacter::CQuranCharacter(Character* c, Attributes a) : CQuranCharacter(c)
 {
-
+	this->attributes = a;
 }
 CQuranCharacter::~CQuranCharacter()
 {
+	delete this->character;
+}
 
+Character* CQuranCharacter::GetCharacter()
+{
+	return this->character;
+}
+int CQuranCharacter::GetASCII()
+{
+	return this->character->GetASCII();
 }
 
 std::string CQuranCharacter::ToString()
 {
-
+	return to_string(this->character);
 }
-std::string CQuranCharacter::ToEnglish()
+std::string CQuranCharacter::GetTranslation()
 {
-
+	return "";
 }
-std::string CQuranCharacter::SoundOf()
+std::string CQuranCharacter::SoundOf(bool includeDiacritics)
 {
-
+	return sound_of(this->character, includeDiacritics);
 }
 
 
@@ -1700,37 +1905,72 @@ std::string CQuranCharacter::SoundOf()
 
 CQuranWord::CQuranWord()
 {
-	
+	this->type = node_t::WORD;
+	this->attributes = Attributes();
+	this->word = std::vector<CQuranCharacter*>();
+	this->translation = "";
 }
-CQuranWord::CQuranWord(std::vector<CQuranCharacter*>, std::string = "")
+CQuranWord::CQuranWord(std::vector<CQuranCharacter*> characters, std::string translation) : CQuranWord()
 {
-	
+	this->word = characters;
+	this->translation = translation;
 }
-CQuranWord::CQuranWord(std::vector<CQuranCharacter*>, Attributes, std::string = "")
+CQuranWord::CQuranWord(std::vector<CQuranCharacter*> characters, Attributes attributes, std::string translation) : CQuranWord(characters, translation)
 {
-	
+	this->attributes = attributes;
 }
 CQuranWord::~CQuranWord()
 {
-	
+	for (auto cp : this->word)
+		delete cp;
+
+	this->word.clear();
 }
 
 std::vector<CQuranCharacter*> CQuranWord::GetWord()
 {
+	return this->word;
+}
+CQuranCharacter* CQuranWord::GetCharacter(int index)
+{
+	return this->word[index];
+}
+std::vector<int> CQuranWord::GetASCII()
+{
+	std::vector<int> asciis(this->word.size());
 	
+	for (size_t i = 0; i < this->word.size(); i++)
+		asciis.push_back(this->word[i]->GetASCII());
+
+	return asciis;
 }
 
 std::string CQuranWord::ToString()
 {
-	
+	std::string str = this->word[0]->ToString();
+
+	for (size_t i = 1; i < this->word.size(); i++)
+		str += "/" + this->word[i]->ToString();
+
+	return str;
 }
-std::string CQuranWord::ToEnglish()
+std::string CQuranWord::GetTranslation()
 {
-	
+	return translation;
 }
-std::string CQuranWord::SoundOf()
+std::string CQuranWord::SoundOf(bool includeDiacritics)
 {
-	
+	std::string str = "";
+
+	for (size_t i = 0; i < this->word.size(); i++)
+		str += this->word[i]->SoundOf(includeDiacritics);
+
+	return str;
+}
+
+CQuranCharacter* CQuranWord::operator[](size_t index)
+{
+	return this->word[index];
 }
 
 
@@ -1741,37 +1981,66 @@ std::string CQuranWord::SoundOf()
 
 CQuranVerse::CQuranVerse()
 {
-	
+	this->type = node_t::VERSE;
+	this->attributes = Attributes();
+	this->verse = std::vector<CQuranWord*>();
 }
-CQuranVerse::CQuranVerse(std::vector<CQuranWord*>)
+CQuranVerse::CQuranVerse(std::vector<CQuranWord*> verse) : CQuranVerse()
 {
-	
+	this->verse = verse;
 }
-CQuranVerse::CQuranVerse(std::vector<CQuranWord*>, Attributes)
+CQuranVerse::CQuranVerse(std::vector<CQuranWord*> verse, Attributes attributes) : CQuranVerse(verse)
 {
-	
+	this->attributes = attributes;
 }
 CQuranVerse::~CQuranVerse()
 {
-	
+	for (auto wp : this->verse)
+		delete wp;
+
+	this->verse.clear();
 }
 
 std::vector<CQuranWord*> CQuranVerse::GetVerse()
 {
-	
+	return this->verse;
+}
+CQuranWord* CQuranVerse::GetWord(int index)
+{
+	return this->verse[index];
 }
 
 std::string CQuranVerse::ToString()
 {
-	
+	std::string str = this->verse[0]->ToString();
+
+	for (size_t i = 1; i < this->verse.size(); i++)
+		str += "  " + this->verse[i]->ToString();
+
+	return str;
 }
-std::string CQuranVerse::ToEnglish()
+std::string CQuranVerse::GetTranslation()
 {
-	
+	std::string str = this->verse[0]->ToString();
+
+	for (size_t i = 1; i < this->verse.size(); i++)
+		str += " " + this->verse[i]->GetTranslation();
+
+	return str;
 }
-std::string CQuranVerse::SoundOf()
+std::string CQuranVerse::SoundOf(bool includeDiacritics)
 {
-	
+	std::string str = this->verse[0]->ToString();
+
+	for (size_t i = 1; i < this->verse.size(); i++)
+		str += " " + this->verse[i]->SoundOf(includeDiacritics);
+
+	return str;
+}
+
+CQuranWord* CQuranVerse::operator[](size_t index)
+{
+	return this->verse[index];
 }
 
 
@@ -1782,37 +2051,66 @@ std::string CQuranVerse::SoundOf()
 
 CQuranChapter::CQuranChapter()
 {
-	
+	this->type = node_t::CHAPTER;
+	this->attributes = Attributes();
+	this->chapter = std::vector<CQuranVerse*>();
 }
-CQuranChapter::CQuranChapter(std::vector<CQuranVerse*>)
+CQuranChapter::CQuranChapter(std::vector<CQuranVerse*> chapter) : CQuranChapter()
 {
-	
+	this->chapter = chapter;
 }
-CQuranChapter::CQuranChapter(std::vector<CQuranVerse*>, Attributes)
+CQuranChapter::CQuranChapter(std::vector<CQuranVerse*> chapter, Attributes attributes) : CQuranChapter(chapter)
 {
-	
+	this->attributes = attributes;
 }
 CQuranChapter::~CQuranChapter()
 {
-	
+	for (auto vp : this->chapter)
+		delete vp;
+
+	this->chapter.clear();
 }
 
 std::vector<CQuranVerse*> CQuranChapter::GetChapter()
 {
-	
+	return this->chapter;
+}
+CQuranWord* CQuranChapter::GetWord(int verseIndex, int wordIndex)
+{
+	return this->chapter[verseIndex]->GetWord(wordIndex);
 }
 
 std::string CQuranChapter::ToString()
 {
-	
+	std::string str = this->chapter[0]->ToString();
+
+	for (size_t i = 1; i < this->chapter.size(); i++)
+		str += "\n" + this->chapter[i]->ToString();
+
+	return str;
 }
-std::string CQuranChapter::ToEnglish()
+std::string CQuranChapter::GetTranslation()
 {
-	
+	std::string str = this->chapter[0]->ToString();
+
+	for (size_t i = 1; i < this->chapter.size(); i++)
+		str += "\n" + this->chapter[i]->GetTranslation();
+
+	return str;
 }
-std::string CQuranChapter::SoundOf()
+std::string CQuranChapter::SoundOf(bool includeDiacritics)
 {
-	
+	std::string str = this->chapter[0]->ToString();
+
+	for (size_t i = 1; i < this->chapter.size(); i++)
+		str += "\n" + this->chapter[i]->SoundOf(includeDiacritics);
+
+	return str;
+}
+
+CQuranVerse* CQuranChapter::operator[](size_t index)
+{
+	return this->chapter[index];
 }
 
 
@@ -1821,61 +2119,116 @@ std::string CQuranChapter::SoundOf()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-CQuranTree::CQuranTree()
+void CQuranTree::PopulateData()
 {
 
 }
-CQuranTree::~CQuranTree()
+void CQuranTree::DeleteData()
 {
 
+}
+
+CQuranTree::CQuranTree()
+{
+	PopulateData();
+}
+CQuranTree::~CQuranTree()
+{
+	DeleteData();
 }
 
 std::vector<CQuranChapter*> CQuranTree::GetQuran()
 {
-	
+	return this->chapters;
 }
 
-CQuranCharacter* CQuranTree::GetSymbolAt(int)
+CQuranCharacter* CQuranTree::GetCharacterSimple(int chapterNum, int verseNum, int wordNum, int characterNum)
 {
-	
+	this->chapters[chapterNum-1]->GetVerse(verseNum-1)->GetWord(wordNum-1)->GetCharacter(characterNum-1);
 }
-CQuranCharacter* CQuranTree::GetDiacriticAt(int)
+CQuranWord* CQuranTree::GetWordSimple(int chapterNum, int verseNum, int wordNum)
 {
-	
+	return this->chapters[chapterNum-1]->GetVerse(verseNum-1)->GetWord(wordNum-1);
 }
-CQuranCharacter* CQuranTree::GetLetterAt(int)
+CQuranVerse* CQuranTree::GetVerseSimple(int chapterNum, int verseNum)
 {
-	
+	return this->chapters[chapterNum-1]->GetVerse(verseNum-1);
 }
-CQuranCharacter* CQuranTree::GetCharacterAt(int)
+CQuranChapter* CQuranTree::GetChapterSimple(int chapterNum)
 {
-	
-}
-CQuranWord* CQuranTree::GetWordAt(int, bool)
-{
-	
-}
-CQuranVerse* CQuranTree::GetBasmallahAt(int)
-{
-	
-}
-CQuranVerse* CQuranTree::GetVerseAt(int)
-{
-	
-}
-CQuranChapter* CQuranTree::GetMakkanChapterAt(int)
-{
-	
-}
-CQuranChapter* CQuranTree::GetMadinanChapterAt(int)
-{
-	
-}
-CQuranChapter* CQuranTree::GetChapterAt(int)
-{
-	
+	return this->chapters[chapterNum-1];
 }
 
+CQuranCharacter* CQuranTree::GetSymbolTotal(int)
+{
+	
+}
+CQuranCharacter* CQuranTree::GetDiacriticTotal(int)
+{
+	
+}
+CQuranCharacter* CQuranTree::GetLetterTotal(int textualPosition, int searchParameters)
+{
+	
+}
+CQuranCharacter* CQuranTree::GetCharacterTotal(int)
+{
+	
+}
+CQuranWord* CQuranTree::GetWordTotal(int, bool)
+{
+	
+}
+CQuranVerse* CQuranTree::GetVerseTotal(int verseNum, int searchParameters)
+{
+	
+}
+CQuranChapter* CQuranTree::GetChapterTotal(int chapterNum)
+{
+	return this->chapters[chapterNum];
+}
+
+CQuranVerse* CQuranTree::GetBasmallahAt(int basmallahNum)
+{
+	if (basmallahNum >= 1 && basmallahNum <= 8)
+		return this->chapters[basmallahNum-1]->GetVerse(0);
+	if (basmallahNum >= 9 && basmallahNum <= 26)
+		return this->chapters[basmallahNum]->GetVerse(0);
+	if (basmallahNum == 27)
+		return (*this->chapters[27])[0];
+
+	return nullptr;
+}
+CQuranChapter* CQuranTree::GetMakkanChapterAt(int makkanChapterNum)
+{
+	int count = 0;
+
+	for (size_t i = 0; i < 114; i++)
+	{
+		if (is_makkan(this->chapters[i]))
+			count++;
+
+		if (count == makkanChapterNum)
+			return this->chapters[i];
+	}
+
+	return nullptr;
+}
+CQuranChapter* CQuranTree::GetMadinanChapterAt(int madinanChapterNum)
+{
+	int count = 0;
+
+	for (size_t i = 0; i < 114; i++)
+	{
+		if (is_madinan(this->chapters[i]))
+			count++;
+
+		if (count == madinanChapterNum)
+			return this->chapters[i];
+	}
+
+	return nullptr;
+}
 
 // ex.with word, display counts of each grammatical category
 int CQuranTree::LetterCount(int)
@@ -1919,11 +2272,11 @@ int CQuranTree::WordCount(std::vector<letter_t>)
 {
 	
 }
-int CQuranTree::WordCount(std::vector<Character>, bool = false)
+int CQuranTree::WordCount(std::vector<Character*>, int)
 {
 	
 }
-int CQuranTree::WordCount(CQuranWord*, bool = false)
+int CQuranTree::WordCount(CQuranWord*, int)
 {
 	
 }
@@ -1932,11 +2285,11 @@ int CQuranTree::VerseCount(std::vector<std::vector<letter_t>>)
 {
 	
 }
-int CQuranTree::VerseCount(std::vector<std::vector<Character>>, bool = false)
+int CQuranTree::VerseCount(std::vector<std::vector<Character*>>, int)
 {
 	
 }
-int CQuranTree::VerseCount(CQuranVerse*, bool = false)
+int CQuranTree::VerseCount(CQuranVerse*, int)
 {
 	
 }
@@ -1944,11 +2297,11 @@ int CQuranTree::PhraseCount(std::vector<std::vector<letter_t>>)
 {
 	
 }
-int CQuranTree::PhraseCount(std::vector<std::vector<Character>>, bool = false)
+int CQuranTree::PhraseCount(std::vector<std::vector<Character*>>, int)
 {
 	
 }
-int CQuranTree::PhraseCount(CQuranVerse*, bool = false)
+int CQuranTree::PhraseCount(CQuranVerse*, int)
 {
 	
 }
@@ -1995,11 +2348,11 @@ std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(std::vector<letter_t>)
 {
 	
 }
-std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(std::vector<Character>, bool = false)
+std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(std::vector<Character>, int)
 {
 	
 }
-std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(CQuranWord*, bool = false)
+std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(CQuranWord*, int)
 {
 	
 }
@@ -2008,11 +2361,11 @@ std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(std::vector<std::vector<
 {
 	
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(std::vector<std::vector<Character>>, bool = false)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(std::vector<std::vector<Character>>, int)
 {
 	
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(CQuranVerse*, bool = false)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(CQuranVerse*, int)
 {
 	
 }
@@ -2020,11 +2373,11 @@ std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(std::vector<std::vector
 {
 	
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(std::vector<std::vector<Character>>, bool = false)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(std::vector<std::vector<Character>>, int)
 {
 	
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(CQuranVerse*, bool = false)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(CQuranVerse*, int)
 {
 	
 }
@@ -2034,11 +2387,11 @@ int CQuranTree::DistanceBetween(CQuranCharacter*)
 {
 	
 }
-int CQuranTree::DistanceBetween(CQuranWord*, bool = false)
+int CQuranTree::DistanceBetween(CQuranWord*, int)
 {
 	
 }
-int CQuranTree::DistanceBetween(CQuranVerse*, bool = false)
+int CQuranTree::DistanceBetween(CQuranVerse*, int)
 {
 	
 }
