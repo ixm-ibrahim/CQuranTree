@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <vector>
 
 namespace Utilities
@@ -65,5 +66,41 @@ namespace Utilities
 	void remove_all(std::vector<T>& vec, T elem)
 	{
 		vec.erase(std::remove(vec.begin(), vec.end(), elem), vec.end());
+	}
+
+	template <class T>
+	int closest_value_lower(const std::vector<T>& vec, T value)
+	{
+		auto const it = std::lower_bound(vec.begin(), vec.end(), value);
+		if (it == vec.end()) { return -1; }
+
+		return *it;
+	}
+	
+	template <class T>
+	int index_of_closest_value_lower(const std::vector<T>& vec, T value)
+	{
+		auto const it = std::lower_bound(vec.begin(), vec.end(), value);
+		if (it == vec.end()) { return -1; }
+
+		return it - vec.begin();
+	}
+
+	template <class T>
+	int closest_value_upper(const std::vector<T>& vec, T value)
+	{
+		auto const it = std::upper_bound(vec.begin(), vec.end(), value);
+		if (it == vec.end()) { return -1; }
+
+		return *it;
+	}
+
+	template <class T>
+	int index_of_closest_value_upper(const std::vector<T>& vec, T value)
+	{
+		auto const it = std::upper_bound(vec.begin(), vec.end(), value);
+		if (it == vec.end()) { return -1; }
+
+		return it - vec.begin();
 	}
 }

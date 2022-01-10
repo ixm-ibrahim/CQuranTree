@@ -8,6 +8,38 @@ using namespace Quran;
 ///////////////////////////////////////////////////////////////////////////////
 
 
+bool Quran::is_enabled(int searchParameters, int param)
+{
+	return (searchParameters & param) == param;
+}
+
+int Quran::verse_num_by_chapter(int chapterNum)
+{
+	return VerseNumByChapter[chapterNum - 1];
+}
+int Quran::total_verse_num_by_chapter(int chapterNum)
+{
+	return TotalVerseNumByChapter[chapterNum-1];
+}
+
+int Quran::chapter_num_by_total_verse(int totalVerseNum)
+{
+	return Utilities::closest_value_upper<int>(TotalVerseNumByChapter, totalVerseNum) + 1;
+}
+
+bool Quran::is_letter(CQuranCharacter* character, bool checkSpace)
+{
+	return is_letter(character->GetCharacter(), checkSpace);
+}
+bool Quran::is_diacritic(CQuranCharacter* character)
+{
+	return is_diacritic(character->GetCharacter());
+}
+bool Quran::is_symbol(CQuranCharacter* character)
+{
+	return is_symbol(character->GetCharacter());
+}
+
 bool Quran::is_makkan(revelation_t r)
 {
 	return r == revelation_t::MAKKAN || r == revelation_t::LATE_MAKKAN;
@@ -24,7 +56,6 @@ bool Quran::is_madinan(CQuranNode* n)
 {
 	return is_madinan(n->GetAttributes().revelationPeriod);
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Attributes 
@@ -1931,9 +1962,9 @@ std::vector<CQuranCharacter*> CQuranWord::GetWord()
 {
 	return this->word;
 }
-CQuranCharacter* CQuranWord::GetCharacter(int index)
+CQuranCharacter* CQuranWord::GetCharacter(int characterNum)
 {
-	return this->word[index];
+	return this->word[characterNum-1];
 }
 std::vector<int> CQuranWord::GetASCII()
 {
@@ -1943,6 +1974,11 @@ std::vector<int> CQuranWord::GetASCII()
 		asciis.push_back(this->word[i]->GetASCII());
 
 	return asciis;
+}
+
+int CQuranWord::Count()
+{
+	return this->word.size();
 }
 
 std::string CQuranWord::ToString()
@@ -2005,9 +2041,18 @@ std::vector<CQuranWord*> CQuranVerse::GetVerse()
 {
 	return this->verse;
 }
-CQuranWord* CQuranVerse::GetWord(int index)
+CQuranWord* CQuranVerse::GetWord(int wordNum)
 {
-	return this->verse[index];
+	return this->verse[wordNum-1];
+}
+CQuranCharacter* CQuranVerse::GetCharacter(int wordNum, int characterNum)
+{
+	return this->verse[wordNum-1]->GetCharacter(characterNum);
+}
+
+int CQuranVerse::Count()
+{
+	return this->verse.size();
 }
 
 std::string CQuranVerse::ToString()
@@ -2075,9 +2120,22 @@ std::vector<CQuranVerse*> CQuranChapter::GetChapter()
 {
 	return this->chapter;
 }
-CQuranWord* CQuranChapter::GetWord(int verseIndex, int wordIndex)
+CQuranVerse* CQuranChapter::GetVerse(int verseNum)
 {
-	return this->chapter[verseIndex]->GetWord(wordIndex);
+	return this->chapter[verseNum-1];
+}
+CQuranWord* CQuranChapter::GetWord(int verseNum, int wordNum)
+{
+	return this->chapter[verseNum-1]->GetWord(wordNum);
+}
+CQuranCharacter* CQuranChapter::GetCharacter(int verseNum, int wordNum, int characterNum)
+{
+	return this->chapter[verseNum-1]->GetWord(wordNum)->GetCharacter(characterNum);
+}
+
+int CQuranChapter::Count()
+{
+	return this->chapter.size();
 }
 
 std::string CQuranChapter::ToString()
@@ -2142,48 +2200,158 @@ std::vector<CQuranChapter*> CQuranTree::GetQuran()
 	return this->chapters;
 }
 
-CQuranCharacter* CQuranTree::GetCharacterSimple(int chapterNum, int verseNum, int wordNum, int characterNum)
+CQuranNode* CQuranTree::Get(int chapterNum, int verseNum, int wordNum, int characterNum)
 {
-	this->chapters[chapterNum-1]->GetVerse(verseNum-1)->GetWord(wordNum-1)->GetCharacter(characterNum-1);
+	return this->chapters[chapterNum-1]->GetVerse(verseNum)->GetWord(wordNum)->GetCharacter(characterNum);
 }
-CQuranWord* CQuranTree::GetWordSimple(int chapterNum, int verseNum, int wordNum)
+CQuranNode* CQuranTree::Get(int chapterNum, int verseNum, int wordNum)
 {
-	return this->chapters[chapterNum-1]->GetVerse(verseNum-1)->GetWord(wordNum-1);
+	return this->chapters[chapterNum-1]->GetVerse(verseNum)->GetWord(wordNum);
 }
-CQuranVerse* CQuranTree::GetVerseSimple(int chapterNum, int verseNum)
+CQuranNode* CQuranTree::Get(int chapterNum, int verseNum)
 {
-	return this->chapters[chapterNum-1]->GetVerse(verseNum-1);
+	return this->chapters[chapterNum-1]->GetVerse(verseNum);
 }
-CQuranChapter* CQuranTree::GetChapterSimple(int chapterNum)
+CQuranNode* CQuranTree::Get(int chapterNum)
 {
 	return this->chapters[chapterNum-1];
 }
 
-CQuranCharacter* CQuranTree::GetSymbolTotal(int)
+CQuranCharacter* CQuranTree::GetCharacter(int chapterNum, int verseNum, int wordNum, int characterNum)
 {
-	
+	if (verseNum == 0)
+		verseNum = 1;
+
+	return this->chapters[chapterNum-1]->GetWord(verseNum, wordNum)->GetCharacter(characterNum);
 }
-CQuranCharacter* CQuranTree::GetDiacriticTotal(int)
+CQuranCharacter* CQuranTree::GetLetter(int chapterNum, int verseNum, int wordNum, int letterNum)
 {
-	
+	if (verseNum == 0)
+		verseNum = 1;
+
+	size_t count = 0;
+	CQuranWord* w = this->chapters[chapterNum-1]->GetWord(verseNum, wordNum);
+
+	for (size_t i = 0; i < w->Count(); i++)
+	{
+		if (is_letter(w->GetCharacter(i)))
+			count++;
+
+		if (count == letterNum)
+			return w->GetCharacter(i);
+	}
+
+	return nullptr;
 }
-CQuranCharacter* CQuranTree::GetLetterTotal(int textualPosition, int searchParameters)
+CQuranCharacter* CQuranTree::GetDiacritic(int chapterNum, int verseNum, int wordNum, int diacriticNum)
 {
-	
+	if (verseNum == 0)
+		verseNum = 1;
+
+	size_t count = 0;
+	CQuranWord* w = this->chapters[chapterNum-1]->GetWord(verseNum, wordNum);
+
+	for (size_t i = 0; i < w->Count(); i++)
+	{
+		if (is_diacritic(w->GetCharacter(i)))
+			count++;
+
+		if (count == diacriticNum)
+			return w->GetCharacter(i);
+	}
+
+	return nullptr;
 }
-CQuranCharacter* CQuranTree::GetCharacterTotal(int)
+CQuranCharacter* CQuranTree::GetSymbol(int chapterNum, int verseNum, int wordNum, int symbolNum)
 {
-	
+	if (verseNum == 0)
+		verseNum = 1;
+
+	size_t count = 0;
+	CQuranWord* w = this->chapters[chapterNum-1]->GetWord(verseNum, wordNum);
+
+	for (size_t i = 0; i < w->Count(); i++)
+	{
+		if (is_symbol(w->GetCharacter(i)))
+			count++;
+
+		if (count == symbolNum)
+			return w->GetCharacter(i);
+	}
+
+	return nullptr;
 }
-CQuranWord* CQuranTree::GetWordTotal(int, bool)
+CQuranWord* CQuranTree::GetWord(int chapterNum, int verseNum, int wordNum)
 {
-	
+	if (verseNum == 0)
+		verseNum = 1;
+
+	return this->GetChapter(chapterNum)->GetVerse(verseNum)->GetWord(wordNum);
 }
-CQuranVerse* CQuranTree::GetVerseTotal(int verseNum, int searchParameters)
+CQuranVerse* CQuranTree::GetVerse(int totalVerseNum)
 {
-	
+	if (totalVerseNum == 0)
+		return this->GetChapter(1)->GetVerse(1);
+
+	int chapterNum = chapter_num_by_total_verse(totalVerseNum);
+	int remainder = totalVerseNum - total_verse_num_by_chapter(chapterNum);
+
+	return this->chapters[chapterNum-1]->GetVerse(remainder);
 }
-CQuranChapter* CQuranTree::GetChapterTotal(int chapterNum)
+CQuranVerse* CQuranTree::GetVerse(int chapterNum, int verseNum)
+{
+	if (verseNum == 0)
+		verseNum = 1;
+
+	return this->chapters[chapterNum-1]->GetVerse(verseNum);
+}
+CQuranChapter* CQuranTree::GetChapter(int chapterNum)
+{
+	return this->chapters[chapterNum-1];
+}
+
+CQuranCharacter* CQuranTree::GetSymbolAt(int)
+{
+	return nullptr;
+}
+CQuranCharacter* CQuranTree::GetDiacriticAt(int)
+{
+	return nullptr;
+}
+CQuranCharacter* CQuranTree::GetLetterAt(int textualPosition)
+{
+	return nullptr;
+}
+CQuranCharacter* CQuranTree::GetCharacterAt(int)
+{
+	return nullptr;
+}
+CQuranWord* CQuranTree::GetWordAt(int, bool)
+{
+	return nullptr;
+}
+CQuranVerse* CQuranTree::GetVerseAt(int verseNum)
+{
+	int startChapter = verseNum % NumChapters;
+	int startVerse = verse_num_by_chapter(startChapter);
+
+	CQuranVerse* current = this->GetVerse(startChapter, startVerse);
+
+	while (current != nullptr)
+	{
+		int verseN = current->GetAttributes().textualPosition.verseNum;
+		int verseBasmallahN = verseN + current->GetAttributes().textualPosition.basmallahNum;
+
+		if (is_enabled(searchParameters, INCLUDE_BASMALLAH) && verseNum == verseBasmallahN
+			|| verseNum == verseNum)
+			return current;
+
+		current->GetNextVerse();
+	}
+
+	return nullptr;
+}
+CQuranChapter* CQuranTree::GetChapterAt(int chapterNum)
 {
 	return this->chapters[chapterNum];
 }
@@ -2191,17 +2359,19 @@ CQuranChapter* CQuranTree::GetChapterTotal(int chapterNum)
 CQuranVerse* CQuranTree::GetBasmallahAt(int basmallahNum)
 {
 	if (basmallahNum >= 1 && basmallahNum <= 8)
-		return this->chapters[basmallahNum-1]->GetVerse(0);
+		return this->GetVerse(basmallahNum, 0);
 	if (basmallahNum >= 9 && basmallahNum <= 26)
-		return this->chapters[basmallahNum]->GetVerse(0);
+		return this->GetVerse(basmallahNum + 1, 0);
 	if (basmallahNum == 27)
-		return (*this->chapters[27])[0];
+		return this->GetVerse(27, 30);
+	if (basmallahNum >= 28 && basmallahNum <= 114)
+		return this->GetVerse(basmallahNum, 0);
 
 	return nullptr;
 }
 CQuranChapter* CQuranTree::GetMakkanChapterAt(int makkanChapterNum)
 {
-	int count = 0;
+	size_t count = 0;
 
 	for (size_t i = 0; i < 114; i++)
 	{
@@ -2216,7 +2386,7 @@ CQuranChapter* CQuranTree::GetMakkanChapterAt(int makkanChapterNum)
 }
 CQuranChapter* CQuranTree::GetMadinanChapterAt(int madinanChapterNum)
 {
-	int count = 0;
+	size_t count = 0;
 
 	for (size_t i = 0; i < 114; i++)
 	{
@@ -2233,211 +2403,211 @@ CQuranChapter* CQuranTree::GetMadinanChapterAt(int madinanChapterNum)
 // ex.with word, display counts of each grammatical category
 int CQuranTree::LetterCount(int)
 {
-	
+	return 0;
 }
 int CQuranTree::LetterCount(letter_t)
 {
-	
+	return 0;
 }
 int CQuranTree::DiacriticCount(int)
 {
-	
+	return 0;
 }
 int CQuranTree::DiacriticCount(diacritic_t)
 {
-	
+	return 0;
 }
 int CQuranTree::SymbolCount(int)
 {
-	
+	return 0;
 }
 int CQuranTree::SymbolCount(symbol_t)
 {
-	
+	return 0;
 }
 int CQuranTree::CharacterCount(int)
 {
-	
+	return 0;
 }
 int CQuranTree::CharacterCount(Character*)
 {
-	
+	return 0;
 }
 int CQuranTree::CharacterCount(CQuranCharacter*)
 {
-	
+	return 0;
 }
 
 int CQuranTree::WordCount(std::vector<letter_t>)
 {
-	
+	return 0;
 }
-int CQuranTree::WordCount(std::vector<Character*>, int)
+int CQuranTree::WordCount(std::vector<Character*>)
 {
-	
+	return 0;
 }
-int CQuranTree::WordCount(CQuranWord*, int)
+int CQuranTree::WordCount(CQuranWord*)
 {
-	
+	return 0;
 }
 
 int CQuranTree::VerseCount(std::vector<std::vector<letter_t>>)
 {
-	
+	return 0;
 }
-int CQuranTree::VerseCount(std::vector<std::vector<Character*>>, int)
+int CQuranTree::VerseCount(std::vector<std::vector<Character*>>)
 {
-	
+	return 0;
 }
-int CQuranTree::VerseCount(CQuranVerse*, int)
+int CQuranTree::VerseCount(CQuranVerse*)
 {
-	
+	return 0;
 }
 int CQuranTree::PhraseCount(std::vector<std::vector<letter_t>>)
 {
-	
+	return 0;
 }
-int CQuranTree::PhraseCount(std::vector<std::vector<Character*>>, int)
+int CQuranTree::PhraseCount(std::vector<std::vector<Character*>>)
 {
-	
+	return 0;
 }
-int CQuranTree::PhraseCount(CQuranVerse*, int)
+int CQuranTree::PhraseCount(CQuranVerse*)
 {
-	
+	return 0;
 }
 
 
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfLetter(int)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfLetter(letter_t)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfDiacritic(int)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfDiacritic(diacritic_t)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfSymbol(int)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfSymbol(symbol_t)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfCharacter(int)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfCharacter(Character*)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 std::vector<CQuranCharacter*> CQuranTree::OccurancesOfCharacter(CQuranCharacter*)
 {
-	
+	return std::vector<CQuranCharacter*>();
 }
 
 std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(std::vector<letter_t>)
 {
-	
+	return std::vector<CQuranWord*>();
 }
-std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(std::vector<Character>, int)
+std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(std::vector<Character>)
 {
-	
+	return std::vector<CQuranWord*>();
 }
-std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(CQuranWord*, int)
+std::vector<CQuranWord*> CQuranTree::OccurancesOfWord(CQuranWord*)
 {
-	
+	return std::vector<CQuranWord*>();
 }
 
 std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(std::vector<std::vector<letter_t>>)
 {
-	
+	return std::vector<CQuranVerse*>();
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(std::vector<std::vector<Character>>, int)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(std::vector<std::vector<Character>>)
 {
-	
+	return std::vector<CQuranVerse*>();
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(CQuranVerse*, int)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfVerse(CQuranVerse*)
 {
-	
+	return std::vector<CQuranVerse*>();
 }
 std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(std::vector<std::vector<letter_t>>)
 {
-	
+	return std::vector<CQuranVerse*>();
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(std::vector<std::vector<Character>>, int)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(std::vector<std::vector<Character>>)
 {
-	
+	return std::vector<CQuranVerse*>();
 }
-std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(CQuranVerse*, int)
+std::vector<CQuranVerse*> CQuranTree::OccurancesOfPhrase(CQuranVerse*)
 {
-	
+	return std::vector<CQuranVerse*>();
 }
 
 
 int CQuranTree::DistanceBetween(CQuranCharacter*)
 {
-	
+	return 0;
 }
-int CQuranTree::DistanceBetween(CQuranWord*, int)
+int CQuranTree::DistanceBetween(CQuranWord*)
 {
-	
+	return 0;
 }
-int CQuranTree::DistanceBetween(CQuranVerse*, int)
+int CQuranTree::DistanceBetween(CQuranVerse*)
 {
-	
+	return 0;
 }
 
 int CQuranTree::DistanceBetween(CQuranCharacter*, CQuranCharacter*)
 {
-	
+	return 0;
 }
 int CQuranTree::DistanceBetween(CQuranCharacter*, CQuranWord*)
 {
-	
+	return 0;
 }
 int CQuranTree::DistanceBetween(CQuranCharacter*, CQuranVerse*)
 {
-	
+	return 0;
 }
 
 int CQuranTree::DistanceBetween(CQuranWord*, CQuranCharacter*)
 {
-	
+	return 0;
 }
 int CQuranTree::DistanceBetween(CQuranWord*, CQuranWord*)
 {
-	
+	return 0;
 }
 int CQuranTree::DistanceBetween(CQuranWord*, CQuranVerse*)
 {
-	
+	return 0;
 }
 
 int CQuranTree::DistanceBetween(CQuranVerse*, CQuranCharacter*)
 {
-	
+	return 0;
 }
 int CQuranTree::DistanceBetween(CQuranVerse*, CQuranWord*)
 {
-	
+	return 0;
 }
 int CQuranTree::DistanceBetween(CQuranVerse*, CQuranVerse*)
 {
-	
+	return 0;
 }
 
 int CQuranTree::DistanceBetween(CQuranChapter*, CQuranChapter*)
 {
-	
+	return 0;
 }
 
 

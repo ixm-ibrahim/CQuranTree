@@ -36,6 +36,241 @@ namespace Quran
 	const int NumQuarters = NumHalves * 4;
 	const int NumBowings = 556;
 
+	const std::vector<int> VerseNumByChapter
+	{
+		7,
+		286,
+		200,
+		176,
+		120,
+		165,
+		206,
+		75,
+		129,
+		109,
+		123,
+		111,
+		43,
+		52,
+		99,
+		128,
+		111,
+		110,
+		98,
+		135,
+		112,
+		78,
+		118,
+		64,
+		77,
+		227,
+		93,
+		88,
+		69,
+		60,
+		34,
+		30,
+		73,
+		54,
+		45,
+		83,
+		182,
+		88,
+		75,
+		85,
+		54,
+		53,
+		89,
+		59,
+		37,
+		35,
+		38,
+		29,
+		18,
+		45,
+		60,
+		49,
+		62,
+		55,
+		78,
+		96,
+		29,
+		22,
+		24,
+		13,
+		14,
+		11,
+		11,
+		18,
+		12,
+		12,
+		30,
+		52,
+		52,
+		44,
+		28,
+		28,
+		20,
+		56,
+		40,
+		31,
+		50,
+		40,
+		46,
+		42,
+		29,
+		19,
+		36,
+		25,
+		22,
+		17,
+		19,
+		26,
+		30,
+		20,
+		15,
+		21,
+		11,
+		8,
+		8,
+		19,
+		5,
+		8,
+		8,
+		11,
+		11,
+		8,
+		3,
+		9,
+		5,
+		4,
+		7,
+		3,
+		6,
+		3,
+		5,
+		4,
+		5,
+		6,
+	};
+	const std::vector<int> TotalVerseNumByChapter
+	{
+		7,
+		293,
+		493,
+		669,
+		789,
+		954,
+		1160,
+		1235,
+		1364,
+		1473,
+		1596,
+		1707,
+		1750,
+		1802,
+		1901,
+		2029,
+		2140,
+		2250,
+		2348,
+		2483,
+		2595,
+		2673,
+		2791,
+		2855,
+		2932,
+		3159,
+		3252,
+		3340,
+		3409,
+		3469,
+		3503,
+		3533,
+		3606,
+		3660,
+		3705,
+		3788,
+		3970,
+		4058,
+		4133,
+		4218,
+		4272,
+		4325,
+		4414,
+		4473,
+		4510,
+		4545,
+		4583,
+		4612,
+		4630,
+		4675,
+		4735,
+		4784,
+		4846,
+		4901,
+		4979,
+		5075,
+		5104,
+		5126,
+		5150,
+		5163,
+		5177,
+		5188,
+		5199,
+		5217,
+		5229,
+		5241,
+		5271,
+		5323,
+		5375,
+		5419,
+		5447,
+		5475,
+		5495,
+		5551,
+		5591,
+		5622,
+		5672,
+		5712,
+		5758,
+		5800,
+		5829,
+		5848,
+		5884,
+		5909,
+		5931,
+		5948,
+		5967,
+		5993,
+		6023,
+		6043,
+		6058,
+		6079,
+		6090,
+		6098,
+		6106,
+		6125,
+		6130,
+		6138,
+		6146,
+		6157,
+		6168,
+		6176,
+		6179,
+		6188,
+		6193,
+		6197,
+		6204,
+		6207,
+		6213,
+		6216,
+		6221,
+		6225,
+		6230,
+		6236,
+	};
+
 	struct Attributes
 	{
 		struct TextualPosition
@@ -346,6 +581,8 @@ namespace Quran
 			CQuranCharacter* GetCharacter(int);
 			std::vector<int> GetASCII();
 
+			int Count();
+
 			std::string ToString();
 			std::string GetTranslation();
 			std::string SoundOf(bool = false);
@@ -368,6 +605,9 @@ namespace Quran
 
 			std::vector<CQuranWord*> GetVerse();
 			CQuranWord* GetWord(int);
+			CQuranCharacter* GetCharacter(int, int);
+
+			int Count();
 
 			std::string ToString();
 			std::string GetTranslation();
@@ -392,6 +632,9 @@ namespace Quran
 			std::vector<CQuranVerse*> GetChapter();
 			CQuranVerse* GetVerse(int);
 			CQuranWord* GetWord(int, int);
+			CQuranCharacter* GetCharacter(int, int, int);
+
+			int Count();
 
 			std::string ToString();
 			std::string GetTranslation();
@@ -410,9 +653,9 @@ namespace Quran
 
 		private:
 			std::vector<CQuranChapter*> chapters;
-
 			std::map<std::string, int> settings;
 			std::vector<State> state;
+			int searchParameters;
 
 			void PopulateData();
 			void DeleteData();
@@ -424,18 +667,28 @@ namespace Quran
 			~CQuranTree();
 
 			std::vector<CQuranChapter*> GetQuran();
-			CQuranCharacter* GetCharacterSimple(int, int, int, int);
-			CQuranWord* GetWordSimple(int, int, int);
-			CQuranVerse* GetVerseSimple(int, int);
-			CQuranChapter* GetChapterSimple(int);
 
-			CQuranCharacter* GetSymbolTotal(int);
-			CQuranCharacter* GetDiacriticTotal(int);
-			CQuranCharacter* GetLetterTotal(int, int = 0);
-			CQuranCharacter* GetCharacterTotal(int);
-			CQuranWord* GetWordTotal(int, bool);
-			CQuranVerse* GetVerseTotal(int, int = 0);
-			CQuranChapter* GetChapterTotal(int);
+			CQuranNode* Get(int, int, int, int);
+			CQuranNode* Get(int, int, int);
+			CQuranNode* Get(int, int);
+			CQuranNode* Get(int);
+
+			CQuranCharacter* GetCharacter(int, int, int, int);
+			CQuranCharacter* GetLetter(int, int, int, int);
+			CQuranCharacter* GetDiacritic(int, int, int, int);
+			CQuranCharacter* GetSymbol(int, int, int, int);
+			CQuranWord* GetWord(int, int, int);
+			CQuranVerse* GetVerse(int);
+			CQuranVerse* GetVerse(int, int);
+			CQuranChapter* GetChapter(int);
+
+			CQuranCharacter* GetSymbolAt(int);
+			CQuranCharacter* GetDiacriticAt(int);
+			CQuranCharacter* GetLetterAt(int);
+			CQuranCharacter* GetCharacterAt(int);
+			CQuranWord* GetWordAt(int, bool);
+			CQuranVerse* GetVerseAt(int);
+			CQuranChapter* GetChapterAt(int);
 
 			CQuranVerse* GetBasmallahAt(int);
 			CQuranChapter* GetMakkanChapterAt(int);
@@ -452,15 +705,15 @@ namespace Quran
 			int CharacterCount(CQuranCharacter*);
 
 			int WordCount(std::vector<letter_t>);				// (ex.with word, display counts of each grammatical category)
-			int WordCount(std::vector<Character*>, int = 0);
-			int WordCount(CQuranWord*, int = 0);
+			int WordCount(std::vector<Character*>);
+			int WordCount(CQuranWord*);
 
 			int VerseCount(std::vector<std::vector<letter_t>>);
-			int VerseCount(std::vector<std::vector<Character*>>, int = 0);
-			int VerseCount(CQuranVerse*, int = 0);
+			int VerseCount(std::vector<std::vector<Character*>>);
+			int VerseCount(CQuranVerse*);
 			int PhraseCount(std::vector<std::vector<letter_t>>);
-			int PhraseCount(std::vector<std::vector<Character*>>, int = 0);
-			int PhraseCount(CQuranVerse*, int = 0);
+			int PhraseCount(std::vector<std::vector<Character*>>);
+			int PhraseCount(CQuranVerse*);
 
 			std::vector<CQuranCharacter*> OccurancesOfLetter(int);
 			std::vector<CQuranCharacter*> OccurancesOfLetter(letter_t);
@@ -473,19 +726,19 @@ namespace Quran
 			std::vector<CQuranCharacter*> OccurancesOfCharacter(CQuranCharacter*);
 
 			std::vector<CQuranWord*> OccurancesOfWord(std::vector<letter_t>);
-			std::vector<CQuranWord*> OccurancesOfWord(std::vector<Character>, int = 0);
-			std::vector<CQuranWord*> OccurancesOfWord(CQuranWord*, int = 0);
+			std::vector<CQuranWord*> OccurancesOfWord(std::vector<Character>);
+			std::vector<CQuranWord*> OccurancesOfWord(CQuranWord*);
 
 			std::vector<CQuranVerse*> OccurancesOfVerse(std::vector<std::vector<letter_t>>);
-			std::vector<CQuranVerse*> OccurancesOfVerse(std::vector<std::vector<Character>>, int = 0);
-			std::vector<CQuranVerse*> OccurancesOfVerse(CQuranVerse*, int = 0);
+			std::vector<CQuranVerse*> OccurancesOfVerse(std::vector<std::vector<Character>>);
+			std::vector<CQuranVerse*> OccurancesOfVerse(CQuranVerse*);
 			std::vector<CQuranVerse*> OccurancesOfPhrase(std::vector<std::vector<letter_t>>);
-			std::vector<CQuranVerse*> OccurancesOfPhrase(std::vector<std::vector<Character>>, int = 0);
-			std::vector<CQuranVerse*> OccurancesOfPhrase(CQuranVerse*, int = 0);
+			std::vector<CQuranVerse*> OccurancesOfPhrase(std::vector<std::vector<Character>>);
+			std::vector<CQuranVerse*> OccurancesOfPhrase(CQuranVerse*);
 
 			int DistanceBetween(CQuranCharacter*);
-			int DistanceBetween(CQuranWord*, int = 0);
-			int DistanceBetween(CQuranVerse*, int = 0);
+			int DistanceBetween(CQuranWord*);
+			int DistanceBetween(CQuranVerse*);
 
 			int DistanceBetween(CQuranCharacter*, CQuranCharacter*);
 			int DistanceBetween(CQuranCharacter*, CQuranWord*);
@@ -543,6 +796,18 @@ namespace Quran
 
 	typedef Attributes::RevelationPeriod revelation_t;
 	typedef CQuranNode::Type node_t;
+
+	bool is_enabled(int, int);
+
+	//@TODO: include searchParameters for these
+	int verse_num_by_chapter(int);
+	int total_verse_num_by_chapter(int);
+
+	int chapter_num_by_total_verse(int);
+
+	bool is_letter(CQuranCharacter*, bool = false);
+	bool is_diacritic(CQuranCharacter*);
+	bool is_symbol(CQuranCharacter*);
 
 	bool is_makkan(revelation_t);
 	bool is_makkan(CQuranNode*);
