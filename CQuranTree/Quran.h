@@ -682,13 +682,12 @@ namespace Quran
 			CQuranVerse* GetVerse(int, int);
 			CQuranChapter* GetChapter(int);
 
-			CQuranCharacter* GetSymbolAt(int);
-			CQuranCharacter* GetDiacriticAt(int);
-			CQuranCharacter* GetLetterAt(int);
-			CQuranCharacter* GetCharacterAt(int);
-			CQuranWord* GetWordAt(int, bool);
-			CQuranVerse* GetVerseAt(int);
-			CQuranChapter* GetChapterAt(int);
+			CQuranCharacter* GetTotalSymbol(int);
+			CQuranCharacter* GetTotalDiacritic(int);
+			CQuranCharacter* GetTotalLetter(int);
+			CQuranCharacter* GetTotalCharacter(int);
+			CQuranWord* GetTotalWord(int, bool);
+			CQuranVerse* GetTotalVerse(int);
 
 			CQuranVerse* GetBasmallahAt(int);
 			CQuranChapter* GetMakkanChapterAt(int);

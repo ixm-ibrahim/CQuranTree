@@ -2310,29 +2310,47 @@ CQuranChapter* CQuranTree::GetChapter(int chapterNum)
 	return this->chapters[chapterNum-1];
 }
 
-CQuranCharacter* CQuranTree::GetSymbolAt(int)
+CQuranCharacter* CQuranTree::GetTotalSymbol(int)
 {
 	return nullptr;
 }
-CQuranCharacter* CQuranTree::GetDiacriticAt(int)
+CQuranCharacter* CQuranTree::GetTotalDiacritic(int)
 {
 	return nullptr;
 }
-CQuranCharacter* CQuranTree::GetLetterAt(int textualPosition)
+CQuranCharacter* CQuranTree::GetTotalLetter(int textualPosition)
 {
 	return nullptr;
 }
-CQuranCharacter* CQuranTree::GetCharacterAt(int)
+CQuranCharacter* CQuranTree::GetTotalCharacter(int)
 {
 	return nullptr;
 }
-CQuranWord* CQuranTree::GetWordAt(int, bool)
+CQuranWord* CQuranTree::GetTotalWord(int totalWordNum, bool)
 {
+	int startChapter = chapter_num_by_total_verse(totalVerseNum);
+	int startVerse = verse_num_by_chapter(startChapter);
+	int startWord = 0;
+
+	CQuranWord* current = this->GetWord(startChapter, startVerse, startWord);
+
+	while (current != nullptr)
+	{
+		int verseN = current->GetAttributes().textualPosition.verseNum;
+		int verseBasmallahN = verseN + current->GetAttributes().textualPosition.basmallahNum;
+
+		if (is_enabled(searchParameters, INCLUDE_BASMALLAH) && totalVerseNum == verseBasmallahN
+			|| totalVerseNum == totalVerseNum)
+			return current;
+
+		current->GetNextWord();
+	}
+
 	return nullptr;
 }
-CQuranVerse* CQuranTree::GetVerseAt(int verseNum)
+CQuranVerse* CQuranTree::GetTotalVerse(int totalVerseNum)
 {
-	int startChapter = verseNum % NumChapters;
+	int startChapter = chapter_num_by_total_verse(totalVerseNum);
 	int startVerse = verse_num_by_chapter(startChapter);
 
 	CQuranVerse* current = this->GetVerse(startChapter, startVerse);
@@ -2342,18 +2360,14 @@ CQuranVerse* CQuranTree::GetVerseAt(int verseNum)
 		int verseN = current->GetAttributes().textualPosition.verseNum;
 		int verseBasmallahN = verseN + current->GetAttributes().textualPosition.basmallahNum;
 
-		if (is_enabled(searchParameters, INCLUDE_BASMALLAH) && verseNum == verseBasmallahN
-			|| verseNum == verseNum)
+		if (is_enabled(searchParameters, INCLUDE_BASMALLAH) && totalVerseNum == verseBasmallahN
+			|| totalVerseNum == totalVerseNum)
 			return current;
 
 		current->GetNextVerse();
 	}
 
 	return nullptr;
-}
-CQuranChapter* CQuranTree::GetChapterAt(int chapterNum)
-{
-	return this->chapters[chapterNum];
 }
 
 CQuranVerse* CQuranTree::GetBasmallahAt(int basmallahNum)
@@ -3271,7 +3285,7 @@ bool Quran_old::validate_file(std::string quranPath)
 TextualPosition::TextualPosition()
 {
 	this->chapterNum = 0;
-	this->verseNum = 0;
+	this->totalVerseNum = 0;
 	this->verseNumBasmallah = 0;
 	this->wordNum = 0;
 	this->wordNumBasmallah = 0;
@@ -3288,10 +3302,10 @@ TextualPosition::TextualPosition()
 	this->quarterNum = 0;
 	this->bowingNum = 0;
 }
-TextualPosition::TextualPosition(int chapterNum, int verseNum, int verseNumBasmallah, int wordNum, int wordNumBasmallah, int wordNumWaw, int wordNumBasmallahWaw, int letterNum, int letterNumBasmallah, int letterNumWaw, int letterNumBasmallahWaw, int pageNum, int stationNum, int partNum, int halfNum, int quarterNum, int bowingNum)
+TextualPosition::TextualPosition(int chapterNum, int totalVerseNum, int verseNumBasmallah, int wordNum, int wordNumBasmallah, int wordNumWaw, int wordNumBasmallahWaw, int letterNum, int letterNumBasmallah, int letterNumWaw, int letterNumBasmallahWaw, int pageNum, int stationNum, int partNum, int halfNum, int quarterNum, int bowingNum)
 {
 	this->chapterNum = chapterNum;
-	this->verseNum = verseNum;
+	this->totalVerseNum = totalVerseNum;
 	this->verseNumBasmallah = verseNumBasmallah;
 	this->wordNum = wordNum;
 	this->wordNumBasmallah = wordNumBasmallah;
