@@ -13,6 +13,32 @@ bool Quran::is_enabled(int searchParameters, int param)
 	return (searchParameters & param) == param;
 }
 
+int Quran::letter_num_by_word(int wordNum)
+{
+	return LetterNumByWord[wordNum - 1];
+}
+int Quran::total_letter_num_by_word(int wordNum)
+{
+	return TotalLetterNumByWord[wordNum - 1];
+}
+
+int Quran::total_word_num_by_total_letter(int totalLetterNum)
+{
+	return Utilities::closest_value_upper<int>(TotalLetterNumByWord, totalLetterNum) + 1;
+}
+int Quran::word_num_by_verse(int verseNum)
+{
+	return WordNumByVerse[verseNum - 1];
+}
+int Quran::total_word_num_by_verse(int verseNum)
+{
+	return TotalWordNumByVerse[verseNum - 1];
+}
+
+int Quran::total_verse_num_by_total_word(int totalWordNum)
+{
+	return Utilities::closest_value_upper<int>(TotalWordNumByVerse, totalWordNum) + 1;
+}
 int Quran::verse_num_by_chapter(int chapterNum)
 {
 	return VerseNumByChapter[chapterNum - 1];
@@ -21,10 +47,26 @@ int Quran::total_verse_num_by_chapter(int chapterNum)
 {
 	return TotalVerseNumByChapter[chapterNum-1];
 }
+int Quran::total_verse_num_by_chapter_verse(int chapterNum, int verseNum)
+{
+	if (chapterNum <= 1)
+		return verseNum;
+
+	return total_verse_num_by_chapter(chapterNum-1) + verseNum;
+}
 
 int Quran::chapter_num_by_total_verse(int totalVerseNum)
 {
 	return Utilities::closest_value_upper<int>(TotalVerseNumByChapter, totalVerseNum) + 1;
+}
+
+int Quran::station_num_by_chapter(int chapterNum)
+{
+	return Utilities::index_of(StationNumByChapter, chapterNum);
+}
+int Quran::chapter_by_station_num(int stationNum)
+{
+	return StationNumByChapter[stationNum-1];
 }
 
 bool Quran::is_letter(CQuranCharacter* character, bool checkSpace)
@@ -2326,11 +2368,11 @@ CQuranCharacter* CQuranTree::GetTotalCharacter(int)
 {
 	return nullptr;
 }
-CQuranWord* CQuranTree::GetTotalWord(int totalWordNum, bool)
+CQuranWord* CQuranTree::GetTotalWord(int totalWordNum)
 {
-	int startChapter = chapter_num_by_total_verse(totalVerseNum);
-	int startVerse = verse_num_by_chapter(startChapter);
-	int startWord = 0;
+	int startVerse = total_verse_num_by_total_word(totalWordNum);
+	int startWord = word_num_by_verse(startVerse);
+	int startChapter = chapter_num_by_total_verse(startVerse);
 
 	CQuranWord* current = this->GetWord(startChapter, startVerse, startWord);
 
@@ -2360,8 +2402,7 @@ CQuranVerse* CQuranTree::GetTotalVerse(int totalVerseNum)
 		int verseN = current->GetAttributes().textualPosition.verseNum;
 		int verseBasmallahN = verseN + current->GetAttributes().textualPosition.basmallahNum;
 
-		if (is_enabled(searchParameters, INCLUDE_BASMALLAH) && totalVerseNum == verseBasmallahN
-			|| totalVerseNum == totalVerseNum)
+		if (is_enabled(searchParameters, INCLUDE_BASMALLAH) && totalVerseNum == verseBasmallahN || totalVerseNum == totalVerseNum)
 			return current;
 
 		current->GetNextVerse();
